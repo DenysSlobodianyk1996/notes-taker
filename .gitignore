@@ -1,0 +1,23 @@
+# deps / build
+node_modules/
+dist/
+.angular/
+coverage/
+out-tsc/
+
+# firebase
+.firebase/
+*-debug.log
+firebase-debug.*.log
+
+# env / os / ide
+.env
+.env.*
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# claude local
+.claude/worktrees/
+.claude/settings.local.json
