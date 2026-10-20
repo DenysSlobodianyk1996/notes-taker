@@ -1,0 +1,35 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-10-20T12:00:00Z" },
+  "title": "Notes Taker Design",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": { "x": 0, "y": 0, "w": 1280, "h": 800, "title": "Clickable prototype (start here, press Play)", "expand": "fill", "is_interactive": true },
+    "Desktop-Editing.dc.html": { "x": 1360, "y": 0, "w": 1280, "h": 800, "title": "Desktop: editing a note + duplicate folder name", "is_interactive": true },
+    "Desktop-DeleteFolder.dc.html": { "x": 2720, "y": 0, "w": 1280, "h": 800, "title": "Desktop: delete folder dialog", "is_interactive": true },
+    "Desktop-MoveGuestData.dc.html": { "x": 4080, "y": 0, "w": 1280, "h": 800, "title": "Desktop: move guest data after sign-in", "is_interactive": true },
+    "Mobile-Login.dc.html": { "x": 0, "y": 1220, "w": 390, "h": 844, "title": "Mobile: login", "is_interactive": true },
+    "Mobile-List.dc.html": { "x": 470, "y": 1220, "w": 390, "h": 844, "title": "Mobile: notes list", "is_interactive": true },
+    "Mobile-Drawer.dc.html": { "x": 940, "y": 1220, "w": 390, "h": 844, "title": "Mobile: folders drawer open", "is_interactive": true },
+    "Mobile-NewNote.dc.html": { "x": 1410, "y": 1220, "w": 390, "h": 844, "title": "Mobile: new note row (guest)", "is_interactive": true },
+    "Mobile-Empty.dc.html": { "x": 1880, "y": 1220, "w": 390, "h": 844, "title": "Mobile: empty folder", "is_interactive": true }
+  },
+  "order": [
+    "Main.dc.html",
+    "Desktop-Editing.dc.html",
+    "Desktop-DeleteFolder.dc.html",
+    "Desktop-MoveGuestData.dc.html",
+    "Mobile-Login.dc.html",
+    "Mobile-List.dc.html",
+    "Mobile-Drawer.dc.html",
+    "Mobile-NewNote.dc.html",
+    "Mobile-Empty.dc.html"
+  ],
+  "notes": {
+    "rowDesktop": { "x": 0, "y": -300, "text": "Desktop (900px and wider)", "kind": "title1", "maxW": 5360 },
+    "rowMobile": { "x": 0, "y": 920, "text": "Mobile (under 900px)", "kind": "title1", "maxW": 2270 },
+    "howTo": { "x": 5440, "y": 0, "w": 340, "size": "m", "fill": "orange", "text": "Every artboard is clickable (Play).\n\nTry in Main:\n1. Continue as guest\n2. Add a folder and a few notes\n3. Sign in with Google (header)\n4. Move guest data: same-name folders merge, duplicate notes are skipped\n5. Sign out\n\nThe other artboards are the same prototype, opened at a specific state." }
+  },
+  "designSystems": []
+}
