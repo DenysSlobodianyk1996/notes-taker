@@ -14,6 +14,14 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - `@angular/pwa` service worker and manifest.
 - Dexie for guest IndexedDB storage; `@angular/fire` for Auth and Firestore.
 - Vitest (Angular's unit-test builder), angular-eslint, Prettier, Husky with lint-staged.
+- `@ngx-translate/core` (with the HTTP loader) for the EN/UA interface. Translations live in `public/i18n/en.json` and `public/i18n/uk.json`, drafted in `docs/design/i18n/` (ADR-0008).
+
+**UI language (EN/UA)**
+- The interface is in English or Ukrainian; user content (folder names, titles, text) is never translated.
+- On the first visit the browser language decides (`uk*` → `uk`, else `en`). The choice is then saved in `localStorage` on this device only.
+- An "EN | UA" toggle sits in the header and in the corner of the login card. Switching is instant, with no reload and no language in the URL. It also sets `<html lang>`.
+- Each key has exactly one translation (no plural rules), so counts are phrased like "Notes: 4".
+- The PWA manifest stays in English.
 
 **Auth and modes**
 - `/login` page offers "Sign in with Google" and "Continue as guest". The chosen mode is persisted.
@@ -24,9 +32,9 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - When signed in, Firestore's `persistentLocalCache` keeps the app working offline.
 
 **Moving guest data to the account**
-- After a Google sign-in, if the guest IndexedDB holds data beyond an empty default "General" folder, a `<dialog>` asks "Move N folders / M notes to your account?" with Move and Skip.
+- After a Google sign-in, if the guest IndexedDB holds anything beyond an empty Default folder (checked by the `isDefault` marker, not the name), a `<dialog>` asks "Move N folders / M notes to your account?" with Move and Skip.
 - **Move:**
-  - Folders whose names match (after trimming and lowercasing) merge into one folder.
+  - Folders whose names match (after trimming and lowercasing) merge into one folder. Matching is by name only, Default folders included. A guest Default folder with a different name arrives as an ordinary folder, because the account keeps its own Default folder.
   - A note is a duplicate when both its trimmed title and trimmed text match, ignoring case. For duplicates the account copy is kept, and the result is completed if either copy was completed.
   - The other notes are added.
   - The guest store is then cleared.
@@ -34,7 +42,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 
 **Folders**
 - One level only; every note belongs to a folder.
-- A "General" folder is auto-created whenever the user has none, so there is always at least one folder. The last folder cannot be deleted.
+- Each user has exactly one **Default folder**, created automatically and named in the current UI language ("General" or "Загальне"). It is marked with `isDefault: true`. It can be renamed but never deleted (its delete button is disabled), so there is always at least one folder. Every other folder can be deleted.
 - Names are required, up to 50 characters, and unique per user after `trim().toLowerCase()`.
 - Sorted by creation date, oldest first.
 - Created inline: an add icon puts a new row with a form at the top of the list.
@@ -54,13 +62,13 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - A single page shell: a folders sidebar on the left and the notes list in the main area. Below 900px the sidebar becomes a drawer opened with ☰, which closes when a folder is picked.
 - Routes:
   - `/login`
-  - `/folders`: its resolver or guard loads the folders, creates "General" if there are none, and redirects to the first folder.
+  - `/folders`: its resolver or guard loads the folders, creates the Default folder if there are none, and redirects to the first folder.
   - `/folders/:folderId`, a nested child route. An unknown ID redirects to the first folder.
   - `**` goes to `/folders`.
 - IDs are UUIDs (`crypto.randomUUID()`, also used as Firestore document IDs).
 
 **Data model**
-- Firestore: `users/{uid}/folders/{folderId}` holds `{name, nameKey, createdAt}`.
+- Firestore: `users/{uid}/folders/{folderId}` holds `{name, nameKey, isDefault, createdAt}`.
 - Firestore: `users/{uid}/notes/{noteId}` holds `{folderId, title, text, completed, createdAt, updatedAt}`.
 - Dexie mirrors this with `folders` and `notes` tables.
 - Security rules allow access only when `request.auth.uid == uid`.
@@ -91,6 +99,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
   - `features/notes/` (list, note row, note form and search)
   - `features/move-guest-data/` (dialog and orchestration)
 - `shared/confirm-dialog/` is a native `<dialog>` wrapper.
+- `core/i18n/ui-language.service.ts` handles the initial choice (localStorage, then the browser language), `use(lang)`, persisting the choice and `<html lang>`. `shared/language-toggle/` is the EN | UA control.
 
 ## Steps
 0. **Seed (on `main`, local commit only).**
@@ -121,10 +130,11 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
      - the move-guest-data dialog with a merge example
    - Save the link and a local export to `docs/design/` (`README.md` plus the HTML).
    - ✅ Done: canvas <https://claude.ai/artifact/TXP1WiDr5cb8hvjZvpV68G>, local `docs/design/project/` and the standalone `docs/design/notes-taker-design.html`.
+   - ✅ EN/UA toggle and Ukrainian text added to both prototypes.
    - **Get user approval** before step 2.
 2. `/to-spec` → `.scratch/notes-app/spec.md`; `/to-tickets` → `.scratch/notes-app/issues/NN-*.md` with blocking edges.
 3. **Tickets, in rough order:**
-   1. Scaffold: Angular 22, Vitest, ESLint, Prettier, Husky (use the `setup-pre-commit` skill), PWA, Material Symbols, `ci.yml`.
+   1. Scaffold: Angular 22, Vitest, ESLint, Prettier, Husky (use the `setup-pre-commit` skill), PWA, Material Symbols, `ci.yml`, plus ngx-translate with `public/i18n/{en,uk}.json`, the UI-language service and the toggle.
    2. Firebase wiring, `firebase.json` with an SPA rewrite to `/index.html`, `firestore.rules`, `deploy.yml`, plus an **early sign-in check on a real iPhone home-screen install**.
    3. Domain functions, test-first.
    4. The `NotesStore` interface and the Dexie adapter.
@@ -142,15 +152,18 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - `npm run lint`, `npm test` and `npm run build` pass, and pre-commit and pre-push hooks run.
 - Unit tests cover:
   - `normalizeFolderName` and uniqueness
-  - `mergeGuestData`: same-name folders, case and space variants, duplicate notes with completion merging, a brand-new account, and empty default "General" only
+  - `mergeGuestData`: same-name folders, case and space variants, duplicate notes with completion merging, a brand-new account, a guest that has only an empty Default folder, and a guest Default named differently from the account's ("Загальне" vs "General")
+  - the UI-language service: browser fallback, localStorage persistence, `<html lang>`
+  - `en.json` and `uk.json` have identical key sets
   - note filtering
   - the guards and resolver redirects
 - Manual check (`ng serve`, then a deploy to Firebase Hosting):
   1. As a guest, create folders and notes, then refresh. Data persists and the app stays on `/folders/:id`.
   2. Try a duplicate folder name: an inline error appears.
-  3. Delete the last folder: it is blocked.
-  4. Sign in with Google; the move dialog appears. Moving merges the data and clears the guest store.
-  5. Go offline, edit, then come back online. The change syncs.
-  6. Sign out: the cache is cleared and the app is back on `/login`.
+  3. Try to delete the Default folder: it is blocked. Renaming it works.
+  4. Switch EN ↔ UA: the interface changes instantly, user content doesn't, and the choice survives a reload.
+  5. Sign in with Google; the move dialog appears. Moving merges the data and clears the guest store.
+  6. Go offline, edit, then come back online. The change syncs.
+  7. Sign out: the cache is cleared and the app is back on `/login`.
 - Deep-link refresh on a hosted `/folders/:id` returns no 404.
 - Install the PWA on Android and on an iPhone home screen. Google sign-in works in the installed iPhone app.

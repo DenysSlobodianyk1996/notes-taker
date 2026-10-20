@@ -13,7 +13,10 @@
     "Mobile-List.dc.html": { "x": 470, "y": 1220, "w": 390, "h": 844, "title": "Mobile: notes list", "is_interactive": true },
     "Mobile-Drawer.dc.html": { "x": 940, "y": 1220, "w": 390, "h": 844, "title": "Mobile: folders drawer open", "is_interactive": true },
     "Mobile-NewNote.dc.html": { "x": 1410, "y": 1220, "w": 390, "h": 844, "title": "Mobile: new note row (guest)", "is_interactive": true },
-    "Mobile-Empty.dc.html": { "x": 1880, "y": 1220, "w": 390, "h": 844, "title": "Mobile: empty folder", "is_interactive": true }
+    "Mobile-Empty.dc.html": { "x": 1880, "y": 1220, "w": 390, "h": 844, "title": "Mobile: empty folder", "is_interactive": true },
+    "Desktop-MoveGuestData-UA.dc.html": { "x": 5440, "y": 0, "w": 1280, "h": 800, "title": "Desktop (UA): move guest data", "is_interactive": true },
+    "Mobile-Login-UA.dc.html": { "x": 2350, "y": 1220, "w": 390, "h": 844, "title": "Mobile (UA): login", "is_interactive": true },
+    "Mobile-List-UA.dc.html": { "x": 2820, "y": 1220, "w": 390, "h": 844, "title": "Mobile (UA): notes list", "is_interactive": true }
   },
   "order": [
     "Main.dc.html",
@@ -24,12 +27,15 @@
     "Mobile-List.dc.html",
     "Mobile-Drawer.dc.html",
     "Mobile-NewNote.dc.html",
-    "Mobile-Empty.dc.html"
+    "Mobile-Empty.dc.html",
+    "Desktop-MoveGuestData-UA.dc.html",
+    "Mobile-Login-UA.dc.html",
+    "Mobile-List-UA.dc.html"
   ],
   "notes": {
-    "rowDesktop": { "x": 0, "y": -300, "text": "Desktop (900px and wider)", "kind": "title1", "maxW": 5360 },
-    "rowMobile": { "x": 0, "y": 920, "text": "Mobile (under 900px)", "kind": "title1", "maxW": 2270 },
-    "howTo": { "x": 5440, "y": 0, "w": 340, "size": "m", "fill": "orange", "text": "Every artboard is clickable (Play).\n\nTry in Main:\n1. Continue as guest\n2. Add a folder and a few notes\n3. Sign in with Google (header)\n4. Move guest data: same-name folders merge, duplicate notes are skipped\n5. Sign out\n\nThe other artboards are the same prototype, opened at a specific state." }
+    "rowDesktop": { "x": 0, "y": -300, "text": "Desktop (900px and wider)", "kind": "title1", "maxW": 6720 },
+    "rowMobile": { "x": 0, "y": 920, "text": "Mobile (under 900px)", "kind": "title1", "maxW": 3210 },
+    "howTo": { "x": 6800, "y": 0, "w": 340, "size": "m", "fill": "orange", "text": "Every artboard is clickable (Play).\n\nTry in Main:\n1. Switch EN | UA (login card or header)\n2. Continue as guest\n3. Add a folder and a few notes\n4. Sign in with Google (header)\n5. Move guest data: same-name folders merge, duplicate notes are skipped\n6. Sign out\n\nThe Default folder (General / Загальне) can be renamed but not deleted.\n\nThe other artboards are the same prototype, opened at a specific state and language." }
   },
   "designSystems": []
 }

@@ -15,8 +15,8 @@ The label of a Folder. Two Folders of the same user can't share a name once surr
 _Avoid_: Title (reserved for Notes)
 
 **Default folder**:
-The Folder named "General", created automatically whenever a user has no Folders, so at least one Folder always exists.
-_Avoid_: Inbox, root folder
+The one Folder each user gets automatically, named in the current UI language at creation ("General" or "Загальне"). It can be renamed but never deleted, so at least one Folder always exists. It is marked as the default, so it is not recognised by its name.
+_Avoid_: Inbox, root folder, main folder
 
 **Note**:
 A single entry inside exactly one Folder. It has an optional Title, required Text, and can be Completed.
@@ -47,6 +47,10 @@ _Avoid_: Profile, cloud user
 Which of the two a person has chosen on the login page: Guest or Account. It is remembered across page reloads until sign-out.
 _Avoid_: Login state
 
+**UI language**:
+The language of the app's own interface text: English (EN) or Ukrainian (UA). It is chosen per device and never changes user content. Folder names, Titles and Text stay exactly as typed.
+_Avoid_: Locale (in conversation), translation of notes
+
 ### Flows
 
 **Move guest data**:
@@ -54,7 +58,7 @@ After a Guest signs in to an Account, the one-time offer to copy all Guest Folde
 _Avoid_: Import, migration, sync
 
 **Folder merge**:
-During Move guest data, a Guest Folder whose Folder name clashes with an Account Folder is folded into that Account Folder instead of being created again.
+During Move guest data, a Guest Folder whose Folder name clashes with an Account Folder is folded into that Account Folder instead of being created again. Matching is by name only. A Guest Default folder whose name differs from every Account Folder arrives as an ordinary Folder, because the Account keeps its own Default folder.
 
 **Duplicate note**:
 During a Folder merge, two Notes whose trimmed Title and trimmed Text both match, ignoring case. Only the Account copy is kept, and it is Completed if either copy was.

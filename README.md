@@ -4,12 +4,13 @@ An installable notes app (PWA) for iOS, Android and desktop. Keep short notes in
 
 - **Guest mode:** notes stay on this device (IndexedDB).
 - **Google sign-in:** notes sync through Firebase and work offline. On first sign-in, your guest notes can be moved into the account.
+- **Interface in English or Ukrainian** (EN | UA toggle). Your own folder names and notes are never translated.
 
 > Status: design review. See [docs/plan.md](docs/plan.md) and the [design prototype](docs/design/README.md).
 
 ## Stack
 
-Angular 22 (standalone, signals, Signal Forms), plain SCSS, Material Symbols, Dexie, Firebase (Auth, Firestore, Hosting), Vitest, ESLint, Prettier and Husky.
+Angular 22 (standalone, signals, Signal Forms), ngx-translate (EN/UA), plain SCSS, Material Symbols, Dexie, Firebase (Auth, Firestore, Hosting), Vitest, ESLint, Prettier and Husky.
 
 ## Docs
 
