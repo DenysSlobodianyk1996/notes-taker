@@ -12,9 +12,8 @@ An Angular 22 PWA for notes grouped into folders. It works as a Guest (IndexedDB
 
 Follows the ask-matt main flow: grill-with-docs → design prototype → `/to-spec` → `/to-tickets` → `/implement` per ticket (TDD), then `/code-review`.
 
-- Branch from `develop`, and open pull requests into `develop`.
-- `develop` → `main` happens only through a pull request; every push to `main` deploys.
-- Never push directly to `main`.
+- Branch from `main` as `feature/<slug>`, and open a pull request into `main`.
+- Merging into `main` deploys. Never push directly to `main`.
 
 ## Agent skills
 
