@@ -15,7 +15,7 @@ The label of a Folder. Two Folders of the same user can't share a name once surr
 _Avoid_: Title (reserved for Notes)
 
 **Default folder**:
-The one Folder each user gets automatically, named in the current UI language at creation ("General" or "Загальне"). It can be renamed but never deleted, so at least one Folder always exists. It is marked as the default, so it is not recognised by its name.
+The one Folder each user gets automatically on first entering the app. It has no stored name; it is always shown in the current UI language ("General" in EN, "Загальне" in UA). It can't be renamed or deleted, so at least one Folder always exists. It is recognised by its default marker, and both of its display names are reserved: no other Folder may use them.
 _Avoid_: Inbox, root folder, main folder
 
 **Note**:
@@ -58,7 +58,7 @@ After a Guest signs in to an Account, the one-time offer to copy all Guest Folde
 _Avoid_: Import, migration, sync
 
 **Folder merge**:
-During Move guest data, a Guest Folder whose Folder name clashes with an Account Folder is folded into that Account Folder instead of being created again. Matching is by name only. A Guest Default folder whose name differs from every Account Folder arrives as an ordinary Folder, because the Account keeps its own Default folder.
+During Move guest data, a Guest Folder whose Folder name clashes with an Account Folder is folded into that Account Folder instead of being created again. The two Default folders always merge with each other. Every other Folder matches by Folder name.
 
 **Duplicate note**:
 During a Folder merge, two Notes whose trimmed Title and trimmed Text both match, ignoring case. Only the Account copy is kept, and it is Completed if either copy was.

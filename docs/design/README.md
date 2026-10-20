@@ -20,7 +20,7 @@ Both copies are throwaway prototype code (Vue in the HTML file, Design Component
 - The **EN | UA** toggle sits in the top-right of the login card and in the app header. Switching is instant, with no reload and no language in the URL.
 - On the first visit the browser language is used (`uk*` gives UA, anything else EN). After that, the choice is saved on the device.
 - **User content is never translated.** Folder names, titles and note text stay exactly as typed.
-- The **Default folder** is named in the current language when it's created ("General" or "Загальне"). It can be renamed but never deleted: its delete button is disabled, with the tooltip "The default folder can't be deleted".
+- The **Default folder** stores no name and is always shown in the current language ("General" in EN, "Загальне" in UA), so it changes with the toggle. It can't be renamed or deleted, so its row shows a lock icon (tooltip "The default folder can't be renamed or deleted") instead of edit and delete. Both names are reserved: a new folder called "general" or "Загальне" gets the "already exists" error.
 - Ukrainian strings are longer, so on phones the header hides the "Guest · on this device" chip and the avatar, and shortens "Sign in with Google" to "Sign in" / "Увійти".
 
 ## Look
@@ -65,18 +65,18 @@ The other artboards all reuse `Main`, opened at a fixed starting state (its `pre
 
 | Side | Folders | Notes |
 | --- | --- | --- |
-| Guest (this device) | General, Shopping, "work " | 4 notes; "Call dentist" and "Standup" also exist in the account |
-| Account (Google) | General, Work, Travel | 6 notes |
+| Guest (this device) | Default folder, Shopping, "work " | 4 notes; "Call dentist" and "Standup" also exist in the account |
+| Account (Google) | Default folder, Work, Travel | 6 notes |
 
-Moving guest data gives: 1 folder created (Shopping), 2 merged (General, "work " → Work), 2 notes added, 2 duplicates skipped. "Standup" ends up completed, because the guest copy was.
+Moving guest data gives: 1 folder created (Shopping), 2 merged (Default → Default, "work " → Work), 2 notes added, 2 duplicates skipped. "Standup" ends up completed, because the guest copy was.
 
-Folders match by name only, Default folders included. A guest Default folder named "Загальне" doesn't merge into the account's "General". It arrives as an ordinary, deletable folder "Загальне", and the account keeps its own Default folder.
+The two Default folders always merge with each other. A brand-new account takes over the guest's Default folder. Every other folder merges by name.
 
 ## Behaviour the prototype pins down
 
 - The **New folder** and **New note** buttons add a form row at the top of the list. ✓ submits and ✕ cancels. In the note form, Enter in the title submits, Ctrl/⌘+Enter in the text submits, and Esc cancels.
 - Clicking a note row edits it in place. Only one row is edited at a time.
-- The selected folder row shows rename and delete. Delete is disabled on the Default folder; every other folder can be deleted.
+- The selected folder row shows rename and delete. The Default folder instead shows a lock icon, because it can't be renamed or deleted.
 - Search filters the current folder by title and text, and has its own "no match" state.
 - **Move guest data:**
   - "work " (guest) merges into "Work" (account).

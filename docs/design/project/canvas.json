@@ -35,7 +35,7 @@
   "notes": {
     "rowDesktop": { "x": 0, "y": -300, "text": "Desktop (900px and wider)", "kind": "title1", "maxW": 6720 },
     "rowMobile": { "x": 0, "y": 920, "text": "Mobile (under 900px)", "kind": "title1", "maxW": 3210 },
-    "howTo": { "x": 6800, "y": 0, "w": 340, "size": "m", "fill": "orange", "text": "Every artboard is clickable (Play).\n\nTry in Main:\n1. Switch EN | UA (login card or header)\n2. Continue as guest\n3. Add a folder and a few notes\n4. Sign in with Google (header)\n5. Move guest data: same-name folders merge, duplicate notes are skipped\n6. Sign out\n\nThe Default folder (General / Загальне) can be renamed but not deleted.\n\nThe other artboards are the same prototype, opened at a specific state and language." }
+    "howTo": { "x": 6800, "y": 0, "w": 340, "size": "m", "fill": "orange", "text": "Every artboard is clickable (Play).\n\nTry in Main:\n1. Switch EN | UA (login card or header)\n2. Continue as guest\n3. Add a folder and a few notes\n4. Sign in with Google (header)\n5. Move guest data: same-name folders merge, duplicate notes are skipped\n6. Sign out\n\nThe Default folder is shown as General / Загальне (follows the language toggle) and has a lock: it can't be renamed or deleted, and both names are reserved. On Move guest data the two Default folders always merge.\n\nThe other artboards are the same prototype, opened at a specific state and language." }
   },
   "designSystems": []
 }

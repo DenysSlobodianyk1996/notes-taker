@@ -33,7 +33,7 @@
     "saveName": "Save folder name",
     "rename": "Rename folder",
     "delete": "Delete folder",
-    "defaultLocked": "The default folder can't be deleted",
+    "defaultLocked": "The default folder can't be renamed or deleted",
     "defaultName": "General",
     "errors": {
       "required": "Enter a folder name",

@@ -34,7 +34,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 **Moving guest data to the account**
 - After a Google sign-in, if the guest IndexedDB holds anything beyond an empty Default folder (checked by the `isDefault` marker, not the name), a `<dialog>` asks "Move N folders / M notes to your account?" with Move and Skip.
 - **Move:**
-  - Folders whose names match (after trimming and lowercasing) merge into one folder. Matching is by name only, Default folders included. A guest Default folder with a different name arrives as an ordinary folder, because the account keeps its own Default folder.
+  - The guest Default folder always merges into the account Default folder (matched by `isDefault`); a brand-new account takes the guest's Default folder as its own. Other folders whose names match (after trimming and lowercasing) merge into one folder.
   - A note is a duplicate when both its trimmed title and trimmed text match, ignoring case. For duplicates the account copy is kept, and the result is completed if either copy was completed.
   - The other notes are added.
   - The guest store is then cleared.
@@ -42,7 +42,8 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 
 **Folders**
 - One level only; every note belongs to a folder.
-- Each user has exactly one **Default folder**, created automatically and named in the current UI language ("General" or "Загальне"). It is marked with `isDefault: true`. It can be renamed but never deleted (its delete button is disabled), so there is always at least one folder. Every other folder can be deleted.
+- Each user has exactly one **Default folder**, created automatically on first entering the app. It is stored as `isDefault: true`, `name: ''` and always shown as the `folders.defaultName` translation ("General" / "Загальне"), so it follows the EN | UA toggle. It can't be renamed or deleted; its row shows a lock icon instead of edit and delete. So there is always at least one folder. Every other folder can be renamed and deleted.
+- Both display names of the Default folder are reserved: creating or renaming a folder to "General" or "Загальне" (any case) shows the "already exists" error.
 - Names are required, up to 50 characters, and unique per user after `trim().toLowerCase()`.
 - Sorted by creation date, oldest first.
 - Created inline: an add icon puts a new row with a form at the top of the list.
@@ -87,7 +88,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 
   A `NOTES_STORE` token resolves to the active adapter based on the session mode.
 - `core/domain/` holds pure, fully unit-tested functions:
-  - `folder-name.ts`: `normalizeFolderName` and `isNameTaken`
+  - `folder-name.ts`: `normalizeFolderName`, `isNameTaken` (including the reserved Default-folder names) and `folderLabel` (the translation for the Default folder, otherwise the stored name)
   - `merge-guest-data.ts`: `mergeGuestData(guest, account) → {foldersToCreate, notesToCreate, notesToUpdate}`
   - `filter-notes.ts`
 - `core/auth/session.service.ts` tracks the mode (`none | guest | google`), user, sign-in (popup or redirect choice), sign-out and cache clearing.
@@ -152,7 +153,8 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - `npm run lint`, `npm test` and `npm run build` pass, and pre-commit and pre-push hooks run.
 - Unit tests cover:
   - `normalizeFolderName` and uniqueness
-  - `mergeGuestData`: same-name folders, case and space variants, duplicate notes with completion merging, a brand-new account, a guest that has only an empty Default folder, and a guest Default named differently from the account's ("Загальне" vs "General")
+  - `mergeGuestData`: same-name folders, case and space variants, duplicate notes with completion merging, a brand-new account, a guest that has only an empty Default folder, and Default folders always merging by marker (or carried over to a brand-new account)
+  - reserved names: "General", " general ", "ЗАГАЛЬНЕ" are rejected for ordinary folders
   - the UI-language service: browser fallback, localStorage persistence, `<html lang>`
   - `en.json` and `uk.json` have identical key sets
   - note filtering
@@ -160,7 +162,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - Manual check (`ng serve`, then a deploy to Firebase Hosting):
   1. As a guest, create folders and notes, then refresh. Data persists and the app stays on `/folders/:id`.
   2. Try a duplicate folder name: an inline error appears.
-  3. Try to delete the Default folder: it is blocked. Renaming it works.
+  3. The Default folder shows a lock and can't be renamed or deleted. Its name switches General ↔ Загальне with the language toggle. Creating a folder named "general" or "Загальне" is rejected.
   4. Switch EN ↔ UA: the interface changes instantly, user content doesn't, and the choice survives a reload.
   5. Sign in with Google; the move dialog appears. Moving merges the data and clears the guest store.
   6. Go offline, edit, then come back online. The change syncs.
