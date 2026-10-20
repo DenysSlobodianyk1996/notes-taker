@@ -4,4 +4,6 @@ When a Guest signs in, they are offered Move guest data instead of losing or hid
 
 ## Default folders
 
-Folders match by name only, even Default folders. A Guest "Загальне" and an Account "General" stay two separate folders after the move. The Account keeps its own Default folder, so a Guest Default folder that arrives under a different name becomes an ordinary, deletable Folder. The offer to move isn't shown at all when the Guest has nothing but an empty Default folder, and that check uses the default marker, not the name, because the folder may have been renamed or created in either language.
+The Default folder has no stored name: it is shown as a translation, and it can't be renamed or deleted. Both sides always have exactly one. So the two Default folders always merge with each other, matched by the `isDefault` marker. If the Account has none yet (a brand-new Account), the Guest's Default folder becomes the Account's. Every other Folder matches by name. Its display names ("General" / "Загальне") are reserved, so an ordinary Folder can never collide with the Default folder. The offer to move isn't shown at all when the Guest has nothing but an empty Default folder; that check also uses the marker.
+
+Matching by name only was considered and rejected. It would leave a stray "Загальне" folder in an Account whose Default folder is "General".

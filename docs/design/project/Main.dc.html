@@ -146,11 +146,17 @@ body{margin:0}
             <span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{f.name}}</span>
             <span style="font-size: 13px; color: #5F5F64; font-weight: 400">{{f.count}}</span>
           </button>
-          <sc-if value="{{f.selected}}" hint-placeholder-val="{{false}}">
+          <sc-if value="{{f.locked}}" hint-placeholder-val="{{false}}">
+            <span title="{{t.folders.defaultLocked}}" style="width: 36px; height: 36px; margin-right: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #8A8880">
+              <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 17px">lock</span>
+              <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.folders.defaultLocked}}</span>
+            </span>
+          </sc-if>
+          <sc-if value="{{f.showActions}}" hint-placeholder-val="{{false}}">
             <button type="button" aria-label="{{t.folders.rename}}" onClick="{{f.rename}}" style="width: 36px; height: 36px; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
               <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 19px">edit</span>
             </button>
-            <button type="button" aria-label="{{f.deleteLabel}}" title="{{f.deleteLabel}}" disabled="{{f.deleteDisabled}}" onClick="{{f.del}}" style="width: 36px; height: 36px; margin-right: 4px; border: 0; border-radius: 8px; background: none; color: #5F5F64; opacity: {{f.deleteOpacity}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+            <button type="button" aria-label="{{t.folders.delete}}" onClick="{{f.del}}" style="width: 36px; height: 36px; margin-right: 4px; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
               <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 19px">delete</span>
             </button>
           </sc-if>
@@ -340,7 +346,7 @@ var I18N = {
       "saveName": "Save folder name",
       "rename": "Rename folder",
       "delete": "Delete folder",
-      "defaultLocked": "The default folder can't be deleted",
+      "defaultLocked": "The default folder can't be renamed or deleted",
       "defaultName": "General",
       "errors": {
         "required": "Enter a folder name",
@@ -426,7 +432,7 @@ var I18N = {
       "saveName": "Зберегти назву папки",
       "rename": "Перейменувати папку",
       "delete": "Видалити папку",
-      "defaultLocked": "Основну папку не можна видалити",
+      "defaultLocked": "Основну папку не можна перейменувати чи видалити",
       "defaultName": "Загальне",
       "errors": {
         "required": "Введіть назву папки",
@@ -496,7 +502,7 @@ function translate(lang, key, params) {
 function seedGuest() {
   return {
     folders: [
-      { id: 'g-gen', name: 'General', isDefault: true, createdAt: T0 },
+      { id: 'g-gen', name: '', isDefault: true, createdAt: T0 },
       { id: 'g-shop', name: 'Shopping', isDefault: false, createdAt: T0 + DAY },
       { id: 'g-work', name: 'work ', isDefault: false, createdAt: T0 + 2 * DAY }
     ],
@@ -512,7 +518,7 @@ function seedGuest() {
 function seedAccount() {
   return {
     folders: [
-      { id: 'acc-gen', name: 'General', isDefault: true, createdAt: T0 - 30 * DAY },
+      { id: 'acc-gen', name: '', isDefault: true, createdAt: T0 - 30 * DAY },
       { id: 'acc-work', name: 'Work', isDefault: false, createdAt: T0 - 20 * DAY },
       { id: 'acc-travel', name: 'Travel', isDefault: false, createdAt: T0 - 10 * DAY }
     ],
@@ -532,31 +538,43 @@ function hasGuestData(g) {
   return g.notes.length > 0 || g.folders.some(function (f) { return !f.isDefault; });
 }
 
-// Default folder is named in the current UI language at creation.
-function ensureDefault(d, lang) {
-  if (d.folders.length) return d;
-  return { folders: [{ id: uid(), name: translate(lang, 'folders.defaultName'), isDefault: true, createdAt: Date.now() }], notes: d.notes };
+// The Default folder stores no name: it is shown as the folders.defaultName
+// translation, so it follows the EN | UA toggle.
+function folderLabel(f, lang) { return f.isDefault ? translate(lang, 'folders.defaultName') : f.name; }
+
+// "General" / "Загальне" (any case, either language) are reserved for the Default folder.
+function isReservedName(name) {
+  var k = norm(name);
+  return Object.keys(I18N).some(function (l) { return norm(translate(l, 'folders.defaultName')) === k; });
 }
 
-// Folder merge (by name only, defaults included) + Duplicate note rule. ADR-0006.
+function ensureDefault(d) {
+  if (d.folders.some(function (f) { return f.isDefault; })) return d;
+  return { folders: [{ id: uid(), name: '', isDefault: true, createdAt: Date.now() }].concat(d.folders), notes: d.notes };
+}
+
+// Folder merge + Duplicate note rule. ADR-0006.
+// Default folders always merge with each other (by marker); every other folder merges by name.
+// Plan entries keep the folder objects so the dialog can label them in the current language.
 function mergeGuestData(guest, account) {
   var folders = account.folders.slice();
   var notes = account.notes.map(function (n) { return Object.assign({}, n); });
+  var accDefault = folders.find(function (f) { return f.isDefault; });
   var byKey = {};
-  folders.forEach(function (f) { byKey[norm(f.name)] = f; });
+  folders.forEach(function (f) { if (!f.isDefault) byKey[norm(f.name)] = f; });
   var plan = [];
   var stats = { created: 0, merged: 0, added: 0, skipped: 0 };
   guest.folders.slice().sort(byCreatedAsc).forEach(function (gf) {
-    var target = byKey[norm(gf.name)];
+    var target = gf.isDefault ? accDefault : byKey[norm(gf.name)];
     if (target) {
       stats.merged++;
-      plan.push({ from: gf.name.trim(), merged: true, into: target.name });
+      plan.push({ from: gf, merged: true, into: target });
     } else {
-      target = { id: uid(), name: gf.name.trim(), isDefault: false, createdAt: Date.now() + stats.created };
+      target = { id: uid(), name: gf.isDefault ? '' : gf.name.trim(), isDefault: !!gf.isDefault, createdAt: Date.now() + stats.created };
       folders.push(target);
-      byKey[norm(target.name)] = target;
+      if (target.isDefault) accDefault = target; else byKey[norm(target.name)] = target;
       stats.created++;
-      plan.push({ from: gf.name.trim(), merged: false });
+      plan.push({ from: gf, merged: false });
     }
     guest.notes.filter(function (n) { return n.folderId === gf.id; }).forEach(function (gn) {
       var dup = notes.find(function (n) {
@@ -631,11 +649,11 @@ class Component extends DCLogic {
 
   // Session
   continueGuest() {
-    var g = ensureDefault(this.state.guest, this.state.lang);
+    var g = ensureDefault(this.state.guest);
     this.setState({ screen: 'app', mode: 'guest', guest: g, sel: g.folders.slice().sort(byCreatedAsc)[0].id, banner: null });
   }
   signIn() {
-    var a = ensureDefault(this.state.account, this.state.lang);
+    var a = ensureDefault(this.state.account);
     this.setState({
       screen: 'app', mode: 'google', account: a, sel: a.folders.slice().sort(byCreatedAsc)[0].id,
       folderForm: null, noteEdit: null, search: '', drawer: false,
@@ -649,7 +667,7 @@ class Component extends DCLogic {
   // Folders
   pickFolder(id) { this.setState({ sel: id, search: '', noteEdit: null, folderForm: null, drawer: false }); }
   startNewFolder() { this.setState({ folderForm: { mode: 'new', id: null, value: '', error: '' } }); }
-  startRename(f) { this.setState({ folderForm: { mode: 'rename', id: f.id, value: f.name, error: '' } }); }
+  startRename(f) { if (!f.isDefault) this.setState({ folderForm: { mode: 'rename', id: f.id, value: f.name, error: '' } }); }
   cancelFolder() { this.setState({ folderForm: null }); }
   submitFolder() {
     var ff = this.state.folderForm;
@@ -658,7 +676,7 @@ class Component extends DCLogic {
     var error = '';
     if (!name) error = 'folders.errors.required';
     else if (name.length > 50) error = 'folders.errors.maxLength';
-    else if (this.active().folders.some((f) => f.id !== ff.id && norm(f.name) === norm(name))) error = 'folders.errors.taken';
+    else if (isReservedName(name) || this.active().folders.some((f) => f.id !== ff.id && !f.isDefault && norm(f.name) === norm(name))) error = 'folders.errors.taken';
     if (error) { this.setState({ folderForm: Object.assign({}, ff, { error: error }) }); return; }
     if (ff.mode === 'new') {
       var f = { id: uid(), name: name, isDefault: false, createdAt: Date.now() };
@@ -765,7 +783,7 @@ class Component extends DCLogic {
       var renaming = !!(ff && ff.mode === 'rename' && ff.id === f.id);
       var locked = !!f.isDefault;
       return {
-        id: f.id, name: f.name, count: count, selected: selected, renaming: renaming, normal: !renaming,
+        id: f.id, name: folderLabel(f, s.lang), count: count, selected: selected, renaming: renaming, normal: !renaming,
         current: selected ? 'page' : 'false',
         bg: selected ? '#FEF3C7' : 'transparent',
         weight: selected ? 600 : 400,
@@ -773,16 +791,15 @@ class Component extends DCLogic {
         pick: () => this.pickFolder(f.id),
         rename: () => this.startRename(f),
         del: () => this.setState({ dialog: { kind: 'deleteFolder', id: f.id } }),
-        deleteDisabled: locked,
-        deleteOpacity: locked ? 0.35 : 1,
-        deleteLabel: locked ? this.tr('folders.defaultLocked') : this.tr('folders.delete')
+        locked: locked,
+        showActions: selected && !locked
       };
     });
 
     var all = d.notes.filter((n) => current && n.folderId === current.id).sort((a, b) => b.createdAt - a.createdAt);
     var shown = q ? all.filter((n) => norm(n.title).includes(q) || norm(n.text).includes(q)) : all;
     var done = all.filter((n) => n.completed).length;
-    var folderName = current ? current.name : '';
+    var folderName = current ? folderLabel(current, s.lang) : '';
     vals.folderName = folderName;
     vals.folderSummary = this.tr('notes.count', { count: all.length }) + (done ? ' · ' + this.tr('notes.completed', { count: done }) : '');
     vals.search = s.search;
@@ -860,8 +877,8 @@ class Component extends DCLogic {
       vals.dialogBody = this.tr('dialogs.moveGuestData.body', { folders: g.folders.length, notes: g.notes.length });
       vals.movePlan = mergeGuestData(g, s.account).plan.map((m) => ({
         icon: m.merged ? 'merge' : 'create_new_folder',
-        from: m.from,
-        outcome: m.merged ? this.tr('dialogs.moveGuestData.mergesInto', { folder: m.into }) : this.tr('dialogs.moveGuestData.newFolder')
+        from: folderLabel(m.from, s.lang),
+        outcome: m.merged ? this.tr('dialogs.moveGuestData.mergesInto', { folder: folderLabel(m.into, s.lang) }) : this.tr('dialogs.moveGuestData.newFolder')
       }));
       vals.dialogCancelLabel = this.tr('dialogs.moveGuestData.skip');
       vals.dialogConfirmLabel = this.tr('dialogs.moveGuestData.confirm');
