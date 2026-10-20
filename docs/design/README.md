@@ -8,10 +8,20 @@ A clickable Claude Design prototype of every flow, made **before any code**. It 
   - **Desktop / Phone:** a 390×844 phone frame
   - **Reset**
 
-  Deep links work too: `notes-taker-design.html?state=move-guest-data&view=phone`.
+  Deep links work too: `notes-taker-design.html?state=move-guest-data&view=phone&lang=uk`.
 - **Canvas source:** [`project/`](project/). `canvas.json` is the canvas layout, and each `*.dc.html` file is one artboard. These files only render inside Claude Design.
 
+- **Translations:** [`i18n/en.json`](i18n/en.json) and [`i18n/uk.json`](i18n/uk.json). They use ngx-translate's format (nested keys, `{{param}}`, one translation per key) and become the app's `public/i18n/*.json`. Both prototypes embed them: after editing the JSON, run `python3 docs/design/sync-i18n.py`.
+
 Both copies are throwaway prototype code (Vue in the HTML file, Design Components on the canvas). The real app is Angular; see [../plan.md](../plan.md).
+
+## Interface language (EN / UA)
+
+- The **EN | UA** toggle sits in the top-right of the login card and in the app header. Switching is instant, with no reload and no language in the URL.
+- On the first visit the browser language is used (`uk*` gives UA, anything else EN). After that, the choice is saved on the device.
+- **User content is never translated.** Folder names, titles and note text stay exactly as typed.
+- The **Default folder** is named in the current language when it's created ("General" or "Загальне"). It can be renamed but never deleted: its delete button is disabled, with the tooltip "The default folder can't be deleted".
+- Ukrainian strings are longer, so on phones the header hides the "Guest · on this device" chip and the avatar, and shortens "Sign in with Google" to "Sign in" / "Увійти".
 
 ## Look
 
@@ -45,8 +55,11 @@ Minimal and light, in the style of Apple Notes:
 | `Mobile-Drawer` | folders drawer open |
 | `Mobile-NewNote` | new-note row at the top of the list (guest) |
 | `Mobile-Empty` | empty folder state |
+| `Desktop-MoveGuestData-UA` | the move-guest-data dialog in Ukrainian (longest strings) |
+| `Mobile-Login-UA` | login page in Ukrainian |
+| `Mobile-List-UA` | guest notes list in Ukrainian, with user content left untranslated |
 
-The other artboards all reuse `Main`, opened at a fixed starting state (its `preset` prop). In the standalone HTML, the same states are the **Start state** options, with `?state=` values `login`, `guest`, `app`, `desktop-editing`, `delete-folder`, `move-guest-data`, `mobile-drawer`, `new-note` and `empty`.
+The other artboards all reuse `Main`, opened at a fixed starting state (its `preset` and `lang` props). In the standalone HTML, the same states are the **Start state** options, with `?state=` values `login`, `guest`, `app`, `desktop-editing`, `delete-folder`, `move-guest-data`, `mobile-drawer`, `new-note` and `empty`. Add `&lang=uk` for Ukrainian.
 
 ## Sample data
 
@@ -57,11 +70,13 @@ The other artboards all reuse `Main`, opened at a fixed starting state (its `pre
 
 Moving guest data gives: 1 folder created (Shopping), 2 merged (General, "work " → Work), 2 notes added, 2 duplicates skipped. "Standup" ends up completed, because the guest copy was.
 
+Folders match by name only, Default folders included. A guest Default folder named "Загальне" doesn't merge into the account's "General". It arrives as an ordinary, deletable folder "Загальне", and the account keeps its own Default folder.
+
 ## Behaviour the prototype pins down
 
 - The **New folder** and **New note** buttons add a form row at the top of the list. ✓ submits and ✕ cancels. In the note form, Enter in the title submits, Ctrl/⌘+Enter in the text submits, and Esc cancels.
 - Clicking a note row edits it in place. Only one row is edited at a time.
-- The selected folder row shows rename and delete. Delete is disabled on the last folder.
+- The selected folder row shows rename and delete. Delete is disabled on the Default folder; every other folder can be deleted.
 - Search filters the current folder by title and text, and has its own "no match" state.
 - **Move guest data:**
   - "work " (guest) merges into "Work" (account).
