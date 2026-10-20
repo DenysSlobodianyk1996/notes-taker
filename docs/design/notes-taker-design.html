@@ -9,6 +9,8 @@
   https://claude.ai/artifact/TXP1WiDr5cb8hvjZvpV68G
   Open this file in a browser (needs internet for Vue + Material Symbols).
   Throwaway prototype code: the real app is Angular (see docs/plan.md).
+  Translations between I18N:BEGIN/END are generated from docs/design/i18n/*.json
+  by docs/design/sync-i18n.py — edit the JSON, then run the script.
 -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
 <script src="https://unpkg.com/vue@3.4.21/dist/vue.global.prod.js"></script>
@@ -58,9 +60,16 @@
   .stage.desktop .frame { min-height: calc(100vh - 48px); }
   .stage.phone .frame { flex: 0 0 auto; width: 390px; max-width: 100%; height: 844px; border-radius: 28px; box-shadow: 0 0 0 10px #1C1C1E, 0 30px 60px rgba(0,0,0,.25); }
 
+  /* Language toggle */
+  .lang { display: inline-flex; flex-shrink: 0; height: 32px; border: 1px solid #D4D3CE; border-radius: 8px; overflow: hidden; background: #FFF; }
+  .lang button { min-width: 38px; border: 0; background: none; padding: 0 8px; font-size: 12px; font-weight: 700; letter-spacing: .03em; color: var(--muted); }
+  .lang button + button { border-left: 1px solid #D4D3CE; }
+  .lang button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent-ink); }
+
   /* App */
   .login { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px 16px; background: var(--sidebar); }
-  .login-card { width: 100%; max-width: 380px; background: #FFF; border: 1px solid var(--border); border-radius: 16px; padding: 40px 28px 28px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+  .login-card { position: relative; width: 100%; max-width: 380px; background: #FFF; border: 1px solid var(--border); border-radius: 16px; padding: 48px 28px 28px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+  .login-card .lang { position: absolute; top: 12px; right: 12px; }
   .logo { width: 56px; height: 56px; border-radius: 14px; background: var(--accent); display: flex; align-items: center; justify-content: center; }
   .logo .ms { font-size: 32px; }
   .login h1 { margin: 0; font-size: 26px; }
@@ -71,17 +80,18 @@
   .btn-soft { border: 0; background: var(--chip); }
 
   header.top { height: 56px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 16px; border-bottom: 1px solid var(--border); background: #FFF; }
-  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 17px; }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 17px; white-space: nowrap; }
   .brand-mark { width: 28px; height: 28px; border-radius: 7px; background: var(--accent); display: flex; align-items: center; justify-content: center; }
   .brand-mark .ms { font-size: 18px; }
-  .icon-btn { width: 44px; height: 44px; border: 0; background: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .icon-btn { width: 44px; height: 44px; border: 0; background: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .icon-btn.sm { width: 36px; height: 36px; border-radius: 8px; }
-  .chip { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); padding: 4px 10px; border-radius: 999px; background: var(--chip); }
+  .chip { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); padding: 4px 10px; border-radius: 999px; background: var(--chip); white-space: nowrap; }
   .chip .ms { font-size: 16px; }
-  .btn { height: 40px; padding: 0 14px; border-radius: 10px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .btn { height: 40px; padding: 0 14px; border-radius: 10px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; white-space: nowrap; flex-shrink: 0; }
   .btn .ms { font-size: 18px; }
+  .narrow .btn { padding: 0 10px; }
   .btn-ghost { border: 0; background: none; color: var(--muted); }
-  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; }
+  .avatar { width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; }
 
   .body { flex: 1; display: flex; position: relative; min-height: 0; }
   .backdrop { position: absolute; inset: 0; z-index: 10; border: 0; padding: 0; background: rgba(28,28,30,.32); }
@@ -171,68 +181,76 @@
   </div>
 
   <div class="stage" :class="view">
-    <div class="frame" :class="{ narrow: narrow }">
+    <div class="frame" :class="{ narrow: narrow }" :lang="lang">
 
       <!-- Login -->
       <main v-if="screen === 'login'" class="login">
         <div class="login-card">
-          <div class="logo"><span class="ms" aria-hidden="true">sticky_note_2</span></div>
-          <h1>Notes</h1>
-          <p class="muted" style="margin:0">Short notes in folders. Works offline on your phone and computer.</p>
-          <div class="login-actions">
-            <button type="button" class="btn-lg btn-outline" @click="signIn"><span class="ms" aria-hidden="true">account_circle</span>Sign in with Google</button>
-            <button type="button" class="btn-lg btn-soft" @click="continueGuest"><span class="ms" aria-hidden="true">smartphone</span>Continue as guest</button>
+          <div class="lang" role="group" :aria-label="t('lang.label')">
+            <button type="button" :aria-pressed="String(lang === 'en')" @click="setLang('en')">{{ t('lang.en') }}</button>
+            <button type="button" :aria-pressed="String(lang === 'uk')" @click="setLang('uk')">{{ t('lang.uk') }}</button>
           </div>
-          <p class="muted" style="margin:6px 0 0;font-size:13px">Guest notes stay on this device. You can move them to your Google account later.</p>
+          <div class="logo"><span class="ms" aria-hidden="true">sticky_note_2</span></div>
+          <h1>{{ t('app.name') }}</h1>
+          <p class="muted" style="margin:0">{{ t('login.tagline') }}</p>
+          <div class="login-actions">
+            <button type="button" class="btn-lg btn-outline" @click="signIn"><span class="ms" aria-hidden="true">account_circle</span>{{ t('login.signInGoogle') }}</button>
+            <button type="button" class="btn-lg btn-soft" @click="continueGuest"><span class="ms" aria-hidden="true">smartphone</span>{{ t('login.continueGuest') }}</button>
+          </div>
+          <p class="muted" style="margin:6px 0 0;font-size:13px">{{ t('login.guestHint') }}</p>
         </div>
       </main>
 
       <!-- App -->
       <template v-else>
         <header class="top">
-          <button v-if="narrow" type="button" class="icon-btn" style="margin-left:-8px" aria-label="Open folders" @click="drawer = true"><span class="ms" aria-hidden="true">menu</span></button>
-          <div class="brand"><span class="brand-mark"><span class="ms" aria-hidden="true">sticky_note_2</span></span>Notes</div>
+          <button v-if="narrow" type="button" class="icon-btn" style="margin-left:-8px" :aria-label="t('header.openFolders')" @click="drawer = true"><span class="ms" aria-hidden="true">menu</span></button>
+          <div class="brand"><span class="brand-mark"><span class="ms" aria-hidden="true">sticky_note_2</span></span>{{ t('app.name') }}</div>
           <span style="flex:1"></span>
+          <div class="lang" role="group" :aria-label="t('lang.label')">
+            <button type="button" :aria-pressed="String(lang === 'en')" @click="setLang('en')">{{ t('lang.en') }}</button>
+            <button type="button" :aria-pressed="String(lang === 'uk')" @click="setLang('uk')">{{ t('lang.uk') }}</button>
+          </div>
           <template v-if="mode === 'guest'">
-            <span class="chip"><span class="ms" aria-hidden="true">smartphone</span>{{ narrow ? 'Guest' : 'Guest · on this device' }}</span>
-            <button type="button" class="btn btn-outline" @click="signIn"><span class="ms" aria-hidden="true">login</span>{{ narrow ? 'Sign in' : 'Sign in with Google' }}</button>
+            <span v-if="!narrow" class="chip"><span class="ms" aria-hidden="true">smartphone</span>{{ t('header.guestOnDevice') }}</span>
+            <button type="button" class="btn btn-outline" @click="signIn"><span class="ms" aria-hidden="true">login</span>{{ narrow ? t('header.signIn') : t('header.signInGoogle') }}</button>
           </template>
           <template v-else>
-            <span class="avatar" aria-hidden="true"><span class="ms">person</span></span>
-            <button type="button" class="btn btn-ghost" @click="signOut"><span class="ms" aria-hidden="true">logout</span>Sign out</button>
+            <span v-if="!narrow" class="avatar" aria-hidden="true"><span class="ms">person</span></span>
+            <button type="button" class="btn btn-ghost" @click="signOut"><span class="ms" aria-hidden="true">logout</span>{{ t('header.signOut') }}</button>
           </template>
         </header>
 
         <div class="body">
-          <button v-if="narrow && drawer" type="button" class="backdrop" aria-label="Close folders" @click="drawer = false"></button>
+          <button v-if="narrow && drawer" type="button" class="backdrop" :aria-label="t('header.closeFolders')" @click="drawer = false"></button>
 
-          <nav v-show="!narrow || drawer" class="folders" :class="{ drawer: narrow }" aria-label="Folders">
+          <nav v-show="!narrow || drawer" class="folders" :class="{ drawer: narrow }" :aria-label="t('folders.title')">
             <div class="folders-head">
-              <h2>Folders</h2>
-              <button type="button" class="add-folder" aria-label="New folder" @click="startNewFolder"><span class="ms" aria-hidden="true">create_new_folder</span></button>
+              <h2>{{ t('folders.title') }}</h2>
+              <button type="button" class="add-folder" :aria-label="t('folders.new')" @click="startNewFolder"><span class="ms" aria-hidden="true">create_new_folder</span></button>
             </div>
 
             <div v-if="folderForm && folderForm.mode === 'new'" class="folder-form">
               <div class="row">
-                <label style="flex:1;min-width:0;display:flex"><span class="sr">Folder name</span>
-                  <input v-model="folderForm.value" @input="folderForm.error = ''" @keydown.enter.prevent="submitFolder" @keydown.esc="folderForm = null" maxlength="50" placeholder="Folder name" v-focus>
+                <label style="flex:1;min-width:0;display:flex"><span class="sr">{{ t('folders.name') }}</span>
+                  <input v-model="folderForm.value" @input="folderForm.error = ''" @keydown.enter.prevent="submitFolder" @keydown.esc="folderForm = null" maxlength="50" :placeholder="t('folders.name')" v-focus>
                 </label>
-                <button type="button" class="icon-btn sm" aria-label="Cancel" @click="folderForm = null" style="color:var(--muted)"><span class="ms" aria-hidden="true">close</span></button>
-                <button type="button" class="icon-btn sm ok" aria-label="Create folder" @click="submitFolder"><span class="ms" aria-hidden="true">check</span></button>
+                <button type="button" class="icon-btn sm" :aria-label="t('common.cancel')" @click="folderForm = null" style="color:var(--muted)"><span class="ms" aria-hidden="true">close</span></button>
+                <button type="button" class="icon-btn sm ok" :aria-label="t('folders.create')" @click="submitFolder"><span class="ms" aria-hidden="true">check</span></button>
               </div>
-              <p v-if="folderForm.error" class="err" role="alert">{{ folderForm.error }}</p>
+              <p v-if="folderForm.error" class="err" role="alert">{{ t(folderForm.error) }}</p>
             </div>
 
             <template v-for="f in folders" :key="f.id">
               <div v-if="folderForm && folderForm.mode === 'rename' && folderForm.id === f.id" class="folder-form">
                 <div class="row">
-                  <label style="flex:1;min-width:0;display:flex"><span class="sr">Folder name</span>
+                  <label style="flex:1;min-width:0;display:flex"><span class="sr">{{ t('folders.name') }}</span>
                     <input v-model="folderForm.value" @input="folderForm.error = ''" @keydown.enter.prevent="submitFolder" @keydown.esc="folderForm = null" maxlength="50" v-focus>
                   </label>
-                  <button type="button" class="icon-btn sm" aria-label="Cancel rename" @click="folderForm = null" style="color:var(--muted)"><span class="ms" aria-hidden="true">close</span></button>
-                  <button type="button" class="icon-btn sm ok" aria-label="Save folder name" @click="submitFolder"><span class="ms" aria-hidden="true">check</span></button>
+                  <button type="button" class="icon-btn sm" :aria-label="t('common.cancel')" @click="folderForm = null" style="color:var(--muted)"><span class="ms" aria-hidden="true">close</span></button>
+                  <button type="button" class="icon-btn sm ok" :aria-label="t('folders.saveName')" @click="submitFolder"><span class="ms" aria-hidden="true">check</span></button>
                 </div>
-                <p v-if="folderForm.error" class="err" role="alert">{{ folderForm.error }}</p>
+                <p v-if="folderForm.error" class="err" role="alert">{{ t(folderForm.error) }}</p>
               </div>
               <div v-else class="folder" :class="{ sel: current && f.id === current.id }">
                 <button type="button" class="folder-pick" :aria-current="current && f.id === current.id ? 'page' : null" @click="pickFolder(f.id)">
@@ -241,8 +259,8 @@
                   <span class="count">{{ countIn(f.id) }}</span>
                 </button>
                 <template v-if="current && f.id === current.id">
-                  <button type="button" class="icon-btn sm" aria-label="Rename folder" @click="startRename(f)"><span class="ms" aria-hidden="true" style="font-size:19px">edit</span></button>
-                  <button type="button" class="icon-btn sm" style="margin-right:4px" :disabled="folders.length <= 1" :title="folders.length <= 1 ? 'You can’t delete the last folder' : 'Delete folder'" :aria-label="folders.length <= 1 ? 'You can’t delete the last folder' : 'Delete folder'" @click="dialog = { kind: 'deleteFolder', id: f.id }"><span class="ms" aria-hidden="true" style="font-size:19px">delete</span></button>
+                  <button type="button" class="icon-btn sm" :aria-label="t('folders.rename')" @click="startRename(f)"><span class="ms" aria-hidden="true" style="font-size:19px">edit</span></button>
+                  <button type="button" class="icon-btn sm" style="margin-right:4px" :disabled="f.isDefault" :title="f.isDefault ? t('folders.defaultLocked') : t('folders.delete')" :aria-label="f.isDefault ? t('folders.defaultLocked') : t('folders.delete')" @click="dialog = { kind: 'deleteFolder', id: f.id }"><span class="ms" aria-hidden="true" style="font-size:19px">delete</span></button>
                 </template>
               </div>
             </template>
@@ -252,8 +270,8 @@
             <div class="col">
               <div v-if="banner" class="banner" role="status">
                 <span class="ms" aria-hidden="true">cloud_done</span>
-                <p>{{ banner }}</p>
-                <button type="button" class="icon-btn sm" style="margin:-6px -4px -6px 0;color:#78350F" aria-label="Dismiss" @click="banner = null"><span class="ms" aria-hidden="true" style="font-size:18px">close</span></button>
+                <p>{{ t('dialogs.moveGuestData.done', banner) }}</p>
+                <button type="button" class="icon-btn sm" style="margin:-6px -4px -6px 0;color:#78350F" :aria-label="t('common.dismiss')" @click="banner = null"><span class="ms" aria-hidden="true" style="font-size:18px">close</span></button>
               </div>
 
               <div class="title">
@@ -264,56 +282,56 @@
               <div class="tools">
                 <label class="search">
                   <span class="ms" aria-hidden="true">search</span>
-                  <span class="sr">Search notes in this folder</span>
-                  <input type="search" v-model="search" :placeholder="'Search in ' + (current ? current.name : 'folder')">
+                  <span class="sr">{{ t('notes.searchLabel') }}</span>
+                  <input type="search" v-model="search" :placeholder="t('notes.searchIn', { folder: current ? current.name : '' })">
                 </label>
-                <button type="button" class="add-note" aria-label="New note" @click="startNewNote"><span class="ms" aria-hidden="true">add</span></button>
+                <button type="button" class="add-note" :aria-label="t('notes.new')" @click="startNewNote"><span class="ms" aria-hidden="true">add</span></button>
               </div>
 
               <div class="list">
                 <div v-if="noteEdit && noteEdit.id === 'new'" class="note-form">
-                  <label><span class="sr">Title (optional)</span><input v-model="noteEdit.title" maxlength="200" placeholder="Title (optional)" @keydown.enter.prevent="submitNote" @keydown.esc="noteEdit = null"></label>
-                  <label><span class="sr">Note text</span><textarea v-model="noteEdit.text" maxlength="1000" rows="3" placeholder="Write a note…" v-focus @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></textarea></label>
+                  <label><span class="sr">{{ t('notes.titlePlaceholder') }}</span><input v-model="noteEdit.title" maxlength="200" :placeholder="t('notes.titlePlaceholder')" @keydown.enter.prevent="submitNote" @keydown.esc="noteEdit = null"></label>
+                  <label><span class="sr">{{ t('notes.textLabel') }}</span><textarea v-model="noteEdit.text" maxlength="1000" rows="3" :placeholder="t('notes.textPlaceholder')" v-focus @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></textarea></label>
                   <div class="foot">
                     <span>{{ noteEdit.text.length }} / 1000</span>
-                    <span v-if="!narrow">· Ctrl/⌘+Enter to save · Esc to cancel</span>
+                    <span v-if="!narrow">· {{ t('notes.shortcuts') }}</span>
                     <span class="grow"></span>
-                    <button type="button" class="icon-btn" aria-label="Cancel" @click="noteEdit = null"><span class="ms" aria-hidden="true">close</span></button>
-                    <button type="button" class="icon-btn ok" aria-label="Save note" :disabled="!noteEdit.text.trim()" @click="submitNote"><span class="ms" aria-hidden="true">check</span></button>
+                    <button type="button" class="icon-btn" :aria-label="t('common.cancel')" @click="noteEdit = null"><span class="ms" aria-hidden="true">close</span></button>
+                    <button type="button" class="icon-btn ok" :aria-label="t('notes.save')" :disabled="!noteEdit.text.trim()" @click="submitNote"><span class="ms" aria-hidden="true">check</span></button>
                   </div>
                 </div>
 
                 <template v-for="n in shownNotes" :key="n.id">
                   <div v-if="noteEdit && noteEdit.id === n.id" class="note-form">
-                    <label><span class="sr">Title (optional)</span><input v-model="noteEdit.title" maxlength="200" placeholder="Title (optional)" @keydown.enter.prevent="submitNote" @keydown.esc="noteEdit = null"></label>
-                    <label><span class="sr">Note text</span><textarea v-model="noteEdit.text" maxlength="1000" rows="3" placeholder="Write a note…" v-focus @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></textarea></label>
+                    <label><span class="sr">{{ t('notes.titlePlaceholder') }}</span><input v-model="noteEdit.title" maxlength="200" :placeholder="t('notes.titlePlaceholder')" @keydown.enter.prevent="submitNote" @keydown.esc="noteEdit = null"></label>
+                    <label><span class="sr">{{ t('notes.textLabel') }}</span><textarea v-model="noteEdit.text" maxlength="1000" rows="3" :placeholder="t('notes.textPlaceholder')" v-focus @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></textarea></label>
                     <div class="foot">
                       <span>{{ noteEdit.text.length }} / 1000</span>
-                      <span v-if="!narrow">· Ctrl/⌘+Enter to save · Esc to cancel</span>
+                      <span v-if="!narrow">· {{ t('notes.shortcuts') }}</span>
                       <span class="grow"></span>
-                      <button type="button" class="icon-btn" aria-label="Cancel" @click="noteEdit = null"><span class="ms" aria-hidden="true">close</span></button>
-                      <button type="button" class="icon-btn ok" aria-label="Save note" :disabled="!noteEdit.text.trim()" @click="submitNote"><span class="ms" aria-hidden="true">check</span></button>
+                      <button type="button" class="icon-btn" :aria-label="t('common.cancel')" @click="noteEdit = null"><span class="ms" aria-hidden="true">close</span></button>
+                      <button type="button" class="icon-btn ok" :aria-label="t('notes.save')" :disabled="!noteEdit.text.trim()" @click="submitNote"><span class="ms" aria-hidden="true">check</span></button>
                     </div>
                   </div>
                   <div v-else class="note" :class="{ done: n.completed }">
-                    <label class="check"><input type="checkbox" :checked="n.completed" @change="toggleNote(n.id)" :aria-label="(n.completed ? 'Mark as not completed: ' : 'Mark as completed: ') + (n.title || n.text.slice(0, 40))"></label>
-                    <button type="button" class="note-body" :aria-label="'Edit note: ' + (n.title || n.text.slice(0, 40))" @click="startEdit(n)">
+                    <label class="check"><input type="checkbox" :checked="n.completed" @change="toggleNote(n.id)" :aria-label="t(n.completed ? 'notes.markNotCompleted' : 'notes.markCompleted', { note: n.title || n.text.slice(0, 40) })"></label>
+                    <button type="button" class="note-body" :aria-label="t('notes.edit', { note: n.title || n.text.slice(0, 40) })" @click="startEdit(n)">
                       <span v-if="n.title" class="t">{{ n.title }}</span>
                       <span class="x">{{ n.text }}</span>
                     </button>
-                    <button type="button" class="icon-btn sm" aria-label="Delete note" @click="dialog = { kind: 'deleteNote', id: n.id }"><span class="ms" aria-hidden="true">delete</span></button>
+                    <button type="button" class="icon-btn sm" :aria-label="t('notes.delete')" @click="dialog = { kind: 'deleteNote', id: n.id }"><span class="ms" aria-hidden="true">delete</span></button>
                   </div>
                 </template>
 
                 <div v-if="folderNotes.length === 0 && !(noteEdit && noteEdit.id === 'new')" class="empty">
                   <span class="ms" aria-hidden="true">note_stack</span>
-                  <p class="h">No notes in {{ current ? current.name : '' }} yet</p>
-                  <p>Tap + to add your first note.</p>
+                  <p class="h">{{ t('notes.emptyTitle', { folder: current ? current.name : '' }) }}</p>
+                  <p>{{ t('notes.emptyHint') }}</p>
                 </div>
                 <div v-if="folderNotes.length > 0 && shownNotes.length === 0" class="empty">
                   <span class="ms" aria-hidden="true">search_off</span>
-                  <p class="h">No notes match “{{ search.trim() }}”</p>
-                  <p>Search looks at titles and text in this folder only.</p>
+                  <p class="h">{{ t('notes.noMatchTitle', { query: search.trim() }) }}</p>
+                  <p>{{ t('notes.noMatchHint') }}</p>
                 </div>
               </div>
             </div>
@@ -325,30 +343,34 @@
       <div v-if="dialog" class="dialog-wrap">
         <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
           <template v-if="dialog.kind === 'deleteFolder'">
-            <h2 id="dlg-title">Delete “{{ folderById(dialog.id).name }}”?</h2>
-            <p>{{ countIn(dialog.id) ? 'The folder and its ' + plural(countIn(dialog.id), 'note', 'notes') + ' will be deleted. This can’t be undone.' : 'This empty folder will be deleted.' }}</p>
+            <h2 id="dlg-title">{{ t('dialogs.deleteFolder.title', { folder: folderById(dialog.id).name }) }}</h2>
+            <p>{{ countIn(dialog.id) ? t('dialogs.deleteFolder.body', { count: countIn(dialog.id) }) : t('dialogs.deleteFolder.bodyEmpty') }}</p>
             <div class="actions">
-              <button type="button" class="btn-outline" @click="dialog = null">Cancel</button>
-              <button type="button" class="danger" @click="deleteFolder(dialog.id)">Delete folder</button>
+              <button type="button" class="btn-outline" @click="dialog = null">{{ t('common.cancel') }}</button>
+              <button type="button" class="danger" @click="deleteFolder(dialog.id)">{{ t('dialogs.deleteFolder.confirm') }}</button>
             </div>
           </template>
           <template v-if="dialog.kind === 'deleteNote'">
-            <h2 id="dlg-title">Delete this note?</h2>
-            <p>“{{ noteLabel(dialog.id) }}” will be deleted. This can’t be undone.</p>
+            <h2 id="dlg-title">{{ t('dialogs.deleteNote.title') }}</h2>
+            <p>{{ t('dialogs.deleteNote.body', { note: noteLabel(dialog.id) }) }}</p>
             <div class="actions">
-              <button type="button" class="btn-outline" @click="dialog = null">Cancel</button>
-              <button type="button" class="danger" @click="deleteNote(dialog.id)">Delete note</button>
+              <button type="button" class="btn-outline" @click="dialog = null">{{ t('common.cancel') }}</button>
+              <button type="button" class="danger" @click="deleteNote(dialog.id)">{{ t('dialogs.deleteNote.confirm') }}</button>
             </div>
           </template>
           <template v-if="dialog.kind === 'move'">
-            <h2 id="dlg-title">Move guest notes to your account?</h2>
-            <p>This device has {{ plural(guest.folders.length, 'folder', 'folders') }} and {{ plural(guest.notes.length, 'note', 'notes') }} from guest mode. Folders with the same name are merged and duplicate notes are skipped. After moving, the guest copy is removed from this device.</p>
+            <h2 id="dlg-title">{{ t('dialogs.moveGuestData.title') }}</h2>
+            <p>{{ t('dialogs.moveGuestData.body', { folders: guest.folders.length, notes: guest.notes.length }) }}</p>
             <ul class="plan">
-              <li v-for="m in movePlan"><span class="ms" aria-hidden="true">{{ m.icon }}</span><strong>{{ m.from }}</strong><span class="muted">{{ m.outcome }}</span></li>
+              <li v-for="m in movePlan">
+                <span class="ms" aria-hidden="true">{{ m.merged ? 'merge' : 'create_new_folder' }}</span>
+                <strong>{{ m.from }}</strong>
+                <span class="muted">{{ m.merged ? t('dialogs.moveGuestData.mergesInto', { folder: m.into }) : t('dialogs.moveGuestData.newFolder') }}</span>
+              </li>
             </ul>
             <div class="actions">
-              <button type="button" class="btn-outline" @click="dialog = null">Not now</button>
-              <button type="button" class="primary" @click="moveGuestData">Move to account</button>
+              <button type="button" class="btn-outline" @click="dialog = null">{{ t('dialogs.moveGuestData.skip') }}</button>
+              <button type="button" class="primary" @click="moveGuestData">{{ t('dialogs.moveGuestData.confirm') }}</button>
             </div>
           </template>
         </div>
@@ -359,19 +381,209 @@
 </div>
 
 <script>
+/* I18N:BEGIN */
+var I18N = {
+  "en": {
+    "app": {
+      "name": "Notes"
+    },
+    "lang": {
+      "label": "Language",
+      "en": "EN",
+      "uk": "UA"
+    },
+    "common": {
+      "cancel": "Cancel",
+      "dismiss": "Dismiss"
+    },
+    "login": {
+      "tagline": "Short notes in folders. Works offline on your phone and computer.",
+      "signInGoogle": "Sign in with Google",
+      "continueGuest": "Continue as guest",
+      "guestHint": "Guest notes stay on this device. You can move them to your Google account later."
+    },
+    "header": {
+      "guestOnDevice": "Guest · on this device",
+      "signIn": "Sign in",
+      "signInGoogle": "Sign in with Google",
+      "signOut": "Sign out",
+      "openFolders": "Open folders",
+      "closeFolders": "Close folders"
+    },
+    "folders": {
+      "title": "Folders",
+      "new": "New folder",
+      "name": "Folder name",
+      "create": "Create folder",
+      "saveName": "Save folder name",
+      "rename": "Rename folder",
+      "delete": "Delete folder",
+      "defaultLocked": "The default folder can't be deleted",
+      "defaultName": "General",
+      "errors": {
+        "required": "Enter a folder name",
+        "maxLength": "Use 50 characters or fewer",
+        "taken": "A folder with this name already exists"
+      }
+    },
+    "notes": {
+      "count": "Notes: {{count}}",
+      "completed": "Completed: {{count}}",
+      "searchLabel": "Search notes in this folder",
+      "searchIn": "Search in {{folder}}",
+      "new": "New note",
+      "titlePlaceholder": "Title (optional)",
+      "textLabel": "Note text",
+      "textPlaceholder": "Write a note…",
+      "shortcuts": "Ctrl/⌘+Enter to save · Esc to cancel",
+      "save": "Save note",
+      "markCompleted": "Mark as completed: {{note}}",
+      "markNotCompleted": "Mark as not completed: {{note}}",
+      "edit": "Edit note: {{note}}",
+      "delete": "Delete note",
+      "emptyTitle": "No notes in {{folder}} yet",
+      "emptyHint": "Tap + to add your first note.",
+      "noMatchTitle": "No notes match “{{query}}”",
+      "noMatchHint": "Search looks at titles and text in this folder only."
+    },
+    "dialogs": {
+      "deleteFolder": {
+        "title": "Delete “{{folder}}”?",
+        "body": "The folder and all its notes (notes: {{count}}) will be deleted. This can't be undone.",
+        "bodyEmpty": "This empty folder will be deleted.",
+        "confirm": "Delete folder"
+      },
+      "deleteNote": {
+        "title": "Delete this note?",
+        "body": "“{{note}}” will be deleted. This can't be undone.",
+        "confirm": "Delete note"
+      },
+      "moveGuestData": {
+        "title": "Move guest notes to your account?",
+        "body": "From guest mode on this device: folders: {{folders}}, notes: {{notes}}. Folders with the same name are merged and duplicate notes are skipped. After moving, the guest copy is removed from this device.",
+        "mergesInto": "merges into “{{folder}}”",
+        "newFolder": "new folder",
+        "skip": "Not now",
+        "confirm": "Move to account",
+        "done": "Moved to your account. Notes added: {{added}}, duplicates skipped: {{skipped}}, folders created: {{created}}, folders merged: {{merged}}."
+      }
+    }
+  },
+  "uk": {
+    "app": {
+      "name": "Нотатки"
+    },
+    "lang": {
+      "label": "Мова",
+      "en": "EN",
+      "uk": "UA"
+    },
+    "common": {
+      "cancel": "Скасувати",
+      "dismiss": "Закрити"
+    },
+    "login": {
+      "tagline": "Короткі нотатки в папках. Працює офлайн на телефоні й комп'ютері.",
+      "signInGoogle": "Увійти через Google",
+      "continueGuest": "Продовжити як гість",
+      "guestHint": "Нотатки гостя зберігаються лише на цьому пристрої. Пізніше їх можна перенести в обліковий запис Google."
+    },
+    "header": {
+      "guestOnDevice": "Гість · на цьому пристрої",
+      "signIn": "Увійти",
+      "signInGoogle": "Увійти через Google",
+      "signOut": "Вийти",
+      "openFolders": "Відкрити папки",
+      "closeFolders": "Закрити папки"
+    },
+    "folders": {
+      "title": "Папки",
+      "new": "Нова папка",
+      "name": "Назва папки",
+      "create": "Створити папку",
+      "saveName": "Зберегти назву папки",
+      "rename": "Перейменувати папку",
+      "delete": "Видалити папку",
+      "defaultLocked": "Основну папку не можна видалити",
+      "defaultName": "Загальне",
+      "errors": {
+        "required": "Введіть назву папки",
+        "maxLength": "Не більше 50 символів",
+        "taken": "Папка з такою назвою вже існує"
+      }
+    },
+    "notes": {
+      "count": "Нотаток: {{count}}",
+      "completed": "Виконано: {{count}}",
+      "searchLabel": "Пошук нотаток у цій папці",
+      "searchIn": "Пошук у «{{folder}}»",
+      "new": "Нова нотатка",
+      "titlePlaceholder": "Заголовок (необов'язково)",
+      "textLabel": "Текст нотатки",
+      "textPlaceholder": "Напишіть нотатку…",
+      "shortcuts": "Ctrl/⌘+Enter — зберегти · Esc — скасувати",
+      "save": "Зберегти нотатку",
+      "markCompleted": "Позначити виконаною: {{note}}",
+      "markNotCompleted": "Зняти позначку виконання: {{note}}",
+      "edit": "Редагувати нотатку: {{note}}",
+      "delete": "Видалити нотатку",
+      "emptyTitle": "У «{{folder}}» ще немає нотаток",
+      "emptyHint": "Натисніть +, щоб додати першу нотатку.",
+      "noMatchTitle": "Немає нотаток за запитом «{{query}}»",
+      "noMatchHint": "Пошук лише за заголовками й текстом у цій папці."
+    },
+    "dialogs": {
+      "deleteFolder": {
+        "title": "Видалити «{{folder}}»?",
+        "body": "Папку й усі її нотатки (нотаток: {{count}}) буде видалено. Цю дію не можна скасувати.",
+        "bodyEmpty": "Цю порожню папку буде видалено.",
+        "confirm": "Видалити папку"
+      },
+      "deleteNote": {
+        "title": "Видалити цю нотатку?",
+        "body": "«{{note}}» буде видалено. Цю дію не можна скасувати.",
+        "confirm": "Видалити нотатку"
+      },
+      "moveGuestData": {
+        "title": "Перенести нотатки гостя в обліковий запис?",
+        "body": "З режиму гостя на цьому пристрої: папок: {{folders}}, нотаток: {{notes}}. Папки з однаковою назвою об'єднуються, а дублікати нотаток пропускаються. Після перенесення копію гостя буде видалено з цього пристрою.",
+        "mergesInto": "об'єднається з «{{folder}}»",
+        "newFolder": "нова папка",
+        "skip": "Не зараз",
+        "confirm": "Перенести",
+        "done": "Перенесено в обліковий запис. Додано нотаток: {{added}}, пропущено дублікатів: {{skipped}}, створено папок: {{created}}, об'єднано папок: {{merged}}."
+      }
+    }
+  }
+};
+/* I18N:END */
+
 var DAY = 86400000;
 var T0 = Date.parse('2026-10-01T09:00:00Z');
 function uid() { return Math.random().toString(36).slice(2, 10); }
 function norm(s) { return (s || '').trim().toLowerCase(); }
 function byCreatedAsc(a, b) { return a.createdAt - b.createdAt; }
-function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+
+// ngx-translate style lookup: nested keys + {{param}} interpolation.
+function translate(lang, key, params) {
+  var v = key.split('.').reduce(function (o, k) { return o && o[k]; }, I18N[lang]);
+  if (typeof v !== 'string') return key;
+  return v.replace(/\{\{\s*(\w+)\s*\}\}/g, function (_, p) { return params && params[p] != null ? params[p] : ''; });
+}
+
+function initialLang() {
+  var q = new URLSearchParams(location.search).get('lang');
+  if (q === 'en' || q === 'uk') return q;
+  try { var saved = localStorage.getItem('notes.lang'); if (saved === 'en' || saved === 'uk') return saved; } catch (e) {}
+  return (navigator.language || '').toLowerCase().indexOf('uk') === 0 ? 'uk' : 'en';
+}
 
 function seedGuest() {
   return {
     folders: [
-      { id: 'g-gen', name: 'General', createdAt: T0 },
-      { id: 'g-shop', name: 'Shopping', createdAt: T0 + DAY },
-      { id: 'g-work', name: 'work ', createdAt: T0 + 2 * DAY }
+      { id: 'g-gen', name: 'General', isDefault: true, createdAt: T0 },
+      { id: 'g-shop', name: 'Shopping', isDefault: false, createdAt: T0 + DAY },
+      { id: 'g-work', name: 'work ', isDefault: false, createdAt: T0 + 2 * DAY }
     ],
     notes: [
       { id: 'gn1', folderId: 'g-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, createdAt: T0 + 3 * DAY },
@@ -385,9 +597,9 @@ function seedGuest() {
 function seedAccount() {
   return {
     folders: [
-      { id: 'acc-gen', name: 'General', createdAt: T0 - 30 * DAY },
-      { id: 'acc-work', name: 'Work', createdAt: T0 - 20 * DAY },
-      { id: 'acc-travel', name: 'Travel', createdAt: T0 - 10 * DAY }
+      { id: 'acc-gen', name: 'General', isDefault: true, createdAt: T0 - 30 * DAY },
+      { id: 'acc-work', name: 'Work', isDefault: false, createdAt: T0 - 20 * DAY },
+      { id: 'acc-travel', name: 'Travel', isDefault: false, createdAt: T0 - 10 * DAY }
     ],
     notes: [
       { id: 'an1', folderId: 'acc-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, createdAt: T0 - 2 * DAY },
@@ -400,40 +612,42 @@ function seedAccount() {
   };
 }
 
+// Anything beyond an empty Default folder? (checked by marker, not by name)
 function hasGuestData(g) {
-  return g.notes.length > 0 || g.folders.some(function (f) { return norm(f.name) !== 'general'; });
+  return g.notes.length > 0 || g.folders.some(function (f) { return !f.isDefault; });
 }
 
-function ensureDefault(d) {
+// Default folder is named in the current UI language at creation.
+function ensureDefault(d, lang) {
   if (d.folders.length) return d;
-  return { folders: [{ id: uid(), name: 'General', createdAt: Date.now() }], notes: d.notes };
+  return { folders: [{ id: uid(), name: translate(lang, 'folders.defaultName'), isDefault: true, createdAt: Date.now() }], notes: d.notes };
 }
 
-// Folder merge + Duplicate note rule (planned mergeGuestData(), ADR-0006).
+// Folder merge (by name only, defaults included) + Duplicate note rule. ADR-0006.
 function mergeGuestData(guest, account) {
   var folders = account.folders.slice();
   var notes = account.notes.map(function (n) { return Object.assign({}, n); });
   var byKey = {};
   folders.forEach(function (f) { byKey[norm(f.name)] = f; });
   var plan = [];
-  var stats = { created: 0, merged: 0, added: 0, dupes: 0 };
+  var stats = { created: 0, merged: 0, added: 0, skipped: 0 };
   guest.folders.slice().sort(byCreatedAsc).forEach(function (gf) {
     var target = byKey[norm(gf.name)];
     if (target) {
       stats.merged++;
-      plan.push({ icon: 'merge', from: gf.name.trim(), outcome: 'merges into “' + target.name + '”' });
+      plan.push({ from: gf.name.trim(), merged: true, into: target.name });
     } else {
-      target = { id: uid(), name: gf.name.trim(), createdAt: Date.now() + stats.created };
+      target = { id: uid(), name: gf.name.trim(), isDefault: false, createdAt: Date.now() + stats.created };
       folders.push(target);
       byKey[norm(target.name)] = target;
       stats.created++;
-      plan.push({ icon: 'create_new_folder', from: gf.name.trim(), outcome: 'new folder' });
+      plan.push({ from: gf.name.trim(), merged: false });
     }
     guest.notes.filter(function (n) { return n.folderId === gf.id; }).forEach(function (gn) {
       var dup = notes.find(function (n) {
         return n.folderId === target.id && norm(n.title) === norm(gn.title) && norm(n.text) === norm(gn.text);
       });
-      if (dup) { stats.dupes++; if (gn.completed) dup.completed = true; }
+      if (dup) { stats.skipped++; if (gn.completed) dup.completed = true; }
       else { notes.push(Object.assign({}, gn, { id: uid(), folderId: target.id })); stats.added++; }
     });
   });
@@ -456,7 +670,7 @@ function initState(preset) {
     open('google');
     s.sel = 'acc-work';
     s.noteEdit = { id: 'an3', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.' };
-    s.folderForm = { mode: 'new', id: null, value: 'work ', error: 'A folder with this name already exists' };
+    s.folderForm = { mode: 'new', id: null, value: 'work ', error: 'folders.errors.taken' };
   }
   if (preset === 'delete-folder') { open('google'); s.sel = 'acc-work'; s.dialog = { kind: 'deleteFolder', id: 'acc-work' }; }
   if (preset === 'move-guest-data') { open('google'); s.dialog = { kind: 'move' }; }
@@ -464,7 +678,7 @@ function initState(preset) {
   if (preset === 'new-note') { open('guest'); s.noteEdit = { id: 'new', title: '', text: 'Pick up the parcel at the post office' }; }
   if (preset === 'empty') {
     open('google');
-    s.account.folders.push({ id: 'acc-ideas', name: 'Ideas', createdAt: T0 });
+    s.account.folders.push({ id: 'acc-ideas', name: 'Ideas', isDefault: false, createdAt: T0 });
     s.sel = 'acc-ideas';
   }
   return s;
@@ -487,7 +701,7 @@ Vue.createApp({
     var params = new URLSearchParams(location.search);
     var preset = params.get('state') || 'login';
     var view = params.get('view') || (preset === 'mobile-drawer' ? 'phone' : 'desktop');
-    return Object.assign(initState(preset), { preset: preset, view: view, presets: PRESETS, w: window.innerWidth });
+    return Object.assign(initState(preset), { preset: preset, view: view, presets: PRESETS, w: window.innerWidth, lang: initialLang() });
   },
   directives: {
     focus: { mounted: function (el) { el.focus(); } }
@@ -495,6 +709,7 @@ Vue.createApp({
   mounted: function () {
     var self = this;
     window.addEventListener('resize', function () { self.w = window.innerWidth; });
+    document.documentElement.lang = this.lang;
   },
   computed: {
     narrow: function () { return this.view === 'phone' || this.w < 900; },
@@ -515,12 +730,17 @@ Vue.createApp({
     },
     summary: function () {
       var done = this.folderNotes.filter(function (n) { return n.completed; }).length;
-      return plural(this.folderNotes.length, 'note', 'notes') + (done ? ' · ' + done + ' completed' : '');
+      return this.t('notes.count', { count: this.folderNotes.length }) + (done ? ' · ' + this.t('notes.completed', { count: done }) : '');
     },
     movePlan: function () { return mergeGuestData(this.guest, this.account).plan; }
   },
   methods: {
-    plural: plural,
+    t: function (key, params) { return translate(this.lang, key, params); },
+    setLang: function (l) {
+      this.lang = l;
+      document.documentElement.lang = l;
+      try { localStorage.setItem('notes.lang', l); } catch (e) {}
+    },
     applyPreset: function (p) {
       Object.assign(this.$data, initState(p), { preset: p });
       if (p === 'mobile-drawer') this.view = 'phone';
@@ -538,11 +758,11 @@ Vue.createApp({
 
     // Session
     continueGuest: function () {
-      this.guest = ensureDefault(this.guest);
+      this.guest = ensureDefault(this.guest, this.lang);
       Object.assign(this, { screen: 'app', mode: 'guest', sel: this.guest.folders.slice().sort(byCreatedAsc)[0].id, banner: null });
     },
     signIn: function () {
-      this.account = ensureDefault(this.account);
+      this.account = ensureDefault(this.account, this.lang);
       Object.assign(this, {
         screen: 'app', mode: 'google', sel: this.account.folders.slice().sort(byCreatedAsc)[0].id,
         folderForm: null, noteEdit: null, search: '', drawer: false,
@@ -561,11 +781,11 @@ Vue.createApp({
       var ff = this.folderForm;
       if (!ff) return;
       var name = ff.value.trim();
-      if (!name) { ff.error = 'Enter a folder name'; return; }
-      if (name.length > 50) { ff.error = 'Use 50 characters or fewer'; return; }
-      if (this.data.folders.some(function (f) { return f.id !== ff.id && norm(f.name) === norm(name); })) { ff.error = 'A folder with this name already exists'; return; }
+      if (!name) { ff.error = 'folders.errors.required'; return; }
+      if (name.length > 50) { ff.error = 'folders.errors.maxLength'; return; }
+      if (this.data.folders.some(function (f) { return f.id !== ff.id && norm(f.name) === norm(name); })) { ff.error = 'folders.errors.taken'; return; }
       if (ff.mode === 'new') {
-        var f = { id: uid(), name: name, createdAt: Date.now() };
+        var f = { id: uid(), name: name, isDefault: false, createdAt: Date.now() };
         this.setData({ folders: this.data.folders.concat([f]), notes: this.data.notes });
         Object.assign(this, { folderForm: null, sel: f.id, search: '', noteEdit: null, drawer: false });
       } else {
@@ -574,8 +794,10 @@ Vue.createApp({
       }
     },
     deleteFolder: function (id) {
+      if (this.folderById(id).isDefault) return;
       this.setData({ folders: this.data.folders.filter(function (f) { return f.id !== id; }), notes: this.data.notes.filter(function (n) { return n.folderId !== id; }) });
-      Object.assign(this, { dialog: null, sel: this.folders[0] ? this.folders[0].id : null, noteEdit: null });
+      var def = this.data.folders.find(function (f) { return f.isDefault; }) || this.folders[0];
+      Object.assign(this, { dialog: null, sel: def ? def.id : null, noteEdit: null });
     },
 
     // Notes
@@ -606,13 +828,10 @@ Vue.createApp({
     // Move guest data
     moveGuestData: function () {
       var r = mergeGuestData(this.guest, this.account);
-      var st = r.stats;
       this.account = r.data;
       this.guest = { folders: [], notes: [] };
       this.dialog = null;
-      this.banner = 'Moved to your account: ' + plural(st.added, 'note', 'notes') + ' added' +
-        (st.dupes ? ', ' + plural(st.dupes, 'duplicate', 'duplicates') + ' skipped' : '') +
-        '. ' + plural(st.created, 'folder', 'folders') + ' created, ' + st.merged + ' merged.';
+      this.banner = r.stats; // rendered via dialogs.moveGuestData.done, so it follows the language toggle
     }
   }
 }).mount('#app');

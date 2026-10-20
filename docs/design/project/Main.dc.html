@@ -13,27 +13,31 @@
 body{margin:0}
 </style>
 </helmet>
-<div style="position: relative; min-height: 100vh; display: flex; flex-direction: column; background: #FFFFFF; color: #1C1C1E; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 15px; line-height: 1.45">
+<div lang="{{lang}}" style="position: relative; min-height: 100vh; display: flex; flex-direction: column; background: #FFFFFF; color: #1C1C1E; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 15px; line-height: 1.45">
 
 <sc-if value="{{isLogin}}" hint-placeholder-val="{{true}}">
 <main style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px 16px; background: #F7F6F3">
-  <div style="width: 100%; max-width: 380px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E5E4E0; border-radius: 16px; padding: 40px 28px 28px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center">
+  <div style="position: relative; width: 100%; max-width: 380px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E5E4E0; border-radius: 16px; padding: 48px 28px 28px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center">
+    <div role="group" aria-label="{{t.lang.label}}" style="position: absolute; top: 12px; right: 12px; display: flex; height: 32px; border: 1px solid #D4D3CE; border-radius: 8px; overflow: hidden; background: #FFFFFF">
+      <button type="button" aria-pressed="{{enPressed}}" onClick="{{setEn}}" style="min-width: 38px; border: 0; padding: 0 8px; font: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; background: {{enBg}}; color: {{enColor}}; cursor: pointer">{{t.lang.en}}</button>
+      <button type="button" aria-pressed="{{ukPressed}}" onClick="{{setUk}}" style="min-width: 38px; border: 0; border-left: 1px solid #D4D3CE; padding: 0 8px; font: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; background: {{ukBg}}; color: {{ukColor}}; cursor: pointer">{{t.lang.uk}}</button>
+    </div>
     <div style="width: 56px; height: 56px; border-radius: 14px; background: {{accent}}; display: flex; align-items: center; justify-content: center; color: #1C1C1E">
       <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 32px">sticky_note_2</span>
     </div>
-    <h1 style="margin: 0; font-size: 26px; font-weight: 700">Notes</h1>
-    <p style="margin: 0; color: #5F5F64">Short notes in folders. Works offline on your phone and computer.</p>
+    <h1 style="margin: 0; font-size: 26px; font-weight: 700">{{t.app.name}}</h1>
+    <p style="margin: 0; color: #5F5F64">{{t.login.tagline}}</p>
     <div style="width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 14px">
       <button type="button" onClick="{{signIn}}" style="height: 48px; border-radius: 10px; border: 1px solid #D4D3CE; background: #FFFFFF; font: inherit; font-weight: 600; color: #1C1C1E; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer">
         <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">account_circle</span>
-        Sign in with Google
+        {{t.login.signInGoogle}}
       </button>
       <button type="button" onClick="{{continueGuest}}" style="height: 48px; border-radius: 10px; border: 0; background: #F1F0EC; font: inherit; font-weight: 600; color: #1C1C1E; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer">
         <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">smartphone</span>
-        Continue as guest
+        {{t.login.continueGuest}}
       </button>
     </div>
-    <p style="margin: 6px 0 0; font-size: 13px; color: #5F5F64">Guest notes stay on this device. You can move them to your Google account later.</p>
+    <p style="margin: 6px 0 0; font-size: 13px; color: #5F5F64">{{t.login.guestHint}}</p>
   </div>
 </main>
 </sc-if>
@@ -41,34 +45,42 @@ body{margin:0}
 <sc-if value="{{isApp}}" hint-placeholder-val="{{false}}">
 <header style="height: 56px; flex-shrink: 0; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 16px; border-bottom: 1px solid #E5E4E0; background: #FFFFFF">
   <sc-if value="{{narrow}}" hint-placeholder-val="{{false}}">
-    <button type="button" aria-label="Open folders" onClick="{{openDrawer}}" style="width: 44px; height: 44px; margin-left: -8px; border: 0; background: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #1C1C1E; cursor: pointer">
+    <button type="button" aria-label="{{t.header.openFolders}}" onClick="{{openDrawer}}" style="width: 44px; height: 44px; flex-shrink: 0; margin-left: -8px; border: 0; background: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #1C1C1E; cursor: pointer">
       <span class="material-symbols-outlined" aria-hidden="true">menu</span>
     </button>
   </sc-if>
-  <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 17px">
+  <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 17px; white-space: nowrap">
     <span style="width: 28px; height: 28px; border-radius: 7px; background: {{accent}}; display: flex; align-items: center; justify-content: center">
       <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px">sticky_note_2</span>
     </span>
-    Notes
+    {{t.app.name}}
   </div>
   <div style="flex: 1"></div>
+  <div role="group" aria-label="{{t.lang.label}}" style="display: flex; flex-shrink: 0; height: 32px; border: 1px solid #D4D3CE; border-radius: 8px; overflow: hidden; background: #FFFFFF">
+    <button type="button" aria-pressed="{{enPressed}}" onClick="{{setEn}}" style="min-width: 38px; border: 0; padding: 0 8px; font: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; background: {{enBg}}; color: {{enColor}}; cursor: pointer">{{t.lang.en}}</button>
+    <button type="button" aria-pressed="{{ukPressed}}" onClick="{{setUk}}" style="min-width: 38px; border: 0; border-left: 1px solid #D4D3CE; padding: 0 8px; font: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; background: {{ukBg}}; color: {{ukColor}}; cursor: pointer">{{t.lang.uk}}</button>
+  </div>
   <sc-if value="{{isGuest}}" hint-placeholder-val="{{true}}">
-    <span style="display: flex; align-items: center; gap: 4px; font-size: 13px; color: #5F5F64; padding: 4px 10px; border-radius: 999px; background: #F1F0EC">
-      <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 16px">smartphone</span>
-      {{guestChip}}
-    </span>
-    <button type="button" onClick="{{signIn}}" style="height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid #D4D3CE; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1C1C1E; display: flex; align-items: center; gap: 6px; cursor: pointer">
+    <sc-if value="{{wide}}" hint-placeholder-val="{{true}}">
+      <span style="display: flex; align-items: center; gap: 4px; font-size: 13px; color: #5F5F64; padding: 4px 10px; border-radius: 999px; background: #F1F0EC; white-space: nowrap">
+        <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 16px">smartphone</span>
+        {{t.header.guestOnDevice}}
+      </span>
+    </sc-if>
+    <button type="button" onClick="{{signIn}}" style="height: 40px; flex-shrink: 0; padding: 0 {{btnPad}}; border-radius: 10px; border: 1px solid #D4D3CE; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1C1C1E; display: flex; align-items: center; gap: 6px; white-space: nowrap; cursor: pointer">
       <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px">login</span>
       {{signInLabel}}
     </button>
   </sc-if>
   <sc-if value="{{isGoogle}}" hint-placeholder-val="{{false}}">
-    <span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 50%; background: #FEF3C7; color: #92400E; display: flex; align-items: center; justify-content: center">
-      <span class="material-symbols-outlined" style="font-size: 20px">person</span>
-    </span>
-    <button type="button" onClick="{{signOut}}" style="height: 40px; padding: 0 12px; border-radius: 10px; border: 0; background: none; font: inherit; font-size: 14px; font-weight: 600; color: #5F5F64; display: flex; align-items: center; gap: 6px; cursor: pointer">
+    <sc-if value="{{wide}}" hint-placeholder-val="{{true}}">
+      <span aria-hidden="true" style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: #FEF3C7; color: #92400E; display: flex; align-items: center; justify-content: center">
+        <span class="material-symbols-outlined" style="font-size: 20px">person</span>
+      </span>
+    </sc-if>
+    <button type="button" onClick="{{signOut}}" style="height: 40px; flex-shrink: 0; padding: 0 {{btnPad}}; border-radius: 10px; border: 0; background: none; font: inherit; font-size: 14px; font-weight: 600; color: #5F5F64; display: flex; align-items: center; gap: 6px; white-space: nowrap; cursor: pointer">
       <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px">logout</span>
-      Sign out
+      {{t.header.signOut}}
     </button>
   </sc-if>
 </header>
@@ -76,13 +88,13 @@ body{margin:0}
 <div style="flex: 1; display: flex; position: relative; min-height: 0">
 
   <sc-if value="{{showBackdrop}}" hint-placeholder-val="{{false}}">
-    <button type="button" aria-label="Close folders" onClick="{{closeDrawer}}" style="position: absolute; inset: 0; z-index: 10; border: 0; padding: 0; background: rgba(28, 28, 30, 0.32); cursor: pointer"></button>
+    <button type="button" aria-label="{{t.header.closeFolders}}" onClick="{{closeDrawer}}" style="position: absolute; inset: 0; z-index: 10; border: 0; padding: 0; background: rgba(28, 28, 30, 0.32); cursor: pointer"></button>
   </sc-if>
 
-  <nav aria-label="Folders" style="display: {{sbDisplay}}; position: {{sbPosition}}; top: 0; left: 0; bottom: 0; z-index: 20; width: 288px; max-width: 85%; box-sizing: border-box; flex-shrink: 0; flex-direction: column; gap: 4px; padding: 16px 12px; background: #F7F6F3; border-right: 1px solid #E5E4E0; box-shadow: {{sbShadow}}; overflow-y: auto">
+  <nav aria-label="{{t.folders.title}}" style="display: {{sbDisplay}}; position: {{sbPosition}}; top: 0; left: 0; bottom: 0; z-index: 20; width: 288px; max-width: 85%; box-sizing: border-box; flex-shrink: 0; flex-direction: column; gap: 4px; padding: 16px 12px; background: #F7F6F3; border-right: 1px solid #E5E4E0; box-shadow: {{sbShadow}}; overflow-y: auto">
     <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 4px 8px 8px">
-      <h2 style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #5F5F64">Folders</h2>
-      <button type="button" aria-label="New folder" onClick="{{startNewFolder}}" style="width: 36px; height: 36px; border: 0; border-radius: 9px; background: #EDEBE6; color: #1C1C1E; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #5F5F64">{{t.folders.title}}</h2>
+      <button type="button" aria-label="{{t.folders.new}}" onClick="{{startNewFolder}}" style="width: 36px; height: 36px; border: 0; border-radius: 9px; background: #EDEBE6; color: #1C1C1E; display: flex; align-items: center; justify-content: center; cursor: pointer">
         <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">create_new_folder</span>
       </button>
     </div>
@@ -91,13 +103,13 @@ body{margin:0}
       <div style="display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 10px; background: #FFFFFF; border: 1.5px solid {{accent}}">
         <div style="display: flex; align-items: center; gap: 4px">
           <label style="flex: 1; min-width: 0">
-            <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Folder name</span>
-            <input type="text" value="{{folderValue}}" onChange="{{onFolderInput}}" onKeyDown="{{onFolderKey}}" maxLength="{{50}}" autoFocus="{{true}}" placeholder="Folder name" style="width: 100%; box-sizing: border-box; height: 36px; border: 0; outline: none; background: transparent; font: inherit; color: #1C1C1E; padding: 0 6px">
+            <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.folders.name}}</span>
+            <input type="text" value="{{folderValue}}" onChange="{{onFolderInput}}" onKeyDown="{{onFolderKey}}" maxLength="{{50}}" autoFocus="{{true}}" placeholder="{{t.folders.name}}" style="width: 100%; box-sizing: border-box; height: 36px; border: 0; outline: none; background: transparent; font: inherit; color: #1C1C1E; padding: 0 6px">
           </label>
-          <button type="button" aria-label="Cancel" onClick="{{cancelFolder}}" style="width: 36px; height: 36px; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
+          <button type="button" aria-label="{{t.common.cancel}}" onClick="{{cancelFolder}}" style="width: 36px; height: 36px; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
             <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">close</span>
           </button>
-          <button type="button" aria-label="Create folder" onClick="{{submitFolder}}" style="width: 36px; height: 36px; border: 0; border-radius: 8px; background: {{accent}}; color: #1C1C1E; display: flex; align-items: center; justify-content: center; cursor: pointer">
+          <button type="button" aria-label="{{t.folders.create}}" onClick="{{submitFolder}}" style="width: 36px; height: 36px; border: 0; border-radius: 8px; background: {{accent}}; color: #1C1C1E; display: flex; align-items: center; justify-content: center; cursor: pointer">
             <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">check</span>
           </button>
         </div>
@@ -112,13 +124,13 @@ body{margin:0}
         <div style="display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 10px; background: #FFFFFF; border: 1.5px solid {{accent}}">
           <div style="display: flex; align-items: center; gap: 4px">
             <label style="flex: 1; min-width: 0">
-              <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Folder name</span>
+              <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.folders.name}}</span>
               <input type="text" value="{{folderValue}}" onChange="{{onFolderInput}}" onKeyDown="{{onFolderKey}}" maxLength="{{50}}" autoFocus="{{true}}" style="width: 100%; box-sizing: border-box; height: 36px; border: 0; outline: none; background: transparent; font: inherit; color: #1C1C1E; padding: 0 6px">
             </label>
-            <button type="button" aria-label="Cancel rename" onClick="{{cancelFolder}}" style="width: 36px; height: 36px; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
+            <button type="button" aria-label="{{t.common.cancel}}" onClick="{{cancelFolder}}" style="width: 36px; height: 36px; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
               <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">close</span>
             </button>
-            <button type="button" aria-label="Save folder name" onClick="{{submitFolder}}" style="width: 36px; height: 36px; border: 0; border-radius: 8px; background: {{accent}}; color: #1C1C1E; display: flex; align-items: center; justify-content: center; cursor: pointer">
+            <button type="button" aria-label="{{t.folders.saveName}}" onClick="{{submitFolder}}" style="width: 36px; height: 36px; border: 0; border-radius: 8px; background: {{accent}}; color: #1C1C1E; display: flex; align-items: center; justify-content: center; cursor: pointer">
               <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">check</span>
             </button>
           </div>
@@ -135,7 +147,7 @@ body{margin:0}
             <span style="font-size: 13px; color: #5F5F64; font-weight: 400">{{f.count}}</span>
           </button>
           <sc-if value="{{f.selected}}" hint-placeholder-val="{{false}}">
-            <button type="button" aria-label="Rename folder" onClick="{{f.rename}}" style="width: 36px; height: 36px; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
+            <button type="button" aria-label="{{t.folders.rename}}" onClick="{{f.rename}}" style="width: 36px; height: 36px; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
               <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 19px">edit</span>
             </button>
             <button type="button" aria-label="{{f.deleteLabel}}" title="{{f.deleteLabel}}" disabled="{{f.deleteDisabled}}" onClick="{{f.del}}" style="width: 36px; height: 36px; margin-right: 4px; border: 0; border-radius: 8px; background: none; color: #5F5F64; opacity: {{f.deleteOpacity}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
@@ -154,26 +166,24 @@ body{margin:0}
         <div role="status" style="display: flex; align-items: flex-start; gap: 10px; padding: 12px 12px 12px 14px; border-radius: 12px; background: #FEF3C7; color: #78350F">
           <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">cloud_done</span>
           <p style="flex: 1; margin: 0; font-size: 14px">{{banner}}</p>
-          <button type="button" aria-label="Dismiss" onClick="{{dismissBanner}}" style="width: 32px; height: 32px; margin: -6px -4px -6px 0; border: 0; border-radius: 8px; background: none; color: #78350F; display: flex; align-items: center; justify-content: center; cursor: pointer">
+          <button type="button" aria-label="{{t.common.dismiss}}" onClick="{{dismissBanner}}" style="width: 32px; height: 32px; margin: -6px -4px -6px 0; border: 0; border-radius: 8px; background: none; color: #78350F; display: flex; align-items: center; justify-content: center; cursor: pointer">
             <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px">close</span>
           </button>
         </div>
       </sc-if>
 
-      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 12px">
-        <div style="min-width: 0">
-          <h1 style="margin: 0; font-size: 26px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{folderName}}</h1>
-          <p style="margin: 2px 0 0; font-size: 14px; color: #5F5F64">{{folderSummary}}</p>
-        </div>
+      <div style="min-width: 0">
+        <h1 style="margin: 0; font-size: 26px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{folderName}}</h1>
+        <p style="margin: 2px 0 0; font-size: 14px; color: #5F5F64">{{folderSummary}}</p>
       </div>
 
       <div style="display: flex; gap: 8px">
         <label style="flex: 1; min-width: 0; height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 10px; background: #F1F0EC; color: #5F5F64">
           <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">search</span>
-          <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search notes in this folder</span>
+          <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.searchLabel}}</span>
           <input type="search" value="{{search}}" onChange="{{onSearch}}" placeholder="{{searchPlaceholder}}" style="flex: 1; min-width: 0; height: 100%; border: 0; outline: none; background: transparent; font: inherit; color: #1C1C1E">
         </label>
-        <button type="button" aria-label="New note" onClick="{{startNewNote}}" style="width: 44px; height: 44px; flex-shrink: 0; border: 0; border-radius: 10px; background: {{accent}}; color: #1C1C1E; display: flex; align-items: center; justify-content: center; cursor: pointer">
+        <button type="button" aria-label="{{t.notes.new}}" onClick="{{startNewNote}}" style="width: 44px; height: 44px; flex-shrink: 0; border: 0; border-radius: 10px; background: {{accent}}; color: #1C1C1E; display: flex; align-items: center; justify-content: center; cursor: pointer">
           <span class="material-symbols-outlined" aria-hidden="true">add</span>
         </button>
       </div>
@@ -183,21 +193,21 @@ body{margin:0}
         <sc-if value="{{newNoteOpen}}" hint-placeholder-val="{{false}}">
           <div style="margin: 10px 0; display: flex; flex-direction: column; gap: 6px; padding: 12px 12px 8px 14px; border-radius: 12px; border: 1.5px solid {{accent}}; background: #FFFDF7">
             <label>
-              <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Title (optional)</span>
-              <input type="text" value="{{noteTitle}}" onChange="{{onNoteTitle}}" onKeyDown="{{onNoteTitleKey}}" maxLength="{{200}}" placeholder="Title (optional)" style="width: 100%; box-sizing: border-box; border: 0; outline: none; background: transparent; font: inherit; font-size: 16px; font-weight: 600; color: #1C1C1E; padding: 4px 0">
+              <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.titlePlaceholder}}</span>
+              <input type="text" value="{{noteTitle}}" onChange="{{onNoteTitle}}" onKeyDown="{{onNoteTitleKey}}" maxLength="{{200}}" placeholder="{{t.notes.titlePlaceholder}}" style="width: 100%; box-sizing: border-box; border: 0; outline: none; background: transparent; font: inherit; font-size: 16px; font-weight: 600; color: #1C1C1E; padding: 4px 0">
             </label>
             <label>
-              <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Note text</span>
-              <textarea value="{{noteText}}" onChange="{{onNoteText}}" onKeyDown="{{onNoteTextKey}}" maxLength="{{1000}}" rows="3" autoFocus="{{true}}" placeholder="Write a note…" style="width: 100%; box-sizing: border-box; border: 0; outline: none; background: transparent; font: inherit; color: #1C1C1E; padding: 2px 0; resize: vertical"></textarea>
+              <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.textLabel}}</span>
+              <textarea value="{{noteText}}" onChange="{{onNoteText}}" onKeyDown="{{onNoteTextKey}}" maxLength="{{1000}}" rows="3" autoFocus="{{true}}" placeholder="{{t.notes.textPlaceholder}}" style="width: 100%; box-sizing: border-box; border: 0; outline: none; background: transparent; font: inherit; color: #1C1C1E; padding: 2px 0; resize: vertical"></textarea>
             </label>
             <div style="display: flex; align-items: center; gap: 6px">
               <span style="font-size: 12px; color: #5F5F64">{{noteCount}}</span>
-              <span style="font-size: 12px; color: #5F5F64; display: {{hintDisplay}}">· Ctrl/⌘+Enter to save · Esc to cancel</span>
+              <span style="font-size: 12px; color: #5F5F64; display: {{hintDisplay}}">· {{t.notes.shortcuts}}</span>
               <span style="flex: 1"></span>
-              <button type="button" aria-label="Cancel" onClick="{{cancelNote}}" style="width: 40px; height: 40px; border: 0; border-radius: 9px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
+              <button type="button" aria-label="{{t.common.cancel}}" onClick="{{cancelNote}}" style="width: 40px; height: 40px; border: 0; border-radius: 9px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
                 <span class="material-symbols-outlined" aria-hidden="true">close</span>
               </button>
-              <button type="button" aria-label="Save note" onClick="{{submitNote}}" disabled="{{noteSubmitDisabled}}" style="width: 40px; height: 40px; border: 0; border-radius: 9px; background: {{accent}}; color: #1C1C1E; opacity: {{noteSubmitOpacity}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+              <button type="button" aria-label="{{t.notes.save}}" onClick="{{submitNote}}" disabled="{{noteSubmitDisabled}}" style="width: 40px; height: 40px; border: 0; border-radius: 9px; background: {{accent}}; color: #1C1C1E; opacity: {{noteSubmitOpacity}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
                 <span class="material-symbols-outlined" aria-hidden="true">check</span>
               </button>
             </div>
@@ -208,21 +218,21 @@ body{margin:0}
           <sc-if value="{{n.editing}}" hint-placeholder-val="{{false}}">
             <div style="margin: 10px 0; display: flex; flex-direction: column; gap: 6px; padding: 12px 12px 8px 14px; border-radius: 12px; border: 1.5px solid {{accent}}; background: #FFFDF7">
               <label>
-                <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Title (optional)</span>
-                <input type="text" value="{{noteTitle}}" onChange="{{onNoteTitle}}" onKeyDown="{{onNoteTitleKey}}" maxLength="{{200}}" placeholder="Title (optional)" style="width: 100%; box-sizing: border-box; border: 0; outline: none; background: transparent; font: inherit; font-size: 16px; font-weight: 600; color: #1C1C1E; padding: 4px 0">
+                <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.titlePlaceholder}}</span>
+                <input type="text" value="{{noteTitle}}" onChange="{{onNoteTitle}}" onKeyDown="{{onNoteTitleKey}}" maxLength="{{200}}" placeholder="{{t.notes.titlePlaceholder}}" style="width: 100%; box-sizing: border-box; border: 0; outline: none; background: transparent; font: inherit; font-size: 16px; font-weight: 600; color: #1C1C1E; padding: 4px 0">
               </label>
               <label>
-                <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Note text</span>
-                <textarea value="{{noteText}}" onChange="{{onNoteText}}" onKeyDown="{{onNoteTextKey}}" maxLength="{{1000}}" rows="3" autoFocus="{{true}}" placeholder="Write a note…" style="width: 100%; box-sizing: border-box; border: 0; outline: none; background: transparent; font: inherit; color: #1C1C1E; padding: 2px 0; resize: vertical"></textarea>
+                <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.textLabel}}</span>
+                <textarea value="{{noteText}}" onChange="{{onNoteText}}" onKeyDown="{{onNoteTextKey}}" maxLength="{{1000}}" rows="3" autoFocus="{{true}}" placeholder="{{t.notes.textPlaceholder}}" style="width: 100%; box-sizing: border-box; border: 0; outline: none; background: transparent; font: inherit; color: #1C1C1E; padding: 2px 0; resize: vertical"></textarea>
               </label>
               <div style="display: flex; align-items: center; gap: 6px">
                 <span style="font-size: 12px; color: #5F5F64">{{noteCount}}</span>
-                <span style="font-size: 12px; color: #5F5F64; display: {{hintDisplay}}">· Ctrl/⌘+Enter to save · Esc to cancel</span>
+                <span style="font-size: 12px; color: #5F5F64; display: {{hintDisplay}}">· {{t.notes.shortcuts}}</span>
                 <span style="flex: 1"></span>
-                <button type="button" aria-label="Cancel" onClick="{{cancelNote}}" style="width: 40px; height: 40px; border: 0; border-radius: 9px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
+                <button type="button" aria-label="{{t.common.cancel}}" onClick="{{cancelNote}}" style="width: 40px; height: 40px; border: 0; border-radius: 9px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
                   <span class="material-symbols-outlined" aria-hidden="true">close</span>
                 </button>
-                <button type="button" aria-label="Save note" onClick="{{submitNote}}" disabled="{{noteSubmitDisabled}}" style="width: 40px; height: 40px; border: 0; border-radius: 9px; background: {{accent}}; color: #1C1C1E; opacity: {{noteSubmitOpacity}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+                <button type="button" aria-label="{{t.notes.save}}" onClick="{{submitNote}}" disabled="{{noteSubmitDisabled}}" style="width: 40px; height: 40px; border: 0; border-radius: 9px; background: {{accent}}; color: #1C1C1E; opacity: {{noteSubmitOpacity}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
                   <span class="material-symbols-outlined" aria-hidden="true">check</span>
                 </button>
               </div>
@@ -239,7 +249,7 @@ body{margin:0}
                 </sc-if>
                 <span style="white-space: pre-wrap; overflow-wrap: anywhere; text-decoration: {{n.deco}}">{{n.text}}</span>
               </button>
-              <button type="button" aria-label="Delete note" onClick="{{n.del}}" style="width: 36px; height: 36px; flex-shrink: 0; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
+              <button type="button" aria-label="{{t.notes.delete}}" onClick="{{n.del}}" style="width: 36px; height: 36px; flex-shrink: 0; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
                 <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">delete</span>
               </button>
             </div>
@@ -250,14 +260,14 @@ body{margin:0}
           <div style="padding: 56px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; color: #5F5F64">
             <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 40px; color: #B8B6AF">note_stack</span>
             <p style="margin: 0; font-weight: 600; color: #1C1C1E">{{emptyTitle}}</p>
-            <p style="margin: 0; font-size: 14px">Tap + to add your first note.</p>
+            <p style="margin: 0; font-size: 14px">{{t.notes.emptyHint}}</p>
           </div>
         </sc-if>
         <sc-if value="{{showNoMatch}}" hint-placeholder-val="{{false}}">
           <div style="padding: 56px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; color: #5F5F64">
             <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 40px; color: #B8B6AF">search_off</span>
             <p style="margin: 0; font-weight: 600; color: #1C1C1E">{{noMatchTitle}}</p>
-            <p style="margin: 0; font-size: 14px">Search looks at titles and text in this folder only.</p>
+            <p style="margin: 0; font-size: 14px">{{t.notes.noMatchHint}}</p>
           </div>
         </sc-if>
       </div>
@@ -292,19 +302,203 @@ body{margin:0}
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"preset":{"editor":"enum","default":"login","options":["login","app","guest","desktop-editing","delete-folder","move-guest-data","mobile-drawer","new-note","empty"],"section":"Start state"},"accent":{"editor":"color","default":"#F59E0B","options":["#F59E0B","#FBBF24","#FB923C"]},"$preview":{"width":1280,"height":800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"preset":{"editor":"enum","default":"login","options":["login","app","guest","desktop-editing","delete-folder","move-guest-data","mobile-drawer","new-note","empty"],"section":"Start state"},"lang":{"editor":"enum","default":"en","options":["en","uk"],"section":"Start state"},"accent":{"editor":"color","default":"#F59E0B","options":["#F59E0B","#FBBF24","#FB923C"]},"$preview":{"width":1280,"height":800}}'>
+/* I18N:BEGIN */
+var I18N = {
+  "en": {
+    "app": {
+      "name": "Notes"
+    },
+    "lang": {
+      "label": "Language",
+      "en": "EN",
+      "uk": "UA"
+    },
+    "common": {
+      "cancel": "Cancel",
+      "dismiss": "Dismiss"
+    },
+    "login": {
+      "tagline": "Short notes in folders. Works offline on your phone and computer.",
+      "signInGoogle": "Sign in with Google",
+      "continueGuest": "Continue as guest",
+      "guestHint": "Guest notes stay on this device. You can move them to your Google account later."
+    },
+    "header": {
+      "guestOnDevice": "Guest · on this device",
+      "signIn": "Sign in",
+      "signInGoogle": "Sign in with Google",
+      "signOut": "Sign out",
+      "openFolders": "Open folders",
+      "closeFolders": "Close folders"
+    },
+    "folders": {
+      "title": "Folders",
+      "new": "New folder",
+      "name": "Folder name",
+      "create": "Create folder",
+      "saveName": "Save folder name",
+      "rename": "Rename folder",
+      "delete": "Delete folder",
+      "defaultLocked": "The default folder can't be deleted",
+      "defaultName": "General",
+      "errors": {
+        "required": "Enter a folder name",
+        "maxLength": "Use 50 characters or fewer",
+        "taken": "A folder with this name already exists"
+      }
+    },
+    "notes": {
+      "count": "Notes: {{count}}",
+      "completed": "Completed: {{count}}",
+      "searchLabel": "Search notes in this folder",
+      "searchIn": "Search in {{folder}}",
+      "new": "New note",
+      "titlePlaceholder": "Title (optional)",
+      "textLabel": "Note text",
+      "textPlaceholder": "Write a note…",
+      "shortcuts": "Ctrl/⌘+Enter to save · Esc to cancel",
+      "save": "Save note",
+      "markCompleted": "Mark as completed: {{note}}",
+      "markNotCompleted": "Mark as not completed: {{note}}",
+      "edit": "Edit note: {{note}}",
+      "delete": "Delete note",
+      "emptyTitle": "No notes in {{folder}} yet",
+      "emptyHint": "Tap + to add your first note.",
+      "noMatchTitle": "No notes match “{{query}}”",
+      "noMatchHint": "Search looks at titles and text in this folder only."
+    },
+    "dialogs": {
+      "deleteFolder": {
+        "title": "Delete “{{folder}}”?",
+        "body": "The folder and all its notes (notes: {{count}}) will be deleted. This can't be undone.",
+        "bodyEmpty": "This empty folder will be deleted.",
+        "confirm": "Delete folder"
+      },
+      "deleteNote": {
+        "title": "Delete this note?",
+        "body": "“{{note}}” will be deleted. This can't be undone.",
+        "confirm": "Delete note"
+      },
+      "moveGuestData": {
+        "title": "Move guest notes to your account?",
+        "body": "From guest mode on this device: folders: {{folders}}, notes: {{notes}}. Folders with the same name are merged and duplicate notes are skipped. After moving, the guest copy is removed from this device.",
+        "mergesInto": "merges into “{{folder}}”",
+        "newFolder": "new folder",
+        "skip": "Not now",
+        "confirm": "Move to account",
+        "done": "Moved to your account. Notes added: {{added}}, duplicates skipped: {{skipped}}, folders created: {{created}}, folders merged: {{merged}}."
+      }
+    }
+  },
+  "uk": {
+    "app": {
+      "name": "Нотатки"
+    },
+    "lang": {
+      "label": "Мова",
+      "en": "EN",
+      "uk": "UA"
+    },
+    "common": {
+      "cancel": "Скасувати",
+      "dismiss": "Закрити"
+    },
+    "login": {
+      "tagline": "Короткі нотатки в папках. Працює офлайн на телефоні й комп'ютері.",
+      "signInGoogle": "Увійти через Google",
+      "continueGuest": "Продовжити як гість",
+      "guestHint": "Нотатки гостя зберігаються лише на цьому пристрої. Пізніше їх можна перенести в обліковий запис Google."
+    },
+    "header": {
+      "guestOnDevice": "Гість · на цьому пристрої",
+      "signIn": "Увійти",
+      "signInGoogle": "Увійти через Google",
+      "signOut": "Вийти",
+      "openFolders": "Відкрити папки",
+      "closeFolders": "Закрити папки"
+    },
+    "folders": {
+      "title": "Папки",
+      "new": "Нова папка",
+      "name": "Назва папки",
+      "create": "Створити папку",
+      "saveName": "Зберегти назву папки",
+      "rename": "Перейменувати папку",
+      "delete": "Видалити папку",
+      "defaultLocked": "Основну папку не можна видалити",
+      "defaultName": "Загальне",
+      "errors": {
+        "required": "Введіть назву папки",
+        "maxLength": "Не більше 50 символів",
+        "taken": "Папка з такою назвою вже існує"
+      }
+    },
+    "notes": {
+      "count": "Нотаток: {{count}}",
+      "completed": "Виконано: {{count}}",
+      "searchLabel": "Пошук нотаток у цій папці",
+      "searchIn": "Пошук у «{{folder}}»",
+      "new": "Нова нотатка",
+      "titlePlaceholder": "Заголовок (необов'язково)",
+      "textLabel": "Текст нотатки",
+      "textPlaceholder": "Напишіть нотатку…",
+      "shortcuts": "Ctrl/⌘+Enter — зберегти · Esc — скасувати",
+      "save": "Зберегти нотатку",
+      "markCompleted": "Позначити виконаною: {{note}}",
+      "markNotCompleted": "Зняти позначку виконання: {{note}}",
+      "edit": "Редагувати нотатку: {{note}}",
+      "delete": "Видалити нотатку",
+      "emptyTitle": "У «{{folder}}» ще немає нотаток",
+      "emptyHint": "Натисніть +, щоб додати першу нотатку.",
+      "noMatchTitle": "Немає нотаток за запитом «{{query}}»",
+      "noMatchHint": "Пошук лише за заголовками й текстом у цій папці."
+    },
+    "dialogs": {
+      "deleteFolder": {
+        "title": "Видалити «{{folder}}»?",
+        "body": "Папку й усі її нотатки (нотаток: {{count}}) буде видалено. Цю дію не можна скасувати.",
+        "bodyEmpty": "Цю порожню папку буде видалено.",
+        "confirm": "Видалити папку"
+      },
+      "deleteNote": {
+        "title": "Видалити цю нотатку?",
+        "body": "«{{note}}» буде видалено. Цю дію не можна скасувати.",
+        "confirm": "Видалити нотатку"
+      },
+      "moveGuestData": {
+        "title": "Перенести нотатки гостя в обліковий запис?",
+        "body": "З режиму гостя на цьому пристрої: папок: {{folders}}, нотаток: {{notes}}. Папки з однаковою назвою об'єднуються, а дублікати нотаток пропускаються. Після перенесення копію гостя буде видалено з цього пристрою.",
+        "mergesInto": "об'єднається з «{{folder}}»",
+        "newFolder": "нова папка",
+        "skip": "Не зараз",
+        "confirm": "Перенести",
+        "done": "Перенесено в обліковий запис. Додано нотаток: {{added}}, пропущено дублікатів: {{skipped}}, створено папок: {{created}}, об'єднано папок: {{merged}}."
+      }
+    }
+  }
+};
+/* I18N:END */
+
 var DAY = 86400000;
 var T0 = Date.parse('2026-10-01T09:00:00Z');
 function uid() { return Math.random().toString(36).slice(2, 10); }
 function norm(s) { return (s || '').trim().toLowerCase(); }
 function byCreatedAsc(a, b) { return a.createdAt - b.createdAt; }
 
+// ngx-translate style lookup: nested keys + {{param}} interpolation.
+function translate(lang, key, params) {
+  var v = key.split('.').reduce(function (o, k) { return o && o[k]; }, I18N[lang]);
+  if (typeof v !== 'string') return key;
+  return v.replace(/\{\{\s*(\w+)\s*\}\}/g, function (_, p) { return params && params[p] != null ? params[p] : ''; });
+}
+
 function seedGuest() {
   return {
     folders: [
-      { id: 'g-gen', name: 'General', createdAt: T0 },
-      { id: 'g-shop', name: 'Shopping', createdAt: T0 + DAY },
-      { id: 'g-work', name: 'work ', createdAt: T0 + 2 * DAY }
+      { id: 'g-gen', name: 'General', isDefault: true, createdAt: T0 },
+      { id: 'g-shop', name: 'Shopping', isDefault: false, createdAt: T0 + DAY },
+      { id: 'g-work', name: 'work ', isDefault: false, createdAt: T0 + 2 * DAY }
     ],
     notes: [
       { id: 'gn1', folderId: 'g-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, createdAt: T0 + 3 * DAY },
@@ -318,9 +512,9 @@ function seedGuest() {
 function seedAccount() {
   return {
     folders: [
-      { id: 'acc-gen', name: 'General', createdAt: T0 - 30 * DAY },
-      { id: 'acc-work', name: 'Work', createdAt: T0 - 20 * DAY },
-      { id: 'acc-travel', name: 'Travel', createdAt: T0 - 10 * DAY }
+      { id: 'acc-gen', name: 'General', isDefault: true, createdAt: T0 - 30 * DAY },
+      { id: 'acc-work', name: 'Work', isDefault: false, createdAt: T0 - 20 * DAY },
+      { id: 'acc-travel', name: 'Travel', isDefault: false, createdAt: T0 - 10 * DAY }
     ],
     notes: [
       { id: 'an1', folderId: 'acc-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, createdAt: T0 - 2 * DAY },
@@ -333,71 +527,65 @@ function seedAccount() {
   };
 }
 
+// Anything beyond an empty Default folder? (checked by marker, not by name)
 function hasGuestData(g) {
-  return g.notes.length > 0 || g.folders.some(function (f) { return norm(f.name) !== 'general'; });
+  return g.notes.length > 0 || g.folders.some(function (f) { return !f.isDefault; });
 }
 
-function ensureDefault(d) {
+// Default folder is named in the current UI language at creation.
+function ensureDefault(d, lang) {
   if (d.folders.length) return d;
-  return { folders: [{ id: uid(), name: 'General', createdAt: Date.now() }], notes: d.notes };
+  return { folders: [{ id: uid(), name: translate(lang, 'folders.defaultName'), isDefault: true, createdAt: Date.now() }], notes: d.notes };
 }
 
-// Folder merge + Duplicate note rule, same as the planned mergeGuestData().
-function mergeGuestData(guest, account, dryRun) {
+// Folder merge (by name only, defaults included) + Duplicate note rule. ADR-0006.
+function mergeGuestData(guest, account) {
   var folders = account.folders.slice();
   var notes = account.notes.map(function (n) { return Object.assign({}, n); });
   var byKey = {};
   folders.forEach(function (f) { byKey[norm(f.name)] = f; });
   var plan = [];
-  var stats = { created: 0, merged: 0, added: 0, dupes: 0 };
+  var stats = { created: 0, merged: 0, added: 0, skipped: 0 };
   guest.folders.slice().sort(byCreatedAsc).forEach(function (gf) {
     var target = byKey[norm(gf.name)];
-    var guestNotes = guest.notes.filter(function (n) { return n.folderId === gf.id; });
     if (target) {
       stats.merged++;
-      plan.push({ icon: 'merge', from: gf.name.trim(), outcome: 'merges into “' + target.name + '”' });
+      plan.push({ from: gf.name.trim(), merged: true, into: target.name });
     } else {
-      target = { id: uid(), name: gf.name.trim(), createdAt: Date.now() + stats.created };
+      target = { id: uid(), name: gf.name.trim(), isDefault: false, createdAt: Date.now() + stats.created };
       folders.push(target);
       byKey[norm(target.name)] = target;
       stats.created++;
-      plan.push({ icon: 'create_new_folder', from: gf.name.trim(), outcome: 'new folder' });
+      plan.push({ from: gf.name.trim(), merged: false });
     }
-    guestNotes.forEach(function (gn) {
+    guest.notes.filter(function (n) { return n.folderId === gf.id; }).forEach(function (gn) {
       var dup = notes.find(function (n) {
         return n.folderId === target.id && norm(n.title) === norm(gn.title) && norm(n.text) === norm(gn.text);
       });
-      if (dup) {
-        stats.dupes++;
-        if (gn.completed) dup.completed = true;
-      } else {
-        notes.push(Object.assign({}, gn, { id: uid(), folderId: target.id }));
-        stats.added++;
-      }
+      if (dup) { stats.skipped++; if (gn.completed) dup.completed = true; }
+      else { notes.push(Object.assign({}, gn, { id: uid(), folderId: target.id })); stats.added++; }
     });
   });
   return { data: { folders: folders, notes: notes }, plan: plan, stats: stats };
 }
 
-function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
-
 class Component extends DCLogic {
   constructor(...args) {
     super(...args);
-    this.state = this.initState((this.props && this.props.preset) || 'login');
+    var p = this.props || {};
+    this.state = this.initState(p.preset || 'login', p.lang === 'uk' ? 'uk' : 'en');
   }
 
-  initState(preset) {
+  initState(preset, lang) {
     var s = {
-      screen: 'login', mode: null, guest: seedGuest(), account: seedAccount(), sel: null,
+      lang: lang, screen: 'login', mode: null, guest: seedGuest(), account: seedAccount(), sel: null,
       folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false, banner: null,
       w: typeof window !== 'undefined' ? window.innerWidth : 1280
     };
     function open(mode) {
       s.screen = 'app';
       s.mode = mode;
-      var d = mode === 'google' ? s.account : s.guest;
-      s.sel = d.folders.slice().sort(byCreatedAsc)[0].id;
+      s.sel = (mode === 'google' ? s.account : s.guest).folders.slice().sort(byCreatedAsc)[0].id;
     }
     if (preset === 'app') open('google');
     if (preset === 'guest') open('guest');
@@ -405,7 +593,7 @@ class Component extends DCLogic {
       open('google');
       s.sel = 'acc-work';
       s.noteEdit = { id: 'an3', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.' };
-      s.folderForm = { mode: 'new', id: null, value: 'work ', error: 'A folder with this name already exists' };
+      s.folderForm = { mode: 'new', id: null, value: 'work ', error: 'folders.errors.taken' };
     }
     if (preset === 'delete-folder') { open('google'); s.sel = 'acc-work'; s.dialog = { kind: 'deleteFolder', id: 'acc-work' }; }
     if (preset === 'move-guest-data') { open('google'); s.dialog = { kind: 'move' }; }
@@ -413,7 +601,7 @@ class Component extends DCLogic {
     if (preset === 'new-note') { open('guest'); s.noteEdit = { id: 'new', title: '', text: 'Pick up the parcel at the post office' }; }
     if (preset === 'empty') {
       open('google');
-      s.account = { folders: s.account.folders.concat([{ id: 'acc-ideas', name: 'Ideas', createdAt: T0 }]), notes: s.account.notes };
+      s.account = { folders: s.account.folders.concat([{ id: 'acc-ideas', name: 'Ideas', isDefault: false, createdAt: T0 }]), notes: s.account.notes };
       s.sel = 'acc-ideas';
     }
     return s;
@@ -428,6 +616,7 @@ class Component extends DCLogic {
     window.removeEventListener('resize', this.onResize);
   }
 
+  tr(key, params) { return translate(this.state.lang, key, params); }
   key() { return this.state.mode === 'google' ? 'account' : 'guest'; }
   active() { return this.state[this.key()]; }
   setData(fn) {
@@ -442,11 +631,11 @@ class Component extends DCLogic {
 
   // Session
   continueGuest() {
-    var g = ensureDefault(this.state.guest);
+    var g = ensureDefault(this.state.guest, this.state.lang);
     this.setState({ screen: 'app', mode: 'guest', guest: g, sel: g.folders.slice().sort(byCreatedAsc)[0].id, banner: null });
   }
   signIn() {
-    var a = ensureDefault(this.state.account);
+    var a = ensureDefault(this.state.account, this.state.lang);
     this.setState({
       screen: 'app', mode: 'google', account: a, sel: a.folders.slice().sort(byCreatedAsc)[0].id,
       folderForm: null, noteEdit: null, search: '', drawer: false,
@@ -467,12 +656,12 @@ class Component extends DCLogic {
     if (!ff) return;
     var name = ff.value.trim();
     var error = '';
-    if (!name) error = 'Enter a folder name';
-    else if (name.length > 50) error = 'Use 50 characters or fewer';
-    else if (this.active().folders.some((f) => f.id !== ff.id && norm(f.name) === norm(name))) error = 'A folder with this name already exists';
+    if (!name) error = 'folders.errors.required';
+    else if (name.length > 50) error = 'folders.errors.maxLength';
+    else if (this.active().folders.some((f) => f.id !== ff.id && norm(f.name) === norm(name))) error = 'folders.errors.taken';
     if (error) { this.setState({ folderForm: Object.assign({}, ff, { error: error }) }); return; }
     if (ff.mode === 'new') {
-      var f = { id: uid(), name: name, createdAt: Date.now() };
+      var f = { id: uid(), name: name, isDefault: false, createdAt: Date.now() };
       this.setData((d) => ({ folders: d.folders.concat([f]), notes: d.notes }));
       this.setState({ folderForm: null, sel: f.id, search: '', noteEdit: null, drawer: false });
     } else {
@@ -481,9 +670,11 @@ class Component extends DCLogic {
     }
   }
   deleteFolder(id) {
+    var target = this.active().folders.find((f) => f.id === id);
+    if (!target || target.isDefault) return;
     this.setData((d) => ({ folders: d.folders.filter((f) => f.id !== id), notes: d.notes.filter((n) => n.folderId !== id) }));
-    var rest = this.sortedFolders().filter((f) => f.id !== id);
-    this.setState({ dialog: null, sel: rest.length ? rest[0].id : null, noteEdit: null });
+    var def = this.active().folders.find((f) => f.isDefault) || this.sortedFolders()[0];
+    this.setState({ dialog: null, sel: def ? def.id : null, noteEdit: null });
   }
 
   // Notes
@@ -516,24 +707,26 @@ class Component extends DCLogic {
   // Move guest data
   moveGuestData() {
     var r = mergeGuestData(this.state.guest, this.state.account);
-    var st = r.stats;
-    var msg = 'Moved to your account: ' + plural(st.added, 'note', 'notes') + ' added' +
-      (st.dupes ? ', ' + plural(st.dupes, 'duplicate', 'duplicates') + ' skipped' : '') +
-      '. ' + plural(st.created, 'folder', 'folders') + ' created, ' + st.merged + ' merged.';
-    this.setState({ account: r.data, guest: { folders: [], notes: [] }, dialog: null, banner: msg });
+    this.setState({ account: r.data, guest: { folders: [], notes: [] }, dialog: null, banner: r.stats });
   }
 
   renderVals() {
     var s = this.state;
+    var t = I18N[s.lang] || {};
     var accent = this.props.accent ?? '#F59E0B';
     var narrow = s.w < 900;
     var isApp = s.screen === 'app';
+    var isEn = s.lang === 'en';
     var vals = {
-      accent: accent, narrow: narrow, isLogin: !isApp, isApp: isApp,
+      t: t, lang: s.lang, accent: accent, narrow: narrow, wide: !narrow, isLogin: !isApp, isApp: isApp,
       signIn: () => this.signIn(), continueGuest: () => this.continueGuest(), signOut: () => this.signOut(),
+      setEn: () => this.setState({ lang: 'en' }), setUk: () => this.setState({ lang: 'uk' }),
+      enPressed: isEn ? 'true' : 'false', ukPressed: isEn ? 'false' : 'true',
+      enBg: isEn ? '#FEF3C7' : '#FFFFFF', ukBg: isEn ? '#FFFFFF' : '#FEF3C7',
+      enColor: isEn ? '#92400E' : '#5F5F64', ukColor: isEn ? '#5F5F64' : '#92400E',
       isGuest: s.mode === 'guest', isGoogle: s.mode === 'google',
-      guestChip: narrow ? 'Guest' : 'Guest · on this device',
-      signInLabel: narrow ? 'Sign in' : 'Sign in with Google',
+      signInLabel: narrow ? this.tr('header.signIn') : this.tr('header.signInGoogle'),
+      btnPad: narrow ? '10px' : '14px',
       hasDialog: false
     };
     if (!isApp) return vals;
@@ -559,18 +752,18 @@ class Component extends DCLogic {
     vals.submitFolder = () => this.submitFolder();
     vals.newFolderOpen = !!(ff && ff.mode === 'new');
     vals.folderValue = ff ? ff.value : '';
-    vals.folderError = ff ? ff.error : '';
+    vals.folderError = ff && ff.error ? this.tr(ff.error) : '';
     vals.hasFolderError = !!(ff && ff.error);
     vals.onFolderInput = (e) => this.setState({ folderForm: Object.assign({}, s.folderForm, { value: e.target.value, error: '' }) });
     vals.onFolderKey = (e) => {
       if (e.key === 'Enter') { e.preventDefault(); this.submitFolder(); }
       if (e.key === 'Escape') this.cancelFolder();
     };
-    var onlyOne = folders.length <= 1;
     vals.folders = folders.map((f) => {
       var count = d.notes.filter((n) => n.folderId === f.id).length;
       var selected = current && f.id === current.id;
       var renaming = !!(ff && ff.mode === 'rename' && ff.id === f.id);
+      var locked = !!f.isDefault;
       return {
         id: f.id, name: f.name, count: count, selected: selected, renaming: renaming, normal: !renaming,
         current: selected ? 'page' : 'false',
@@ -580,19 +773,20 @@ class Component extends DCLogic {
         pick: () => this.pickFolder(f.id),
         rename: () => this.startRename(f),
         del: () => this.setState({ dialog: { kind: 'deleteFolder', id: f.id } }),
-        deleteDisabled: onlyOne,
-        deleteOpacity: onlyOne ? 0.35 : 1,
-        deleteLabel: onlyOne ? 'You can’t delete the last folder' : 'Delete folder'
+        deleteDisabled: locked,
+        deleteOpacity: locked ? 0.35 : 1,
+        deleteLabel: locked ? this.tr('folders.defaultLocked') : this.tr('folders.delete')
       };
     });
 
     var all = d.notes.filter((n) => current && n.folderId === current.id).sort((a, b) => b.createdAt - a.createdAt);
     var shown = q ? all.filter((n) => norm(n.title).includes(q) || norm(n.text).includes(q)) : all;
     var done = all.filter((n) => n.completed).length;
-    vals.folderName = current ? current.name : '';
-    vals.folderSummary = plural(all.length, 'note', 'notes') + (done ? ' · ' + done + ' completed' : '');
+    var folderName = current ? current.name : '';
+    vals.folderName = folderName;
+    vals.folderSummary = this.tr('notes.count', { count: all.length }) + (done ? ' · ' + this.tr('notes.completed', { count: done }) : '');
     vals.search = s.search;
-    vals.searchPlaceholder = 'Search in ' + (current ? current.name : 'folder');
+    vals.searchPlaceholder = this.tr('notes.searchIn', { folder: folderName });
     vals.onSearch = (e) => this.setState({ search: e.target.value });
     vals.startNewNote = () => this.startNewNote();
     vals.cancelNote = () => this.cancelNote();
@@ -615,25 +809,26 @@ class Component extends DCLogic {
     };
     vals.notes = shown.map((n) => {
       var editing = !!(ne && ne.id === n.id);
+      var label = n.title || n.text.slice(0, 40);
       return {
         id: n.id, title: n.title, text: n.text, hasTitle: !!n.title, completed: n.completed,
         editing: editing, normal: !editing,
         deco: n.completed ? 'line-through' : 'none',
         color: n.completed ? '#6B6B70' : '#1C1C1E',
-        checkLabel: (n.completed ? 'Mark as not completed: ' : 'Mark as completed: ') + (n.title || n.text.slice(0, 40)),
-        editLabel: 'Edit note: ' + (n.title || n.text.slice(0, 40)),
+        checkLabel: this.tr(n.completed ? 'notes.markNotCompleted' : 'notes.markCompleted', { note: label }),
+        editLabel: this.tr('notes.edit', { note: label }),
         toggle: () => this.toggleNote(n.id),
         edit: () => this.startEdit(n),
         del: () => this.setState({ dialog: { kind: 'deleteNote', id: n.id } })
       };
     });
     vals.showEmpty = all.length === 0 && !vals.newNoteOpen;
-    vals.emptyTitle = 'No notes in ' + vals.folderName + ' yet';
+    vals.emptyTitle = this.tr('notes.emptyTitle', { folder: folderName });
     vals.showNoMatch = all.length > 0 && shown.length === 0;
-    vals.noMatchTitle = 'No notes match “' + s.search.trim() + '”';
+    vals.noMatchTitle = this.tr('notes.noMatchTitle', { query: s.search.trim() });
 
     vals.hasBanner = !!s.banner;
-    vals.banner = s.banner || '';
+    vals.banner = s.banner ? this.tr('dialogs.moveGuestData.done', s.banner) : '';
     vals.dismissBanner = () => this.setState({ banner: null });
 
     var dlg = s.dialog;
@@ -641,33 +836,35 @@ class Component extends DCLogic {
     vals.isMoveDialog = !!(dlg && dlg.kind === 'move');
     vals.movePlan = [];
     vals.dialogCancel = () => this.setState({ dialog: null });
-    vals.dialogCancelLabel = 'Cancel';
+    vals.dialogCancelLabel = this.tr('common.cancel');
     vals.dialogConfirmBg = '#B91C1C';
     vals.dialogConfirmColor = '#FFFFFF';
     if (dlg && dlg.kind === 'deleteFolder') {
       var df = d.folders.find((f) => f.id === dlg.id) || { name: '' };
       var dn = d.notes.filter((n) => n.folderId === dlg.id).length;
-      vals.dialogTitle = 'Delete “' + df.name + '”?';
-      vals.dialogBody = dn ? 'The folder and its ' + plural(dn, 'note', 'notes') + ' will be deleted. This can’t be undone.' : 'This empty folder will be deleted.';
-      vals.dialogConfirmLabel = 'Delete folder';
+      vals.dialogTitle = this.tr('dialogs.deleteFolder.title', { folder: df.name });
+      vals.dialogBody = dn ? this.tr('dialogs.deleteFolder.body', { count: dn }) : this.tr('dialogs.deleteFolder.bodyEmpty');
+      vals.dialogConfirmLabel = this.tr('dialogs.deleteFolder.confirm');
       vals.dialogConfirm = () => this.deleteFolder(dlg.id);
     }
     if (dlg && dlg.kind === 'deleteNote') {
       var dnote = d.notes.find((n) => n.id === dlg.id) || { title: '', text: '' };
-      vals.dialogTitle = 'Delete this note?';
-      vals.dialogBody = '“' + (dnote.title || dnote.text.slice(0, 60)) + '” will be deleted. This can’t be undone.';
-      vals.dialogConfirmLabel = 'Delete note';
+      vals.dialogTitle = this.tr('dialogs.deleteNote.title');
+      vals.dialogBody = this.tr('dialogs.deleteNote.body', { note: dnote.title || dnote.text.slice(0, 60) });
+      vals.dialogConfirmLabel = this.tr('dialogs.deleteNote.confirm');
       vals.dialogConfirm = () => this.deleteNote(dlg.id);
     }
     if (dlg && dlg.kind === 'move') {
       var g = s.guest;
-      var preview = mergeGuestData(g, s.account, true);
-      vals.dialogTitle = 'Move guest notes to your account?';
-      vals.dialogBody = 'This device has ' + plural(g.folders.length, 'folder', 'folders') + ' and ' + plural(g.notes.length, 'note', 'notes') +
-        ' from guest mode. Folders with the same name are merged and duplicate notes are skipped. After moving, the guest copy is removed from this device.';
-      vals.movePlan = preview.plan;
-      vals.dialogCancelLabel = 'Not now';
-      vals.dialogConfirmLabel = 'Move to account';
+      vals.dialogTitle = this.tr('dialogs.moveGuestData.title');
+      vals.dialogBody = this.tr('dialogs.moveGuestData.body', { folders: g.folders.length, notes: g.notes.length });
+      vals.movePlan = mergeGuestData(g, s.account).plan.map((m) => ({
+        icon: m.merged ? 'merge' : 'create_new_folder',
+        from: m.from,
+        outcome: m.merged ? this.tr('dialogs.moveGuestData.mergesInto', { folder: m.into }) : this.tr('dialogs.moveGuestData.newFolder')
+      }));
+      vals.dialogCancelLabel = this.tr('dialogs.moveGuestData.skip');
+      vals.dialogConfirmLabel = this.tr('dialogs.moveGuestData.confirm');
       vals.dialogConfirmBg = accent;
       vals.dialogConfirmColor = '#1C1C1E';
       vals.dialogConfirm = () => this.moveGuestData();
