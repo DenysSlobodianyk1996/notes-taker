@@ -3,7 +3,15 @@
 A clickable Claude Design prototype of every flow, made **before any code**. It needs approval before `/to-spec` (plan step 1).
 
 - **Claude Design canvas:** <https://claude.ai/artifact/TXP1WiDr5cb8hvjZvpV68G> (private; share it from the page's Share menu)
-- **Local copy:** [`project/`](project/). `canvas.json` is the canvas layout, and each `*.dc.html` file is one artboard.
+- **Standalone HTML:** [`notes-taker-design.html`](notes-taker-design.html). Open it in any browser by double-clicking; it needs internet for Vue and the icon font. It's the same prototype, with a toolbar for:
+  - **Start state:** jump to any screen below
+  - **Desktop / Phone:** a 390×844 phone frame
+  - **Reset**
+
+  Deep links work too: `notes-taker-design.html?state=move-guest-data&view=phone`.
+- **Canvas source:** [`project/`](project/). `canvas.json` is the canvas layout, and each `*.dc.html` file is one artboard. These files only render inside Claude Design.
+
+Both copies are throwaway prototype code (Vue in the HTML file, Design Components on the canvas). The real app is Angular; see [../plan.md](../plan.md).
 
 ## Look
 
@@ -38,7 +46,16 @@ Minimal and light, in the style of Apple Notes:
 | `Mobile-NewNote` | new-note row at the top of the list (guest) |
 | `Mobile-Empty` | empty folder state |
 
-The other artboards all reuse `Main`, opened at a fixed starting state (its `preset` prop).
+The other artboards all reuse `Main`, opened at a fixed starting state (its `preset` prop). In the standalone HTML, the same states are the **Start state** options, with `?state=` values `login`, `guest`, `app`, `desktop-editing`, `delete-folder`, `move-guest-data`, `mobile-drawer`, `new-note` and `empty`.
+
+## Sample data
+
+| Side | Folders | Notes |
+| --- | --- | --- |
+| Guest (this device) | General, Shopping, "work " | 4 notes; "Call dentist" and "Standup" also exist in the account |
+| Account (Google) | General, Work, Travel | 6 notes |
+
+Moving guest data gives: 1 folder created (Shopping), 2 merged (General, "work " → Work), 2 notes added, 2 duplicates skipped. "Standup" ends up completed, because the guest copy was.
 
 ## Behaviour the prototype pins down
 

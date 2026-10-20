@@ -120,6 +120,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
      - empty states
      - the move-guest-data dialog with a merge example
    - Save the link and a local export to `docs/design/` (`README.md` plus the HTML).
+   - ✅ Done: canvas <https://claude.ai/artifact/TXP1WiDr5cb8hvjZvpV68G>, local `docs/design/project/` and the standalone `docs/design/notes-taker-design.html`.
    - **Get user approval** before step 2.
 2. `/to-spec` → `.scratch/notes-app/spec.md`; `/to-tickets` → `.scratch/notes-app/issues/NN-*.md` with blocking edges.
 3. **Tickets, in rough order:**
