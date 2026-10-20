@@ -6,7 +6,7 @@ An Angular 22 PWA for notes grouped into folders. It works as a Guest (IndexedDB
 - Glossary: `CONTEXT.md`. Use its terms (Folder, Note, Guest, Account, Move guest data…) in code, tests and tickets.
 - Decisions: `docs/adr/`
 - Setup: `docs/setup/firebase.md` and `docs/setup/deploy.md`
-- Design: `docs/design/`
+- Design: `docs/design/`. This is the source of truth for UI and flows: `notes-taker-design.html` is the standalone prototype, `project/` is the Claude Design canvas source, and the canvas link is in `docs/design/README.md`.
 
 ## Workflow
 

@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notes Taker Design</title>
+<!--
+  Standalone copy of the Claude Design prototype:
+  https://claude.ai/artifact/TXP1WiDr5cb8hvjZvpV68G
+  Open this file in a browser (needs internet for Vue + Material Symbols).
+  Throwaway prototype code: the real app is Angular (see docs/plan.md).
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+<script src="https://unpkg.com/vue@3.4.21/dist/vue.global.prod.js"></script>
+<style>
+  :root {
+    --accent: #F59E0B;
+    --accent-soft: #FEF3C7;
+    --accent-ink: #92400E;
+    --text: #1C1C1E;
+    --muted: #5F5F64;
+    --sidebar: #F7F6F3;
+    --chip: #F1F0EC;
+    --border: #E5E4E0;
+    --divider: #ECEBE7;
+    --danger: #B91C1C;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: #E9E8E4;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+  [v-cloak] { display: none; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  input, textarea { font: inherit; color: var(--text); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 20px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; direction: ltr; -webkit-font-smoothing: antialiased; }
+
+  /* Preview toolbar (not part of the app) */
+  .pv { position: sticky; top: 0; z-index: 100; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 8px 16px; background: #1C1C1E; color: #F2F2F2; font-size: 13px; }
+  .pv strong { font-weight: 700; margin-right: 4px; }
+  .pv label { display: flex; align-items: center; gap: 6px; }
+  .pv select, .pv button { height: 32px; border-radius: 8px; border: 1px solid #48484C; background: #2C2C2E; color: #F2F2F2; padding: 0 10px; }
+  .pv .seg { display: inline-flex; border: 1px solid #48484C; border-radius: 8px; overflow: hidden; }
+  .pv .seg button { border: 0; border-radius: 0; }
+  .pv .seg button[aria-pressed="true"] { background: var(--accent); color: var(--text); font-weight: 600; }
+  .pv a { color: #FCD34D; }
+  .pv .grow { flex: 1; }
+
+  .stage { min-height: calc(100vh - 48px); display: flex; }
+  .stage.phone { align-items: flex-start; justify-content: center; padding: 24px 16px; }
+  .frame { position: relative; flex: 1; display: flex; flex-direction: column; background: #FFFFFF; overflow: hidden; }
+  .stage.desktop .frame { min-height: calc(100vh - 48px); }
+  .stage.phone .frame { flex: 0 0 auto; width: 390px; max-width: 100%; height: 844px; border-radius: 28px; box-shadow: 0 0 0 10px #1C1C1E, 0 30px 60px rgba(0,0,0,.25); }
+
+  /* App */
+  .login { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px 16px; background: var(--sidebar); }
+  .login-card { width: 100%; max-width: 380px; background: #FFF; border: 1px solid var(--border); border-radius: 16px; padding: 40px 28px 28px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+  .logo { width: 56px; height: 56px; border-radius: 14px; background: var(--accent); display: flex; align-items: center; justify-content: center; }
+  .logo .ms { font-size: 32px; }
+  .login h1 { margin: 0; font-size: 26px; }
+  .muted { color: var(--muted); }
+  .login-actions { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .btn-lg { height: 48px; border-radius: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .btn-outline { border: 1px solid #D4D3CE; background: #FFF; }
+  .btn-soft { border: 0; background: var(--chip); }
+
+  header.top { height: 56px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 16px; border-bottom: 1px solid var(--border); background: #FFF; }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 17px; }
+  .brand-mark { width: 28px; height: 28px; border-radius: 7px; background: var(--accent); display: flex; align-items: center; justify-content: center; }
+  .brand-mark .ms { font-size: 18px; }
+  .icon-btn { width: 44px; height: 44px; border: 0; background: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .icon-btn.sm { width: 36px; height: 36px; border-radius: 8px; }
+  .chip { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); padding: 4px 10px; border-radius: 999px; background: var(--chip); }
+  .chip .ms { font-size: 16px; }
+  .btn { height: 40px; padding: 0 14px; border-radius: 10px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .btn .ms { font-size: 18px; }
+  .btn-ghost { border: 0; background: none; color: var(--muted); }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; }
+
+  .body { flex: 1; display: flex; position: relative; min-height: 0; }
+  .backdrop { position: absolute; inset: 0; z-index: 10; border: 0; padding: 0; background: rgba(28,28,30,.32); }
+  nav.folders { width: 288px; max-width: 85%; flex-shrink: 0; display: flex; flex-direction: column; gap: 4px; padding: 16px 12px; background: var(--sidebar); border-right: 1px solid var(--border); overflow-y: auto; }
+  nav.folders.drawer { position: absolute; top: 0; left: 0; bottom: 0; z-index: 20; box-shadow: 0 10px 40px rgba(0,0,0,.18); }
+  .folders-head { display: flex; align-items: center; justify-content: space-between; padding: 0 4px 8px 8px; }
+  .folders-head h2 { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .add-folder { width: 36px; height: 36px; border: 0; border-radius: 9px; background: #EDEBE6; display: flex; align-items: center; justify-content: center; }
+  .folder-form { display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 10px; background: #FFF; border: 1.5px solid var(--accent); }
+  .row { display: flex; align-items: center; gap: 4px; }
+  .folder-form input { flex: 1; min-width: 0; height: 36px; border: 0; outline: none; background: transparent; padding: 0 6px; }
+  .ok { background: var(--accent); }
+  .err { margin: 0; padding: 0 6px; font-size: 13px; color: var(--danger); }
+  .folder { display: flex; align-items: center; border-radius: 10px; }
+  .folder.sel { background: var(--accent-soft); }
+  .folder-pick { flex: 1; min-width: 0; height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 8px 0 10px; border: 0; background: none; text-align: left; }
+  .folder-pick .ms { color: #8A8880; }
+  .folder.sel .folder-pick { font-weight: 600; }
+  .folder.sel .folder-pick .ms { color: var(--accent-ink); }
+  .folder-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .count { font-size: 13px; color: var(--muted); font-weight: 400; }
+  .folder .icon-btn { color: var(--muted); }
+  .folder .icon-btn:disabled { opacity: .35; }
+
+  main.notes { flex: 1; min-width: 0; padding: 32px 40px; overflow-y: auto; }
+  .narrow main.notes { padding: 16px; }
+  .col { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+  .banner { display: flex; align-items: flex-start; gap: 10px; padding: 12px 12px 12px 14px; border-radius: 12px; background: var(--accent-soft); color: #78350F; }
+  .banner p { flex: 1; margin: 0; font-size: 14px; }
+  .title h1 { margin: 0; font-size: 26px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .title p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+  .tools { display: flex; gap: 8px; }
+  .search { flex: 1; min-width: 0; height: 44px; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 10px; background: var(--chip); color: var(--muted); }
+  .search input { flex: 1; min-width: 0; height: 100%; border: 0; outline: none; background: transparent; }
+  .add-note { width: 44px; height: 44px; flex-shrink: 0; border: 0; border-radius: 10px; background: var(--accent); display: flex; align-items: center; justify-content: center; }
+  .list { display: flex; flex-direction: column; border-top: 1px solid var(--divider); }
+  .note-form { margin: 10px 0; display: flex; flex-direction: column; gap: 6px; padding: 12px 12px 8px 14px; border-radius: 12px; border: 1.5px solid var(--accent); background: #FFFDF7; }
+  .note-form input { width: 100%; border: 0; outline: none; background: transparent; font-size: 16px; font-weight: 600; padding: 4px 0; }
+  .note-form textarea { width: 100%; border: 0; outline: none; background: transparent; padding: 2px 0; resize: vertical; }
+  .note-form .foot { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+  .note-form .foot .grow { flex: 1; }
+  .note-form .icon-btn { width: 40px; height: 40px; border-radius: 9px; }
+  .note-form .ok:disabled { opacity: .4; }
+  .note { display: flex; align-items: flex-start; gap: 12px; padding: 12px 4px 12px 6px; border-bottom: 1px solid var(--divider); }
+  .check { width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .check input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); cursor: pointer; }
+  .note-body { flex: 1; min-width: 0; padding: 5px 0; border: 0; background: none; text-align: left; cursor: text; display: flex; flex-direction: column; gap: 2px; }
+  .note-body .t { font-weight: 600; }
+  .note-body .x { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .note.done .note-body { color: #6B6B70; }
+  .note.done .note-body span { text-decoration: line-through; }
+  .note .icon-btn { color: var(--muted); }
+  .empty { padding: 56px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; color: var(--muted); }
+  .empty .ms { font-size: 40px; color: #B8B6AF; }
+  .empty p { margin: 0; font-size: 14px; }
+  .empty p.h { font-weight: 600; color: var(--text); font-size: 15px; }
+
+  .dialog-wrap { position: absolute; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(28,28,30,.4); }
+  .dialog { width: 100%; max-width: 420px; background: #FFF; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 20px 50px rgba(0,0,0,.18); }
+  .dialog h2 { margin: 0; font-size: 19px; }
+  .dialog p { margin: 0; color: var(--muted); }
+  .plan { margin: 4px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .plan li { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; background: var(--sidebar); font-size: 14px; }
+  .plan .ms { font-size: 18px; color: var(--accent-ink); }
+  .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .actions button { height: 44px; padding: 0 16px; border-radius: 10px; font-weight: 600; }
+  .danger { border: 0; background: var(--danger); color: #FFF !important; }
+  .primary { border: 0; background: var(--accent); }
+</style>
+</head>
+<body>
+<div id="app" v-cloak>
+  <div class="pv" role="toolbar" aria-label="Design preview controls">
+    <strong>Notes Taker · design prototype</strong>
+    <label>Start state
+      <select :value="preset" @change="applyPreset($event.target.value)">
+        <option v-for="p in presets" :value="p.id">{{ p.label }}</option>
+      </select>
+    </label>
+    <span class="seg" role="group" aria-label="Viewport">
+      <button type="button" :aria-pressed="String(view === 'desktop')" @click="view = 'desktop'">Desktop</button>
+      <button type="button" :aria-pressed="String(view === 'phone')" @click="view = 'phone'">Phone</button>
+    </span>
+    <button type="button" @click="applyPreset(preset)">Reset</button>
+    <span class="grow"></span>
+    <a href="https://claude.ai/artifact/TXP1WiDr5cb8hvjZvpV68G" target="_blank" rel="noopener">Claude Design canvas</a>
+  </div>
+
+  <div class="stage" :class="view">
+    <div class="frame" :class="{ narrow: narrow }">
+
+      <!-- Login -->
+      <main v-if="screen === 'login'" class="login">
+        <div class="login-card">
+          <div class="logo"><span class="ms" aria-hidden="true">sticky_note_2</span></div>
+          <h1>Notes</h1>
+          <p class="muted" style="margin:0">Short notes in folders. Works offline on your phone and computer.</p>
+          <div class="login-actions">
+            <button type="button" class="btn-lg btn-outline" @click="signIn"><span class="ms" aria-hidden="true">account_circle</span>Sign in with Google</button>
+            <button type="button" class="btn-lg btn-soft" @click="continueGuest"><span class="ms" aria-hidden="true">smartphone</span>Continue as guest</button>
+          </div>
+          <p class="muted" style="margin:6px 0 0;font-size:13px">Guest notes stay on this device. You can move them to your Google account later.</p>
+        </div>
+      </main>
+
+      <!-- App -->
+      <template v-else>
+        <header class="top">
+          <button v-if="narrow" type="button" class="icon-btn" style="margin-left:-8px" aria-label="Open folders" @click="drawer = true"><span class="ms" aria-hidden="true">menu</span></button>
+          <div class="brand"><span class="brand-mark"><span class="ms" aria-hidden="true">sticky_note_2</span></span>Notes</div>
+          <span style="flex:1"></span>
+          <template v-if="mode === 'guest'">
+            <span class="chip"><span class="ms" aria-hidden="true">smartphone</span>{{ narrow ? 'Guest' : 'Guest · on this device' }}</span>
+            <button type="button" class="btn btn-outline" @click="signIn"><span class="ms" aria-hidden="true">login</span>{{ narrow ? 'Sign in' : 'Sign in with Google' }}</button>
+          </template>
+          <template v-else>
+            <span class="avatar" aria-hidden="true"><span class="ms">person</span></span>
+            <button type="button" class="btn btn-ghost" @click="signOut"><span class="ms" aria-hidden="true">logout</span>Sign out</button>
+          </template>
+        </header>
+
+        <div class="body">
+          <button v-if="narrow && drawer" type="button" class="backdrop" aria-label="Close folders" @click="drawer = false"></button>
+
+          <nav v-show="!narrow || drawer" class="folders" :class="{ drawer: narrow }" aria-label="Folders">
+            <div class="folders-head">
+              <h2>Folders</h2>
+              <button type="button" class="add-folder" aria-label="New folder" @click="startNewFolder"><span class="ms" aria-hidden="true">create_new_folder</span></button>
+            </div>
+
+            <div v-if="folderForm && folderForm.mode === 'new'" class="folder-form">
+              <div class="row">
+                <label style="flex:1;min-width:0;display:flex"><span class="sr">Folder name</span>
+                  <input v-model="folderForm.value" @input="folderForm.error = ''" @keydown.enter.prevent="submitFolder" @keydown.esc="folderForm = null" maxlength="50" placeholder="Folder name" v-focus>
+                </label>
+                <button type="button" class="icon-btn sm" aria-label="Cancel" @click="folderForm = null" style="color:var(--muted)"><span class="ms" aria-hidden="true">close</span></button>
+                <button type="button" class="icon-btn sm ok" aria-label="Create folder" @click="submitFolder"><span class="ms" aria-hidden="true">check</span></button>
+              </div>
+              <p v-if="folderForm.error" class="err" role="alert">{{ folderForm.error }}</p>
+            </div>
+
+            <template v-for="f in folders" :key="f.id">
+              <div v-if="folderForm && folderForm.mode === 'rename' && folderForm.id === f.id" class="folder-form">
+                <div class="row">
+                  <label style="flex:1;min-width:0;display:flex"><span class="sr">Folder name</span>
+                    <input v-model="folderForm.value" @input="folderForm.error = ''" @keydown.enter.prevent="submitFolder" @keydown.esc="folderForm = null" maxlength="50" v-focus>
+                  </label>
+                  <button type="button" class="icon-btn sm" aria-label="Cancel rename" @click="folderForm = null" style="color:var(--muted)"><span class="ms" aria-hidden="true">close</span></button>
+                  <button type="button" class="icon-btn sm ok" aria-label="Save folder name" @click="submitFolder"><span class="ms" aria-hidden="true">check</span></button>
+                </div>
+                <p v-if="folderForm.error" class="err" role="alert">{{ folderForm.error }}</p>
+              </div>
+              <div v-else class="folder" :class="{ sel: current && f.id === current.id }">
+                <button type="button" class="folder-pick" :aria-current="current && f.id === current.id ? 'page' : null" @click="pickFolder(f.id)">
+                  <span class="ms" aria-hidden="true">folder</span>
+                  <span class="folder-name">{{ f.name }}</span>
+                  <span class="count">{{ countIn(f.id) }}</span>
+                </button>
+                <template v-if="current && f.id === current.id">
+                  <button type="button" class="icon-btn sm" aria-label="Rename folder" @click="startRename(f)"><span class="ms" aria-hidden="true" style="font-size:19px">edit</span></button>
+                  <button type="button" class="icon-btn sm" style="margin-right:4px" :disabled="folders.length <= 1" :title="folders.length <= 1 ? 'You can’t delete the last folder' : 'Delete folder'" :aria-label="folders.length <= 1 ? 'You can’t delete the last folder' : 'Delete folder'" @click="dialog = { kind: 'deleteFolder', id: f.id }"><span class="ms" aria-hidden="true" style="font-size:19px">delete</span></button>
+                </template>
+              </div>
+            </template>
+          </nav>
+
+          <main class="notes">
+            <div class="col">
+              <div v-if="banner" class="banner" role="status">
+                <span class="ms" aria-hidden="true">cloud_done</span>
+                <p>{{ banner }}</p>
+                <button type="button" class="icon-btn sm" style="margin:-6px -4px -6px 0;color:#78350F" aria-label="Dismiss" @click="banner = null"><span class="ms" aria-hidden="true" style="font-size:18px">close</span></button>
+              </div>
+
+              <div class="title">
+                <h1>{{ current ? current.name : '' }}</h1>
+                <p>{{ summary }}</p>
+              </div>
+
+              <div class="tools">
+                <label class="search">
+                  <span class="ms" aria-hidden="true">search</span>
+                  <span class="sr">Search notes in this folder</span>
+                  <input type="search" v-model="search" :placeholder="'Search in ' + (current ? current.name : 'folder')">
+                </label>
+                <button type="button" class="add-note" aria-label="New note" @click="startNewNote"><span class="ms" aria-hidden="true">add</span></button>
+              </div>
+
+              <div class="list">
+                <div v-if="noteEdit && noteEdit.id === 'new'" class="note-form">
+                  <label><span class="sr">Title (optional)</span><input v-model="noteEdit.title" maxlength="200" placeholder="Title (optional)" @keydown.enter.prevent="submitNote" @keydown.esc="noteEdit = null"></label>
+                  <label><span class="sr">Note text</span><textarea v-model="noteEdit.text" maxlength="1000" rows="3" placeholder="Write a note…" v-focus @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></textarea></label>
+                  <div class="foot">
+                    <span>{{ noteEdit.text.length }} / 1000</span>
+                    <span v-if="!narrow">· Ctrl/⌘+Enter to save · Esc to cancel</span>
+                    <span class="grow"></span>
+                    <button type="button" class="icon-btn" aria-label="Cancel" @click="noteEdit = null"><span class="ms" aria-hidden="true">close</span></button>
+                    <button type="button" class="icon-btn ok" aria-label="Save note" :disabled="!noteEdit.text.trim()" @click="submitNote"><span class="ms" aria-hidden="true">check</span></button>
+                  </div>
+                </div>
+
+                <template v-for="n in shownNotes" :key="n.id">
+                  <div v-if="noteEdit && noteEdit.id === n.id" class="note-form">
+                    <label><span class="sr">Title (optional)</span><input v-model="noteEdit.title" maxlength="200" placeholder="Title (optional)" @keydown.enter.prevent="submitNote" @keydown.esc="noteEdit = null"></label>
+                    <label><span class="sr">Note text</span><textarea v-model="noteEdit.text" maxlength="1000" rows="3" placeholder="Write a note…" v-focus @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></textarea></label>
+                    <div class="foot">
+                      <span>{{ noteEdit.text.length }} / 1000</span>
+                      <span v-if="!narrow">· Ctrl/⌘+Enter to save · Esc to cancel</span>
+                      <span class="grow"></span>
+                      <button type="button" class="icon-btn" aria-label="Cancel" @click="noteEdit = null"><span class="ms" aria-hidden="true">close</span></button>
+                      <button type="button" class="icon-btn ok" aria-label="Save note" :disabled="!noteEdit.text.trim()" @click="submitNote"><span class="ms" aria-hidden="true">check</span></button>
+                    </div>
+                  </div>
+                  <div v-else class="note" :class="{ done: n.completed }">
+                    <label class="check"><input type="checkbox" :checked="n.completed" @change="toggleNote(n.id)" :aria-label="(n.completed ? 'Mark as not completed: ' : 'Mark as completed: ') + (n.title || n.text.slice(0, 40))"></label>
+                    <button type="button" class="note-body" :aria-label="'Edit note: ' + (n.title || n.text.slice(0, 40))" @click="startEdit(n)">
+                      <span v-if="n.title" class="t">{{ n.title }}</span>
+                      <span class="x">{{ n.text }}</span>
+                    </button>
+                    <button type="button" class="icon-btn sm" aria-label="Delete note" @click="dialog = { kind: 'deleteNote', id: n.id }"><span class="ms" aria-hidden="true">delete</span></button>
+                  </div>
+                </template>
+
+                <div v-if="folderNotes.length === 0 && !(noteEdit && noteEdit.id === 'new')" class="empty">
+                  <span class="ms" aria-hidden="true">note_stack</span>
+                  <p class="h">No notes in {{ current ? current.name : '' }} yet</p>
+                  <p>Tap + to add your first note.</p>
+                </div>
+                <div v-if="folderNotes.length > 0 && shownNotes.length === 0" class="empty">
+                  <span class="ms" aria-hidden="true">search_off</span>
+                  <p class="h">No notes match “{{ search.trim() }}”</p>
+                  <p>Search looks at titles and text in this folder only.</p>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </template>
+
+      <!-- Confirmation dialogs (native <dialog> in the real app) -->
+      <div v-if="dialog" class="dialog-wrap">
+        <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
+          <template v-if="dialog.kind === 'deleteFolder'">
+            <h2 id="dlg-title">Delete “{{ folderById(dialog.id).name }}”?</h2>
+            <p>{{ countIn(dialog.id) ? 'The folder and its ' + plural(countIn(dialog.id), 'note', 'notes') + ' will be deleted. This can’t be undone.' : 'This empty folder will be deleted.' }}</p>
+            <div class="actions">
+              <button type="button" class="btn-outline" @click="dialog = null">Cancel</button>
+              <button type="button" class="danger" @click="deleteFolder(dialog.id)">Delete folder</button>
+            </div>
+          </template>
+          <template v-if="dialog.kind === 'deleteNote'">
+            <h2 id="dlg-title">Delete this note?</h2>
+            <p>“{{ noteLabel(dialog.id) }}” will be deleted. This can’t be undone.</p>
+            <div class="actions">
+              <button type="button" class="btn-outline" @click="dialog = null">Cancel</button>
+              <button type="button" class="danger" @click="deleteNote(dialog.id)">Delete note</button>
+            </div>
+          </template>
+          <template v-if="dialog.kind === 'move'">
+            <h2 id="dlg-title">Move guest notes to your account?</h2>
+            <p>This device has {{ plural(guest.folders.length, 'folder', 'folders') }} and {{ plural(guest.notes.length, 'note', 'notes') }} from guest mode. Folders with the same name are merged and duplicate notes are skipped. After moving, the guest copy is removed from this device.</p>
+            <ul class="plan">
+              <li v-for="m in movePlan"><span class="ms" aria-hidden="true">{{ m.icon }}</span><strong>{{ m.from }}</strong><span class="muted">{{ m.outcome }}</span></li>
+            </ul>
+            <div class="actions">
+              <button type="button" class="btn-outline" @click="dialog = null">Not now</button>
+              <button type="button" class="primary" @click="moveGuestData">Move to account</button>
+            </div>
+          </template>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+var DAY = 86400000;
+var T0 = Date.parse('2026-10-01T09:00:00Z');
+function uid() { return Math.random().toString(36).slice(2, 10); }
+function norm(s) { return (s || '').trim().toLowerCase(); }
+function byCreatedAsc(a, b) { return a.createdAt - b.createdAt; }
+function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+
+function seedGuest() {
+  return {
+    folders: [
+      { id: 'g-gen', name: 'General', createdAt: T0 },
+      { id: 'g-shop', name: 'Shopping', createdAt: T0 + DAY },
+      { id: 'g-work', name: 'work ', createdAt: T0 + 2 * DAY }
+    ],
+    notes: [
+      { id: 'gn1', folderId: 'g-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, createdAt: T0 + 3 * DAY },
+      { id: 'gn2', folderId: 'g-gen', title: '', text: 'Return library books before Friday', completed: true, createdAt: T0 + 4 * DAY },
+      { id: 'gn3', folderId: 'g-shop', title: 'Groceries', text: 'Milk, eggs, spinach, rye bread', completed: false, createdAt: T0 + 5 * DAY },
+      { id: 'gn4', folderId: 'g-work', title: 'Standup', text: 'Share the sync bug findings', completed: true, createdAt: T0 + 6 * DAY }
+    ]
+  };
+}
+
+function seedAccount() {
+  return {
+    folders: [
+      { id: 'acc-gen', name: 'General', createdAt: T0 - 30 * DAY },
+      { id: 'acc-work', name: 'Work', createdAt: T0 - 20 * DAY },
+      { id: 'acc-travel', name: 'Travel', createdAt: T0 - 10 * DAY }
+    ],
+    notes: [
+      { id: 'an1', folderId: 'acc-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, createdAt: T0 - 2 * DAY },
+      { id: 'an2', folderId: 'acc-gen', title: '', text: 'Renew bike insurance\nPolicy ends 30 Oct', completed: false, createdAt: T0 - 3 * DAY },
+      { id: 'an3', folderId: 'acc-work', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.', completed: false, createdAt: T0 - 1 * DAY },
+      { id: 'an4', folderId: 'acc-work', title: 'standup', text: 'Share the sync bug findings ', completed: false, createdAt: T0 - 4 * DAY },
+      { id: 'an5', folderId: 'acc-work', title: 'Expenses', text: 'Submit September receipts', completed: true, createdAt: T0 - 9 * DAY },
+      { id: 'an6', folderId: 'acc-travel', title: 'Packing list', text: 'Passport, charger, rain jacket, adapters', completed: false, createdAt: T0 - 5 * DAY }
+    ]
+  };
+}
+
+function hasGuestData(g) {
+  return g.notes.length > 0 || g.folders.some(function (f) { return norm(f.name) !== 'general'; });
+}
+
+function ensureDefault(d) {
+  if (d.folders.length) return d;
+  return { folders: [{ id: uid(), name: 'General', createdAt: Date.now() }], notes: d.notes };
+}
+
+// Folder merge + Duplicate note rule (planned mergeGuestData(), ADR-0006).
+function mergeGuestData(guest, account) {
+  var folders = account.folders.slice();
+  var notes = account.notes.map(function (n) { return Object.assign({}, n); });
+  var byKey = {};
+  folders.forEach(function (f) { byKey[norm(f.name)] = f; });
+  var plan = [];
+  var stats = { created: 0, merged: 0, added: 0, dupes: 0 };
+  guest.folders.slice().sort(byCreatedAsc).forEach(function (gf) {
+    var target = byKey[norm(gf.name)];
+    if (target) {
+      stats.merged++;
+      plan.push({ icon: 'merge', from: gf.name.trim(), outcome: 'merges into “' + target.name + '”' });
+    } else {
+      target = { id: uid(), name: gf.name.trim(), createdAt: Date.now() + stats.created };
+      folders.push(target);
+      byKey[norm(target.name)] = target;
+      stats.created++;
+      plan.push({ icon: 'create_new_folder', from: gf.name.trim(), outcome: 'new folder' });
+    }
+    guest.notes.filter(function (n) { return n.folderId === gf.id; }).forEach(function (gn) {
+      var dup = notes.find(function (n) {
+        return n.folderId === target.id && norm(n.title) === norm(gn.title) && norm(n.text) === norm(gn.text);
+      });
+      if (dup) { stats.dupes++; if (gn.completed) dup.completed = true; }
+      else { notes.push(Object.assign({}, gn, { id: uid(), folderId: target.id })); stats.added++; }
+    });
+  });
+  return { data: { folders: folders, notes: notes }, plan: plan, stats: stats };
+}
+
+function initState(preset) {
+  var s = {
+    screen: 'login', mode: null, guest: seedGuest(), account: seedAccount(), sel: null,
+    folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false, banner: null
+  };
+  function open(mode) {
+    s.screen = 'app';
+    s.mode = mode;
+    s.sel = (mode === 'google' ? s.account : s.guest).folders.slice().sort(byCreatedAsc)[0].id;
+  }
+  if (preset === 'app') open('google');
+  if (preset === 'guest') open('guest');
+  if (preset === 'desktop-editing') {
+    open('google');
+    s.sel = 'acc-work';
+    s.noteEdit = { id: 'an3', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.' };
+    s.folderForm = { mode: 'new', id: null, value: 'work ', error: 'A folder with this name already exists' };
+  }
+  if (preset === 'delete-folder') { open('google'); s.sel = 'acc-work'; s.dialog = { kind: 'deleteFolder', id: 'acc-work' }; }
+  if (preset === 'move-guest-data') { open('google'); s.dialog = { kind: 'move' }; }
+  if (preset === 'mobile-drawer') { open('google'); s.drawer = true; }
+  if (preset === 'new-note') { open('guest'); s.noteEdit = { id: 'new', title: '', text: 'Pick up the parcel at the post office' }; }
+  if (preset === 'empty') {
+    open('google');
+    s.account.folders.push({ id: 'acc-ideas', name: 'Ideas', createdAt: T0 });
+    s.sel = 'acc-ideas';
+  }
+  return s;
+}
+
+var PRESETS = [
+  { id: 'login', label: 'Login' },
+  { id: 'guest', label: 'Guest: notes list' },
+  { id: 'app', label: 'Signed in: notes list' },
+  { id: 'desktop-editing', label: 'Editing a note + duplicate folder name' },
+  { id: 'delete-folder', label: 'Delete folder dialog' },
+  { id: 'move-guest-data', label: 'Move guest data dialog' },
+  { id: 'mobile-drawer', label: 'Folders drawer open (phone)' },
+  { id: 'new-note', label: 'New note row (guest)' },
+  { id: 'empty', label: 'Empty folder' }
+];
+
+Vue.createApp({
+  data: function () {
+    var params = new URLSearchParams(location.search);
+    var preset = params.get('state') || 'login';
+    var view = params.get('view') || (preset === 'mobile-drawer' ? 'phone' : 'desktop');
+    return Object.assign(initState(preset), { preset: preset, view: view, presets: PRESETS, w: window.innerWidth });
+  },
+  directives: {
+    focus: { mounted: function (el) { el.focus(); } }
+  },
+  mounted: function () {
+    var self = this;
+    window.addEventListener('resize', function () { self.w = window.innerWidth; });
+  },
+  computed: {
+    narrow: function () { return this.view === 'phone' || this.w < 900; },
+    data: function () { return this.mode === 'google' ? this.account : this.guest; },
+    folders: function () { return this.data.folders.slice().sort(byCreatedAsc); },
+    current: function () {
+      var sel = this.sel;
+      return this.folders.find(function (f) { return f.id === sel; }) || this.folders[0];
+    },
+    folderNotes: function () {
+      var id = this.current && this.current.id;
+      return this.data.notes.filter(function (n) { return n.folderId === id; }).sort(function (a, b) { return b.createdAt - a.createdAt; });
+    },
+    shownNotes: function () {
+      var q = norm(this.search);
+      if (!q) return this.folderNotes;
+      return this.folderNotes.filter(function (n) { return norm(n.title).includes(q) || norm(n.text).includes(q); });
+    },
+    summary: function () {
+      var done = this.folderNotes.filter(function (n) { return n.completed; }).length;
+      return plural(this.folderNotes.length, 'note', 'notes') + (done ? ' · ' + done + ' completed' : '');
+    },
+    movePlan: function () { return mergeGuestData(this.guest, this.account).plan; }
+  },
+  methods: {
+    plural: plural,
+    applyPreset: function (p) {
+      Object.assign(this.$data, initState(p), { preset: p });
+      if (p === 'mobile-drawer') this.view = 'phone';
+      var url = new URL(location.href);
+      url.searchParams.set('state', p);
+      history.replaceState(null, '', url);
+    },
+    countIn: function (id) { return this.data.notes.filter(function (n) { return n.folderId === id; }).length; },
+    folderById: function (id) { return this.data.folders.find(function (f) { return f.id === id; }) || { name: '' }; },
+    noteLabel: function (id) {
+      var n = this.data.notes.find(function (x) { return x.id === id; }) || { title: '', text: '' };
+      return n.title || n.text.slice(0, 60);
+    },
+    setData: function (d) { if (this.mode === 'google') this.account = d; else this.guest = d; },
+
+    // Session
+    continueGuest: function () {
+      this.guest = ensureDefault(this.guest);
+      Object.assign(this, { screen: 'app', mode: 'guest', sel: this.guest.folders.slice().sort(byCreatedAsc)[0].id, banner: null });
+    },
+    signIn: function () {
+      this.account = ensureDefault(this.account);
+      Object.assign(this, {
+        screen: 'app', mode: 'google', sel: this.account.folders.slice().sort(byCreatedAsc)[0].id,
+        folderForm: null, noteEdit: null, search: '', drawer: false,
+        dialog: hasGuestData(this.guest) ? { kind: 'move' } : null
+      });
+    },
+    signOut: function () {
+      Object.assign(this, { screen: 'login', mode: null, sel: null, folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false, banner: null });
+    },
+
+    // Folders
+    pickFolder: function (id) { Object.assign(this, { sel: id, search: '', noteEdit: null, folderForm: null, drawer: false }); },
+    startNewFolder: function () { this.folderForm = { mode: 'new', id: null, value: '', error: '' }; },
+    startRename: function (f) { this.folderForm = { mode: 'rename', id: f.id, value: f.name, error: '' }; },
+    submitFolder: function () {
+      var ff = this.folderForm;
+      if (!ff) return;
+      var name = ff.value.trim();
+      if (!name) { ff.error = 'Enter a folder name'; return; }
+      if (name.length > 50) { ff.error = 'Use 50 characters or fewer'; return; }
+      if (this.data.folders.some(function (f) { return f.id !== ff.id && norm(f.name) === norm(name); })) { ff.error = 'A folder with this name already exists'; return; }
+      if (ff.mode === 'new') {
+        var f = { id: uid(), name: name, createdAt: Date.now() };
+        this.setData({ folders: this.data.folders.concat([f]), notes: this.data.notes });
+        Object.assign(this, { folderForm: null, sel: f.id, search: '', noteEdit: null, drawer: false });
+      } else {
+        this.setData({ folders: this.data.folders.map(function (x) { return x.id === ff.id ? Object.assign({}, x, { name: name }) : x; }), notes: this.data.notes });
+        this.folderForm = null;
+      }
+    },
+    deleteFolder: function (id) {
+      this.setData({ folders: this.data.folders.filter(function (f) { return f.id !== id; }), notes: this.data.notes.filter(function (n) { return n.folderId !== id; }) });
+      Object.assign(this, { dialog: null, sel: this.folders[0] ? this.folders[0].id : null, noteEdit: null });
+    },
+
+    // Notes
+    startNewNote: function () { Object.assign(this, { noteEdit: { id: 'new', title: '', text: '' }, search: '' }); },
+    startEdit: function (n) { this.noteEdit = { id: n.id, title: n.title, text: n.text }; },
+    submitNote: function () {
+      var ne = this.noteEdit;
+      if (!ne) return;
+      var text = ne.text.trim();
+      if (!text) return;
+      var title = ne.title.trim();
+      if (ne.id === 'new') {
+        var n = { id: uid(), folderId: this.current.id, title: title, text: text, completed: false, createdAt: Date.now() };
+        this.setData({ folders: this.data.folders, notes: this.data.notes.concat([n]) });
+      } else {
+        this.setData({ folders: this.data.folders, notes: this.data.notes.map(function (x) { return x.id === ne.id ? Object.assign({}, x, { title: title, text: text }) : x; }) });
+      }
+      this.noteEdit = null;
+    },
+    toggleNote: function (id) {
+      this.setData({ folders: this.data.folders, notes: this.data.notes.map(function (x) { return x.id === id ? Object.assign({}, x, { completed: !x.completed }) : x; }) });
+    },
+    deleteNote: function (id) {
+      this.setData({ folders: this.data.folders, notes: this.data.notes.filter(function (x) { return x.id !== id; }) });
+      this.dialog = null;
+    },
+
+    // Move guest data
+    moveGuestData: function () {
+      var r = mergeGuestData(this.guest, this.account);
+      var st = r.stats;
+      this.account = r.data;
+      this.guest = { folders: [], notes: [] };
+      this.dialog = null;
+      this.banner = 'Moved to your account: ' + plural(st.added, 'note', 'notes') + ' added' +
+        (st.dupes ? ', ' + plural(st.dupes, 'duplicate', 'duplicates') + ' skipped' : '') +
+        '. ' + plural(st.created, 'folder', 'folders') + ' created, ' + st.merged + ' merged.';
+    }
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
