@@ -6,7 +6,7 @@ See [ADR-0007](../adr/0007-branching-and-ci.md) for the branching model.
 
 | File | Trigger | Steps |
 | --- | --- | --- |
-| `.github/workflows/ci.yml` | push to `develop`, any pull request | `npm ci` → lint → test → build |
+| `.github/workflows/ci.yml` | any pull request into `main` | `npm ci` → lint → test → build |
 | `.github/workflows/deploy.yml` | push to `main` | `npm ci` → lint → test → build → deploy to Firebase Hosting (live channel) |
 
 The deploy step uses `FirebaseExtended/action-hosting-deploy@v0`.
@@ -27,7 +27,7 @@ You can check the secret under **GitHub → repo → Settings → Secrets and va
 
 ## Branch protection (recommended)
 
-Under **GitHub → Settings → Branches**, add rules for `main` and `develop`:
+Under **GitHub → Settings → Branches**, add a rule for `main`:
 
 - Require a pull request before merging
 - Require the `ci` status check to pass

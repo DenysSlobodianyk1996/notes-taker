@@ -3,7 +3,7 @@
 ## Context
 The repo (`git@github.com:DenysSlobodianyk1996/notes-taker.git`) is an empty clone. The goal is a personal installable notes app (PWA) for iOS, Android and desktop: folders on the left, notes in the main area. Notes can be used as a guest, with data kept on the device, or after signing in with Google, with data synced through Firebase. All decisions below came out of the interview and are final unless the design review changes them.
 
-Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickable prototype, approved first** → `/to-spec` → `/to-tickets` (local markdown) → `/implement` per ticket (test-first) → `/code-review` → PR into `develop` → PR `develop`→`main` deploys.
+Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickable prototype, approved first** → `/to-spec` → `/to-tickets` (local markdown) → `/implement` per ticket (test-first) → `/code-review` → PR from the feature branch into `main`; merging deploys.
 
 ## Settled decisions
 **Stack**
@@ -67,8 +67,8 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - Name uniqueness is checked in the client against the loaded list, since Firestore can't enforce it offline.
 
 **Git and CI**
-- Feature branches merge into `develop` through pull requests; `develop` merges into `main` through a pull request.
-- `ci.yml` runs on pushes to `develop` and on pull requests: lint, test and build.
+- Feature branches (`feature/*`) merge straight into `main` through pull requests. There is no `develop` branch.
+- `ci.yml` runs on every pull request into `main`: lint, test and build.
 - `deploy.yml` runs on pushes to `main`: lint, test and build, then `FirebaseExtended/action-hosting-deploy` using the `FIREBASE_SERVICE_ACCOUNT` secret.
 - Husky runs lint-staged (Prettier and ESLint) before each commit, and type-check plus tests before each push.
 
@@ -106,7 +106,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
      7. Branching and CI
    - Write `docs/setup/firebase.md`, the console step-by-step: create the project, enable Google sign-in, Firestore, Hosting, authorized domains, web config into `environment.ts`, and deploying rules. Also covers Spark plan free limits.
    - Write `docs/setup/deploy.md`: the service account secret and the workflows.
-   - Commit. **The user runs `! git push -u origin main`.** I then create and push `develop`; all later work happens on branches off `develop`.
+   - Commit. **The user runs `! git push -u origin main`.** All later work happens on `feature/*` branches off `main`.
 1. **Claude Design prototype, before any code.**
    - Create it from the Design type (`type_url` from quickstart, no design system): a clickable prototype of every flow, in a minimal Apple-Notes style with amber `#F59E0B` and the system font.
    - Screens:
@@ -135,7 +135,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
    10. Moving guest data.
    11. Responsive drawer and PWA manifest and icon polish.
 
-   Each ticket runs `/implement` (TDD), then `/code-review`, then a PR into `develop`.
+   Each ticket runs `/implement` (TDD), then `/code-review`, then a PR into `main`.
 
 ## Verification
 - `npm run lint`, `npm test` and `npm run build` pass, and pre-commit and pre-push hooks run.
