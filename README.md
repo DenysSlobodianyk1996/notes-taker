@@ -25,4 +25,4 @@ Angular 22 (standalone, signals, Signal Forms), plain SCSS, Material Symbols, De
 
 ## Branches
 
-`feature/*` → `develop` → `main`, through pull requests only. A push to `main` deploys to Firebase Hosting.
+`feature/*` → `main`, through pull requests only. A push to `main` deploys to Firebase Hosting.
