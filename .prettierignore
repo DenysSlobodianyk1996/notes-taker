@@ -1,0 +1,9 @@
+dist
+coverage
+.angular
+node_modules
+package-lock.json
+# Design prototypes are generated/throwaway: keep them byte-stable for the Claude Design canvas.
+docs/design/project
+docs/design/notes-taker-design.html
+.scratch

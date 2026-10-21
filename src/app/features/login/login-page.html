@@ -1,0 +1,18 @@
+<main class="login">
+  <section class="card">
+    <app-language-toggle class="lang" />
+
+    <div class="logo">
+      <span class="material-symbols-outlined" aria-hidden="true">sticky_note_2</span>
+    </div>
+    <h1>{{ 'app.name' | translate }}</h1>
+    <p class="tagline">{{ 'login.tagline' | translate }}</p>
+
+    <button type="button" class="sign-in">
+      <span class="material-symbols-outlined" aria-hidden="true">account_circle</span>
+      {{ 'login.signInGoogle' | translate }}
+    </button>
+
+    <p class="hint">{{ 'login.syncHint' | translate }}</p>
+  </section>
+</main>

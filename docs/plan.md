@@ -1,12 +1,15 @@
 # Notes Taker PWA — Plan
 
 ## Context
+
 A personal installable notes app (PWA) for iOS, Android and desktop: folders on the left, notes in the main area. You sign in with Google, and notes are stored in Firebase (Firestore), so they sync across browsers, the installed app and every device. They still work offline once you've signed in. There is no guest mode (ADR-0009). All decisions below came out of the interview and are final unless the design review changes them.
 
 Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickable prototype, approved first** → `/to-spec` → `/to-tickets` (local markdown) → `/implement` per ticket (test-first) → `/code-review` → PR from the feature branch into `main`; merging deploys.
 
 ## Settled decisions
+
 **Stack**
+
 - Angular 22 with standalone components, signals and zoneless change detection.
 - Signal Forms (`@angular/forms/signals`).
 - Plain SCSS, no UI library, no dark mode.
@@ -17,6 +20,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - `@ngx-translate/core` (with the HTTP loader) for the EN/UA interface. Translations live in `public/i18n/en.json` and `public/i18n/uk.json`, drafted in `docs/design/i18n/` (ADR-0008).
 
 **UI language (EN/UA)**
+
 - The interface is in English or Ukrainian; user content (folder names, titles, text) is never translated.
 - On the first visit the browser language decides (`uk*` → `uk`, else `en`). The choice is then saved in `localStorage` on this device only.
 - An "EN | UA" toggle sits in the header and in the corner of the login card. Switching is instant, with no reload and no language in the URL. It also sets `<html lang>`.
@@ -24,6 +28,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - The PWA manifest stays in English.
 
 **Auth (Google only, ADR-0009)**
+
 - `/login` has one action, **Sign in with Google**, plus the EN | UA toggle and the hint "Your notes sync across all your devices."
 - `authGuard` lets signed-in users through; anyone else goes to `/login`. `/login` redirects signed-in users to `/folders`. Firebase keeps the session across reloads.
 - **Offline, never signed in on this device:** the login page shows "You're offline. Connect to sign in." and disables the button. It re-enables when the device is back online.
@@ -34,6 +39,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - The app never sees or stores passwords; Google handles the sign-in. Firebase Auth stores only uid, email, name, photo and timestamps.
 
 **Folders**
+
 - One level only; every note belongs to a folder.
 - Each Account has exactly one **Default folder**, created automatically on its first sign-in (when it has no folders). It is stored as `isDefault: true`, `name: ''` and always shown as the `folders.defaultName` translation ("General" / "Загальне"), so it follows the EN | UA toggle. It can't be renamed or deleted; its row shows a lock icon instead of edit and delete. So there is always at least one folder. Every other folder can be renamed and deleted.
 - Both display names of the Default folder are reserved: creating or renaming a folder to "General" or "Загальне" (any case) shows the "already exists" error.
@@ -43,6 +49,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - Each folder shows a note count. Rename is inline; delete asks in a `<dialog>` ("Delete folder and N notes?").
 
 **Notes**
+
 - Fields: optional title (≤200), required text (≤1000, not just spaces, with a live character count), `completed`, `createdAt`, `updatedAt`.
 - Shown in full with no preview truncation, newest first. Completed notes stay in place, crossed out and dimmed.
 - Each row has a checkbox on the left that toggles completion either way, and a delete icon that asks in a `<dialog>`.
@@ -53,6 +60,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - No popups for create or edit. `<dialog>` is used only for delete confirmations.
 
 **Layout and routing**
+
 - A single page shell: a folders sidebar on the left and the notes list in the main area. Below 900px the sidebar becomes a drawer opened with ☰, which closes when a folder is picked.
 - Routes:
   - `/login`
@@ -62,18 +70,21 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - IDs are UUIDs (`crypto.randomUUID()`, also used as Firestore document IDs).
 
 **Data model**
+
 - Firestore: `users/{uid}/folders/{folderId}` holds `{name, nameKey, isDefault, createdAt}`.
 - Firestore: `users/{uid}/notes/{noteId}` holds `{folderId, title, text, completed, createdAt, updatedAt}`.
 - Security rules allow access only when `request.auth.uid == uid`.
 - Name uniqueness is checked in the client against the loaded list, since Firestore can't enforce it offline.
 
 **Git and CI**
+
 - Feature branches (`feature/*`) merge straight into `main` through pull requests. There is no `develop` branch.
 - `ci.yml` runs on every pull request into `main`: lint, test and build.
 - `deploy.yml` runs on pushes to `main`: lint, test and build, then `FirebaseExtended/action-hosting-deploy` using the `FIREBASE_SERVICE_ACCOUNT` secret.
 - Husky runs lint-staged (Prettier and ESLint) before each commit, and type-check plus tests before each push.
 
 ## Architecture
+
 - No storage interface (ADR-0009): `core/data/folders.service.ts` and `core/data/notes.service.ts` use `@angular/fire/firestore` directly and expose signals (from `collectionData`) plus `createFolder`, `renameFolder`, `deleteFolder` (with its notes, in a batch), `ensureDefaultFolder`, `createNote`, `updateNote`, `toggleNote` and `deleteNote`.
 - `core/domain/` holds pure, fully unit-tested functions:
   - `folder-name.ts`: `normalizeFolderName`, `isNameTaken` (including the reserved Default-folder names) and `folderLabel` (the translation for the Default folder, otherwise the stored name)
@@ -89,6 +100,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - `core/i18n/ui-language.service.ts` handles the initial choice (localStorage, then the browser language), `use(lang)`, persisting the choice and `<html lang>`. `shared/language-toggle/` is the EN | UA control.
 
 ## Steps
+
 0. ✅ **Seed:** README, `CONTEXT.md`, ADRs, `docs/setup/firebase.md`, `docs/setup/deploy.md`, agent-skill config.
 1. **Claude Design prototype, before any code.**
    - ✅ Canvas <https://claude.ai/artifact/TXP1WiDr5cb8hvjZvpV68G>, local `docs/design/project/` and the standalone `docs/design/notes-taker-design.html`.
@@ -110,6 +122,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
    Each ticket runs `/implement` (TDD), then `/code-review`, then a PR into `main`.
 
 ## Verification
+
 - `npm run lint`, `npm test` and `npm run build` pass, and pre-commit and pre-push hooks run.
 - Unit tests cover:
   - `normalizeFolderName`, uniqueness and `folderLabel`
