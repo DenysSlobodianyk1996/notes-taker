@@ -15,7 +15,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - Plain SCSS, no UI library, no dark mode.
 - Material Symbols icons through a Google Fonts `<link>` in `index.html` (`<span class="material-symbols-outlined">`).
 - `@angular/pwa` service worker and manifest.
-- `@angular/fire` for Auth and Firestore. No other storage library.
+- The `firebase` SDK (modular, no AngularFire; see ADR-0009) for Auth and Firestore. No other storage library.
 - Vitest (Angular's unit-test builder), angular-eslint, Prettier, Husky with lint-staged.
 - `@ngx-translate/core` (with the HTTP loader) for the EN/UA interface. Translations live in `public/i18n/en.json` and `public/i18n/uk.json`, drafted in `docs/design/i18n/` (ADR-0008).
 
@@ -85,7 +85,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 
 ## Architecture
 
-- No storage interface (ADR-0009): `core/data/folders.service.ts` and `core/data/notes.service.ts` use `@angular/fire/firestore` directly and expose signals (from `collectionData`) plus `createFolder`, `renameFolder`, `deleteFolder` (with its notes, in a batch), `ensureDefaultFolder`, `createNote`, `updateNote`, `toggleNote` and `deleteNote`.
+- No storage interface (ADR-0009): `core/data/folders.service.ts` and `core/data/notes.service.ts` use `firebase/firestore` directly and expose signals (from `onSnapshot`) plus `createFolder`, `renameFolder`, `deleteFolder` (with its notes, in a batch), `ensureDefaultFolder`, `createNote`, `updateNote`, `toggleNote` and `deleteNote`.
 - `core/domain/` holds pure, fully unit-tested functions:
   - `folder-name.ts`: `normalizeFolderName`, `isNameTaken` (including the reserved Default-folder names) and `folderLabel` (the translation for the Default folder, otherwise the stored name)
   - `filter-notes.ts`
@@ -131,7 +131,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
   - the UI-language service: browser fallback, localStorage persistence, `<html lang>`
   - `en.json` and `uk.json` have identical key sets
   - the guards and resolver redirects, and `ensureDefaultFolder` creating exactly one Default folder
-  - the Firestore services, with AngularFire mocked
+  - the Firestore services, with the Firebase SDK mocked
 - Manual check (`ng serve`, then a deploy to Firebase Hosting):
   1. Sign in with Google, create folders and notes, then refresh. Data persists and the app stays on `/folders/:id`.
   2. Try a duplicate folder name: an inline error appears.

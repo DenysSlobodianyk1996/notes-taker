@@ -20,7 +20,7 @@ Limits: <https://firebase.google.com/pricing>
 
 1. In **Project settings → General → Your apps**, click the **</>** (Web) icon.
 2. Nickname it `notes-taker-web`, and tick **Also set up Firebase Hosting**.
-3. Copy the `firebaseConfig` object. It goes into `src/environments/environment.ts` and `environment.prod.ts`. These values are public and safe to commit; security comes from the Firestore rules.
+3. Copy the `firebaseConfig` object. It goes into `src/environments/environment.ts` (one file: dev and prod use the same project). These values are public and safe to commit; security comes from the Firestore rules.
 4. **Change `authDomain`** from `<project>.firebaseapp.com` to `<project>.web.app` (see [ADR-0003](../adr/0003-firebase-hosting-and-sign-in-strategy.md)).
 
 ## 3. Enable Google sign-in
