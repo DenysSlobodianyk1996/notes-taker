@@ -4,7 +4,7 @@
 
 **Blocked by:** 01 (App skeleton). Also needs the owner's Firebase web config: a human step, see `docs/setup/firebase.md` (steps 1–6).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] Firebase SDK (not `@angular/fire`, see ADR-0009) wired with the owner's config (`authDomain` = `<project>.web.app`); Firestore uses `persistentLocalCache` with multi-tab support.
 - [x] Auth service: the current user as a signal; `signIn()` uses a popup on desktop and a redirect on mobile or standalone display mode, and completes a pending redirect result on startup; `signOut()` signs out, terminates Firestore and clears its persistent cache.
@@ -14,7 +14,7 @@
 - [x] App shell with a header (brand, toggle, avatar, Sign out) and a router outlet; `/folders` shows a placeholder.
 - [x] `firestore.rules` allows `users/{uid}/**` only when `request.auth.uid == uid`; `.firebaserc` committed.
 - [x] Tests (services replaced through DI by test doubles): the offline login state, the sign-in click, sign-out calling the service, and the guard redirects.
-- [ ] Manual: sign in locally (`localhost` authorised), reload and stay signed in, sign out.
+- [x] Manual: sign in locally (`localhost` authorised), reload and stay signed in, sign out.
 
 ## Comments
 
@@ -30,3 +30,5 @@ firebase: {
   appId: '1:443702703956:web:e5598de0f8763276b43ac1',
 },
 ```
+
+**Manual check (2026-10-21):** passed on localhost: Google sign-in, staying signed in after a reload, and Sign out back to `/login`. Sign-in first failed with `auth/configuration-not-found` until Google sign-in was enabled in the Firebase console (setup step 3).
