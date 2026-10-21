@@ -11,4 +11,4 @@
 - [ ] Notes view: the header (folder label, translated counts), the note rows (title optional, text with `white-space: pre-wrap`), the empty state, and the "+" button with an accessible label.
 - [ ] Inline new-note row built with Signal Forms: focus on the text; the counter; Save disabled for blank text; the keyboard shortcuts as described; shortcut hint hidden on narrow screens.
 - [ ] Sidebar rows show note counts.
-- [ ] Tests: domain rules; notes view component tests (empty state, newest-first order, Save disabled, Ctrl/⌘+Enter calls `createNote`, Esc closes the row) with the services replaced through DI; notes service payload test with AngularFire mocked.
+- [ ] Tests: domain rules; notes view component tests (empty state, newest-first order, Save disabled, Ctrl/⌘+Enter calls `createNote`, Esc closes the row) with the services replaced through DI; notes service payload test with Firebase SDK mocked.

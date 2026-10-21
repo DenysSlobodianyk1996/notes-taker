@@ -114,7 +114,7 @@ A small installable web app (PWA) called **Notes**:
 
 ### Stack (ADR-0001, ADR-0008, ADR-0009)
 - Angular 22: standalone components, signals, zoneless change detection, Signal Forms for every form, plain SCSS, no UI library, no dark mode. Material Symbols Outlined icons via a Google Fonts link.
-- `@angular/fire` for Auth and Firestore; `@angular/pwa` for the service worker and manifest; `@ngx-translate/core` with the HTTP loader for translations. No other storage library (no Dexie, no IndexedDB code of our own).
+- The `firebase` SDK for Auth and Firestore (no AngularFire, see ADR-0009); `@angular/pwa` for the service worker and manifest; `@ngx-translate/core` with the HTTP loader for translations. No other storage library (no Dexie, no IndexedDB code of our own).
 - Tooling: Vitest through Angular's unit-test builder, angular-eslint, Prettier, Husky with lint-staged.
 
 ### Modules (deep modules, small interfaces)
@@ -178,7 +178,7 @@ A small installable web app (PWA) called **Notes**:
   - search and its no-match state
   - the EN ↔ UA switch changing the labels but not the user content
   - the drawer below 900px
-- **Seam 3, Firestore services with AngularFire mocked:** check that the right document paths and payloads are written (trimming, `nameKey`, `isDefault`, timestamps), that `deleteFolder` batches the folder and its notes, refuses the Default folder, and that `ensureDefaultFolder` is idempotent.
+- **Seam 3, Firestore services with the Firebase SDK mocked:** check that the right document paths and payloads are written (trimming, `nameKey`, `isDefault`, timestamps), that `deleteFolder` batches the folder and its notes, refuses the Default folder, and that `ensureDefaultFolder` is idempotent.
 - **Routing:** guard and resolver tests (signed out → `/login`; signed in on `/login` → `/folders`; `/folders` → first folder; unknown id → first folder).
 - **UI-language service:** browser fallback, saved choice wins, `<html lang>` updated.
 - **Translations:** a test asserts that `en.json` and `uk.json` have identical key sets.
