@@ -114,7 +114,8 @@
   .folder-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .count { font-size: 13px; color: var(--muted); font-weight: 400; }
   .folder .icon-btn { color: var(--muted); }
-  .folder .icon-btn:disabled { opacity: .35; }
+  .lock { width: 36px; height: 36px; margin-right: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #8A8880; }
+  .lock .ms { font-size: 17px; }
 
   main.notes { flex: 1; min-width: 0; padding: 32px 40px; overflow-y: auto; }
   .narrow main.notes { padding: 16px; }
@@ -255,12 +256,13 @@
               <div v-else class="folder" :class="{ sel: current && f.id === current.id }">
                 <button type="button" class="folder-pick" :aria-current="current && f.id === current.id ? 'page' : null" @click="pickFolder(f.id)">
                   <span class="ms" aria-hidden="true">folder</span>
-                  <span class="folder-name">{{ f.name }}</span>
+                  <span class="folder-name">{{ label(f) }}</span>
                   <span class="count">{{ countIn(f.id) }}</span>
                 </button>
-                <template v-if="current && f.id === current.id">
+                <span v-if="f.isDefault" class="lock" :title="t('folders.defaultLocked')"><span class="ms" aria-hidden="true">lock</span><span class="sr">{{ t('folders.defaultLocked') }}</span></span>
+                <template v-else-if="current && f.id === current.id">
                   <button type="button" class="icon-btn sm" :aria-label="t('folders.rename')" @click="startRename(f)"><span class="ms" aria-hidden="true" style="font-size:19px">edit</span></button>
-                  <button type="button" class="icon-btn sm" style="margin-right:4px" :disabled="f.isDefault" :title="f.isDefault ? t('folders.defaultLocked') : t('folders.delete')" :aria-label="f.isDefault ? t('folders.defaultLocked') : t('folders.delete')" @click="dialog = { kind: 'deleteFolder', id: f.id }"><span class="ms" aria-hidden="true" style="font-size:19px">delete</span></button>
+                  <button type="button" class="icon-btn sm" style="margin-right:4px" :aria-label="t('folders.delete')" @click="dialog = { kind: 'deleteFolder', id: f.id }"><span class="ms" aria-hidden="true" style="font-size:19px">delete</span></button>
                 </template>
               </div>
             </template>
@@ -275,7 +277,7 @@
               </div>
 
               <div class="title">
-                <h1>{{ current ? current.name : '' }}</h1>
+                <h1>{{ currentName }}</h1>
                 <p>{{ summary }}</p>
               </div>
 
@@ -283,7 +285,7 @@
                 <label class="search">
                   <span class="ms" aria-hidden="true">search</span>
                   <span class="sr">{{ t('notes.searchLabel') }}</span>
-                  <input type="search" v-model="search" :placeholder="t('notes.searchIn', { folder: current ? current.name : '' })">
+                  <input type="search" v-model="search" :placeholder="t('notes.searchIn', { folder: currentName })">
                 </label>
                 <button type="button" class="add-note" :aria-label="t('notes.new')" @click="startNewNote"><span class="ms" aria-hidden="true">add</span></button>
               </div>
@@ -325,7 +327,7 @@
 
                 <div v-if="folderNotes.length === 0 && !(noteEdit && noteEdit.id === 'new')" class="empty">
                   <span class="ms" aria-hidden="true">note_stack</span>
-                  <p class="h">{{ t('notes.emptyTitle', { folder: current ? current.name : '' }) }}</p>
+                  <p class="h">{{ t('notes.emptyTitle', { folder: currentName }) }}</p>
                   <p>{{ t('notes.emptyHint') }}</p>
                 </div>
                 <div v-if="folderNotes.length > 0 && shownNotes.length === 0" class="empty">
@@ -364,8 +366,8 @@
             <ul class="plan">
               <li v-for="m in movePlan">
                 <span class="ms" aria-hidden="true">{{ m.merged ? 'merge' : 'create_new_folder' }}</span>
-                <strong>{{ m.from }}</strong>
-                <span class="muted">{{ m.merged ? t('dialogs.moveGuestData.mergesInto', { folder: m.into }) : t('dialogs.moveGuestData.newFolder') }}</span>
+                <strong>{{ label(m.from) }}</strong>
+                <span class="muted">{{ m.merged ? t('dialogs.moveGuestData.mergesInto', { folder: label(m.into) }) : t('dialogs.moveGuestData.newFolder') }}</span>
               </li>
             </ul>
             <div class="actions">
@@ -418,7 +420,7 @@ var I18N = {
       "saveName": "Save folder name",
       "rename": "Rename folder",
       "delete": "Delete folder",
-      "defaultLocked": "The default folder can't be deleted",
+      "defaultLocked": "The default folder can't be renamed or deleted",
       "defaultName": "General",
       "errors": {
         "required": "Enter a folder name",
@@ -504,7 +506,7 @@ var I18N = {
       "saveName": "Зберегти назву папки",
       "rename": "Перейменувати папку",
       "delete": "Видалити папку",
-      "defaultLocked": "Основну папку не можна видалити",
+      "defaultLocked": "Основну папку не можна перейменувати чи видалити",
       "defaultName": "Загальне",
       "errors": {
         "required": "Введіть назву папки",
@@ -581,7 +583,7 @@ function initialLang() {
 function seedGuest() {
   return {
     folders: [
-      { id: 'g-gen', name: 'General', isDefault: true, createdAt: T0 },
+      { id: 'g-gen', name: '', isDefault: true, createdAt: T0 },
       { id: 'g-shop', name: 'Shopping', isDefault: false, createdAt: T0 + DAY },
       { id: 'g-work', name: 'work ', isDefault: false, createdAt: T0 + 2 * DAY }
     ],
@@ -597,7 +599,7 @@ function seedGuest() {
 function seedAccount() {
   return {
     folders: [
-      { id: 'acc-gen', name: 'General', isDefault: true, createdAt: T0 - 30 * DAY },
+      { id: 'acc-gen', name: '', isDefault: true, createdAt: T0 - 30 * DAY },
       { id: 'acc-work', name: 'Work', isDefault: false, createdAt: T0 - 20 * DAY },
       { id: 'acc-travel', name: 'Travel', isDefault: false, createdAt: T0 - 10 * DAY }
     ],
@@ -617,31 +619,43 @@ function hasGuestData(g) {
   return g.notes.length > 0 || g.folders.some(function (f) { return !f.isDefault; });
 }
 
-// Default folder is named in the current UI language at creation.
-function ensureDefault(d, lang) {
-  if (d.folders.length) return d;
-  return { folders: [{ id: uid(), name: translate(lang, 'folders.defaultName'), isDefault: true, createdAt: Date.now() }], notes: d.notes };
+// The Default folder stores no name: it is shown as the folders.defaultName
+// translation, so it follows the EN | UA toggle.
+function folderLabel(f, lang) { return f.isDefault ? translate(lang, 'folders.defaultName') : f.name; }
+
+// "General" / "Загальне" (any case, either language) are reserved for the Default folder.
+function isReservedName(name) {
+  var k = norm(name);
+  return Object.keys(I18N).some(function (l) { return norm(translate(l, 'folders.defaultName')) === k; });
 }
 
-// Folder merge (by name only, defaults included) + Duplicate note rule. ADR-0006.
+function ensureDefault(d) {
+  if (d.folders.some(function (f) { return f.isDefault; })) return d;
+  return { folders: [{ id: uid(), name: '', isDefault: true, createdAt: Date.now() }].concat(d.folders), notes: d.notes };
+}
+
+// Folder merge + Duplicate note rule. ADR-0006.
+// Default folders always merge with each other (by marker); every other folder merges by name.
+// Plan entries keep the folder objects so the dialog can label them in the current language.
 function mergeGuestData(guest, account) {
   var folders = account.folders.slice();
   var notes = account.notes.map(function (n) { return Object.assign({}, n); });
+  var accDefault = folders.find(function (f) { return f.isDefault; });
   var byKey = {};
-  folders.forEach(function (f) { byKey[norm(f.name)] = f; });
+  folders.forEach(function (f) { if (!f.isDefault) byKey[norm(f.name)] = f; });
   var plan = [];
   var stats = { created: 0, merged: 0, added: 0, skipped: 0 };
   guest.folders.slice().sort(byCreatedAsc).forEach(function (gf) {
-    var target = byKey[norm(gf.name)];
+    var target = gf.isDefault ? accDefault : byKey[norm(gf.name)];
     if (target) {
       stats.merged++;
-      plan.push({ from: gf.name.trim(), merged: true, into: target.name });
+      plan.push({ from: gf, merged: true, into: target });
     } else {
-      target = { id: uid(), name: gf.name.trim(), isDefault: false, createdAt: Date.now() + stats.created };
+      target = { id: uid(), name: gf.isDefault ? '' : gf.name.trim(), isDefault: !!gf.isDefault, createdAt: Date.now() + stats.created };
       folders.push(target);
-      byKey[norm(target.name)] = target;
+      if (target.isDefault) accDefault = target; else byKey[norm(target.name)] = target;
       stats.created++;
-      plan.push({ from: gf.name.trim(), merged: false });
+      plan.push({ from: gf, merged: false });
     }
     guest.notes.filter(function (n) { return n.folderId === gf.id; }).forEach(function (gn) {
       var dup = notes.find(function (n) {
@@ -715,6 +729,7 @@ Vue.createApp({
     narrow: function () { return this.view === 'phone' || this.w < 900; },
     data: function () { return this.mode === 'google' ? this.account : this.guest; },
     folders: function () { return this.data.folders.slice().sort(byCreatedAsc); },
+    currentName: function () { return this.current ? folderLabel(this.current, this.lang) : ''; },
     current: function () {
       var sel = this.sel;
       return this.folders.find(function (f) { return f.id === sel; }) || this.folders[0];
@@ -736,6 +751,7 @@ Vue.createApp({
   },
   methods: {
     t: function (key, params) { return translate(this.lang, key, params); },
+    label: function (f) { return f ? folderLabel(f, this.lang) : ''; },
     setLang: function (l) {
       this.lang = l;
       document.documentElement.lang = l;
@@ -758,11 +774,11 @@ Vue.createApp({
 
     // Session
     continueGuest: function () {
-      this.guest = ensureDefault(this.guest, this.lang);
+      this.guest = ensureDefault(this.guest);
       Object.assign(this, { screen: 'app', mode: 'guest', sel: this.guest.folders.slice().sort(byCreatedAsc)[0].id, banner: null });
     },
     signIn: function () {
-      this.account = ensureDefault(this.account, this.lang);
+      this.account = ensureDefault(this.account);
       Object.assign(this, {
         screen: 'app', mode: 'google', sel: this.account.folders.slice().sort(byCreatedAsc)[0].id,
         folderForm: null, noteEdit: null, search: '', drawer: false,
@@ -776,14 +792,14 @@ Vue.createApp({
     // Folders
     pickFolder: function (id) { Object.assign(this, { sel: id, search: '', noteEdit: null, folderForm: null, drawer: false }); },
     startNewFolder: function () { this.folderForm = { mode: 'new', id: null, value: '', error: '' }; },
-    startRename: function (f) { this.folderForm = { mode: 'rename', id: f.id, value: f.name, error: '' }; },
+    startRename: function (f) { if (!f.isDefault) this.folderForm = { mode: 'rename', id: f.id, value: f.name, error: '' }; },
     submitFolder: function () {
       var ff = this.folderForm;
       if (!ff) return;
       var name = ff.value.trim();
       if (!name) { ff.error = 'folders.errors.required'; return; }
       if (name.length > 50) { ff.error = 'folders.errors.maxLength'; return; }
-      if (this.data.folders.some(function (f) { return f.id !== ff.id && norm(f.name) === norm(name); })) { ff.error = 'folders.errors.taken'; return; }
+      if (isReservedName(name) || this.data.folders.some(function (f) { return f.id !== ff.id && !f.isDefault && norm(f.name) === norm(name); })) { ff.error = 'folders.errors.taken'; return; }
       if (ff.mode === 'new') {
         var f = { id: uid(), name: name, isDefault: false, createdAt: Date.now() };
         this.setData({ folders: this.data.folders.concat([f]), notes: this.data.notes });
