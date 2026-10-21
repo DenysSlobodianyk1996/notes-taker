@@ -9,4 +9,4 @@ The app is hosted on Firebase Hosting (free Spark plan), not GitHub Pages, and `
 
 ## Consequences
 
-The first implementation work includes testing sign-in on a real iPhone home-screen install. Firebase Hosting also handles SPA deep links with a single rewrite rule, so the `404.html` workaround isn't needed.
+The first implementation work includes testing sign-in on a real iPhone home-screen install. This matters even more since Google sign-in became the only way into the app (ADR-0009). Firebase Hosting also handles SPA deep links with a single rewrite rule, so the `404.html` workaround isn't needed.

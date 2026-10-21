@@ -8,7 +8,7 @@ A clickable Claude Design prototype of every flow, made **before any code**. It 
   - **Desktop / Phone:** a 390×844 phone frame
   - **Reset**
 
-  Deep links work too: `notes-taker-design.html?state=move-guest-data&view=phone&lang=uk`.
+  Deep links work too: `notes-taker-design.html?state=offline&view=phone&lang=uk`.
 - **Canvas source:** [`project/`](project/). `canvas.json` is the canvas layout, and each `*.dc.html` file is one artboard. These files only render inside Claude Design.
 
 - **Translations:** [`i18n/en.json`](i18n/en.json) and [`i18n/uk.json`](i18n/uk.json). They use ngx-translate's format (nested keys, `{{param}}`, one translation per key) and become the app's `public/i18n/*.json`. Both prototypes embed them: after editing the JSON, run `python3 docs/design/sync-i18n.py`.
@@ -21,7 +21,7 @@ Both copies are throwaway prototype code (Vue in the HTML file, Design Component
 - On the first visit the browser language is used (`uk*` gives UA, anything else EN). After that, the choice is saved on the device.
 - **User content is never translated.** Folder names, titles and note text stay exactly as typed.
 - The **Default folder** stores no name and is always shown in the current language ("General" in EN, "Загальне" in UA), so it changes with the toggle. It can't be renamed or deleted, so its row shows a lock icon (tooltip "The default folder can't be renamed or deleted") instead of edit and delete. Both names are reserved: a new folder called "general" or "Загальне" gets the "already exists" error.
-- Ukrainian strings are longer, so on phones the header hides the "Guest · on this device" chip and the avatar, and shortens "Sign in with Google" to "Sign in" / "Увійти".
+- Ukrainian strings are longer, so on phones the header hides the avatar and keeps only the toggle and "Sign out" / "Вийти".
 
 ## Look
 
@@ -30,7 +30,7 @@ Minimal and light, in the style of Apple Notes:
 | Token | Value | Use |
 | --- | --- | --- |
 | Accent | `#F59E0B` (amber) | primary buttons, checkbox, active borders, app icon |
-| Accent soft | `#FEF3C7` / text `#92400E` | selected folder, banners |
+| Accent soft | `#FEF3C7` / text `#92400E` | selected folder, language toggle, offline note |
 | Text | `#1C1C1E` | body |
 | Muted text | `#5F5F64` | secondary text (passes 4.5:1 on white and sidebar) |
 | Sidebar | `#F7F6F3` | folders panel, login background |
@@ -42,35 +42,34 @@ Minimal and light, in the style of Apple Notes:
 - **Touch targets:** at least 36–44 px.
 - **Breakpoint:** 900 px. Below it, the folders panel becomes a drawer opened with ☰.
 
+## Sign-in (Google only)
+
+- The login page has one button, **Sign in with Google**, plus the EN | UA toggle and the hint "Your notes sync across all your devices." There is no guest mode (ADR-0009).
+- **Offline and never signed in on this device:** the button is disabled and the page shows "You're offline. Connect to sign in." (Start state `offline`). In the standalone HTML this also reacts to the browser really going offline.
+- An Account's first sign-in creates the Default folder (Start state `new-account`).
+- Sign out returns to the login page.
+
 ## Artboards
 
 | Artboard | Shows |
 | --- | --- |
-| `Main` | **Interactive full flow:** login, then guest or Google, folders CRUD, notes CRUD, completion, search, delete dialogs, moving guest data with merge, sign-out |
+| `Main` | **Interactive full flow:** login → Google sign-in → folders CRUD, notes CRUD, completion, search, delete dialogs → sign-out |
 | `Desktop-Editing` | inline note edit row, and the new-folder row with the duplicate-name error |
 | `Desktop-DeleteFolder` | `<dialog>` confirmation for deleting a folder with its notes |
-| `Desktop-MoveGuestData` | the move-guest-data dialog, with a per-folder plan (merge vs new folder) |
 | `Mobile-Login` | login page |
+| `Mobile-Login-Offline` | login page while offline, before the first sign-in |
 | `Mobile-List` | notes list on a phone |
 | `Mobile-Drawer` | folders drawer open |
-| `Mobile-NewNote` | new-note row at the top of the list (guest) |
+| `Mobile-NewNote` | new-note row at the top of the list |
 | `Mobile-Empty` | empty folder state |
-| `Desktop-MoveGuestData-UA` | the move-guest-data dialog in Ukrainian (longest strings) |
 | `Mobile-Login-UA` | login page in Ukrainian |
-| `Mobile-List-UA` | guest notes list in Ukrainian, with user content left untranslated |
+| `Mobile-List-UA` | notes list in Ukrainian, with user content left untranslated |
 
-The other artboards all reuse `Main`, opened at a fixed starting state (its `preset` and `lang` props). In the standalone HTML, the same states are the **Start state** options, with `?state=` values `login`, `guest`, `app`, `desktop-editing`, `delete-folder`, `move-guest-data`, `mobile-drawer`, `new-note` and `empty`. Add `&lang=uk` for Ukrainian.
+The other artboards all reuse `Main`, opened at a fixed starting state (its `preset` and `lang` props). In the standalone HTML, the same states are the **Start state** options, with `?state=` values `login`, `offline`, `app`, `new-account`, `desktop-editing`, `delete-folder`, `mobile-drawer`, `new-note` and `empty`. Add `&lang=uk` for Ukrainian.
 
 ## Sample data
 
-| Side | Folders | Notes |
-| --- | --- | --- |
-| Guest (this device) | Default folder, Shopping, "work " | 4 notes; "Call dentist" and "Standup" also exist in the account |
-| Account (Google) | Default folder, Work, Travel | 6 notes |
-
-Moving guest data gives: 1 folder created (Shopping), 2 merged (Default → Default, "work " → Work), 2 notes added, 2 duplicates skipped. "Standup" ends up completed, because the guest copy was.
-
-The two Default folders always merge with each other. A brand-new account takes over the guest's Default folder. Every other folder merges by name.
+One signed-in Account: the Default folder (3 notes, one completed), Work (3 notes) and Travel (1 note). The `new-account` state starts with no folders and shows the Default folder being created on first sign-in.
 
 ## Behaviour the prototype pins down
 
@@ -78,7 +77,3 @@ The two Default folders always merge with each other. A brand-new account takes 
 - Clicking a note row edits it in place. Only one row is edited at a time.
 - The selected folder row shows rename and delete. The Default folder instead shows a lock icon, because it can't be renamed or deleted.
 - Search filters the current folder by title and text, and has its own "no match" state.
-- **Move guest data:**
-  - "work " (guest) merges into "Work" (account).
-  - Duplicate notes (same title and text, ignoring case and surrounding spaces) are skipped, and a completed guest copy marks the account copy completed.
-  - A banner summarises the result.

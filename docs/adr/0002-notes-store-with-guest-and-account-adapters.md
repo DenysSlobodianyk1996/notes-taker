@@ -1,4 +1,10 @@
+---
+status: superseded by ADR-0009
+---
+
 # One NotesStore interface, two storage adapters
+
+> **Superseded by [ADR-0009](0009-google-sign-in-only.md).** Guest mode was dropped, so there is only one store (Firestore), and the `NotesStore` interface was removed. Kept for history.
 
 All features read and write Folders and Notes only through a `NotesStore` interface. It has two adapters: Dexie (IndexedDB) for a Guest and Firestore for an Account. The active adapter is picked from the Session mode. Without this, every component would branch on "guest or account", and the move-guest-data flow would have no clean seam to read from one store and write to the other.
 
