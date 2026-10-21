@@ -1,0 +1,30 @@
+<header class="top">
+  <div class="brand">
+    <span class="brand-mark">
+      <span class="material-symbols-outlined" aria-hidden="true">sticky_note_2</span>
+    </span>
+    {{ 'app.name' | translate }}
+  </div>
+  <span class="spacer"></span>
+  <app-language-toggle />
+  @let user = auth.user();
+  <span class="avatar">
+    @if (user?.photoURL && !photoFailed()) {
+      <img
+        [src]="user?.photoURL"
+        [alt]="user?.displayName ?? ''"
+        referrerpolicy="no-referrer"
+        (error)="photoFailed.set(true)"
+      />
+    } @else {
+      <span class="material-symbols-outlined" aria-hidden="true">person</span>
+    }
+  </span>
+  <button type="button" class="sign-out" (click)="signOut()">
+    <span class="material-symbols-outlined" aria-hidden="true">logout</span>
+    {{ 'header.signOut' | translate }}
+  </button>
+</header>
+<main class="content">
+  <router-outlet />
+</main>

@@ -4,10 +4,11 @@ The app can only be used signed in with Google. There is no guest mode. Every Fo
 
 The trigger was iOS. A home-screen web app gets **storage separate from Safari**, so guest notes written in Safari never appear in the installed app, and vice versa (Android and desktop Chrome share storage between the browser and the installed app). Guest mode would therefore behave differently per platform and lose notes in a confusing way. Requiring sign-in removes that whole class of problems. It also removes the IndexedDB (Dexie) store, the move-guest-data dialog and its merge and dedupe rules (ADR-0006), and the session-mode concept.
 
-With only one store left, the `NotesStore` interface (ADR-0002) is removed as well. `FoldersService` and `NotesService` call `@angular/fire/firestore` directly. The rules worth testing (folder-name normalisation, uniqueness with reserved Default-folder names, folder labels, note filtering) live in pure functions under `core/domain/` and are unit tested on their own. Service tests mock AngularFire; the Firebase emulator can be added later if needed.
+With only one store left, the `NotesStore` interface (ADR-0002) is removed as well. `FoldersService` and `NotesService` call the modular Firebase SDK (`firebase/firestore`) directly. The rules worth testing (folder-name normalisation, uniqueness with reserved Default-folder names, folder labels, note filtering) live in pure functions under `core/domain/` and are unit tested on their own. Service tests mock the Firebase SDK; the Firebase emulator can be added later if needed.
 
 - **Offline before the first sign-in:** the login page shows "You're offline. Connect to sign in." and disables the button. After one sign-in, the app works offline from the cache.
 - **The Default folder** is created on an Account's first sign-in, when it has no folders.
+- **No AngularFire (amended in ticket 02).** No `@angular/fire` release supports Angular 22 (20.x needs Angular 20, the 21 release candidate needs Angular 21 and TypeScript below 6). The app uses the `firebase` package directly, and `core/firebase/firebase.ts` provides the Auth and Firestore instances through injection tokens. AngularFire can be swapped in later if a compatible release appears.
 - **Passwords** are never seen or stored by the app or by Firebase; Google handles the sign-in. Notes aren't end-to-end encrypted, so the Firebase project owner can read them in the console.
 
 ## Considered options
