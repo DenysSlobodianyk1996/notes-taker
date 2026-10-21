@@ -10,3 +10,7 @@ The app is hosted on Firebase Hosting (free Spark plan), not GitHub Pages, and `
 ## Consequences
 
 The first implementation work includes testing sign-in on a real iPhone home-screen install. This matters even more since Google sign-in became the only way into the app (ADR-0009). Firebase Hosting also handles SPA deep links with a single rewrite rule, so the `404.html` workaround isn't needed.
+
+## Status
+
+As of 2026-10-21, redirect sign-in has been checked on Android only. The iPhone home-screen check is deferred because no iPhone is available, so the iOS risk stays open. Run the check, and build the Google Identity Services fallback if needed, once an iPhone is available.
