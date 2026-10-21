@@ -85,8 +85,6 @@
   .brand-mark .ms { font-size: 18px; }
   .icon-btn { width: 44px; height: 44px; border: 0; background: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .icon-btn.sm { width: 36px; height: 36px; border-radius: 8px; }
-  .chip { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); padding: 4px 10px; border-radius: 999px; background: var(--chip); white-space: nowrap; }
-  .chip .ms { font-size: 16px; }
   .btn { height: 40px; padding: 0 14px; border-radius: 10px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; white-space: nowrap; flex-shrink: 0; }
   .btn .ms { font-size: 18px; }
   .narrow .btn { padding: 0 10px; }
@@ -120,8 +118,9 @@
   main.notes { flex: 1; min-width: 0; padding: 32px 40px; overflow-y: auto; }
   .narrow main.notes { padding: 16px; }
   .col { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
-  .banner { display: flex; align-items: flex-start; gap: 10px; padding: 12px 12px 12px 14px; border-radius: 12px; background: var(--accent-soft); color: #78350F; }
-  .banner p { flex: 1; margin: 0; font-size: 14px; }
+  .offline { margin: 6px 0 0; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; color: #92400E; }
+  .offline .ms { font-size: 18px; }
+  .btn-lg:disabled { opacity: .45; }
   .title h1 { margin: 0; font-size: 26px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .title p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
   .tools { display: flex; gap: 8px; }
@@ -195,10 +194,10 @@
           <h1>{{ t('app.name') }}</h1>
           <p class="muted" style="margin:0">{{ t('login.tagline') }}</p>
           <div class="login-actions">
-            <button type="button" class="btn-lg btn-outline" @click="signIn"><span class="ms" aria-hidden="true">account_circle</span>{{ t('login.signInGoogle') }}</button>
-            <button type="button" class="btn-lg btn-soft" @click="continueGuest"><span class="ms" aria-hidden="true">smartphone</span>{{ t('login.continueGuest') }}</button>
+            <button type="button" class="btn-lg btn-outline" :disabled="offline" @click="signIn"><span class="ms" aria-hidden="true">account_circle</span>{{ t('login.signInGoogle') }}</button>
           </div>
-          <p class="muted" style="margin:6px 0 0;font-size:13px">{{ t('login.guestHint') }}</p>
+          <p v-if="offline" class="offline" role="status"><span class="ms" aria-hidden="true">wifi_off</span>{{ t('login.offline') }}</p>
+          <p v-else class="muted" style="margin:6px 0 0;font-size:13px">{{ t('login.syncHint') }}</p>
         </div>
       </main>
 
@@ -212,14 +211,8 @@
             <button type="button" :aria-pressed="String(lang === 'en')" @click="setLang('en')">{{ t('lang.en') }}</button>
             <button type="button" :aria-pressed="String(lang === 'uk')" @click="setLang('uk')">{{ t('lang.uk') }}</button>
           </div>
-          <template v-if="mode === 'guest'">
-            <span v-if="!narrow" class="chip"><span class="ms" aria-hidden="true">smartphone</span>{{ t('header.guestOnDevice') }}</span>
-            <button type="button" class="btn btn-outline" @click="signIn"><span class="ms" aria-hidden="true">login</span>{{ narrow ? t('header.signIn') : t('header.signInGoogle') }}</button>
-          </template>
-          <template v-else>
-            <span v-if="!narrow" class="avatar" aria-hidden="true"><span class="ms">person</span></span>
-            <button type="button" class="btn btn-ghost" @click="signOut"><span class="ms" aria-hidden="true">logout</span>{{ t('header.signOut') }}</button>
-          </template>
+          <span v-if="!narrow" class="avatar" aria-hidden="true"><span class="ms">person</span></span>
+          <button type="button" class="btn btn-ghost" @click="signOut"><span class="ms" aria-hidden="true">logout</span>{{ t('header.signOut') }}</button>
         </header>
 
         <div class="body">
@@ -270,12 +263,6 @@
 
           <main class="notes">
             <div class="col">
-              <div v-if="banner" class="banner" role="status">
-                <span class="ms" aria-hidden="true">cloud_done</span>
-                <p>{{ t('dialogs.moveGuestData.done', banner) }}</p>
-                <button type="button" class="icon-btn sm" style="margin:-6px -4px -6px 0;color:#78350F" :aria-label="t('common.dismiss')" @click="banner = null"><span class="ms" aria-hidden="true" style="font-size:18px">close</span></button>
-              </div>
-
               <div class="title">
                 <h1>{{ currentName }}</h1>
                 <p>{{ summary }}</p>
@@ -360,21 +347,6 @@
               <button type="button" class="danger" @click="deleteNote(dialog.id)">{{ t('dialogs.deleteNote.confirm') }}</button>
             </div>
           </template>
-          <template v-if="dialog.kind === 'move'">
-            <h2 id="dlg-title">{{ t('dialogs.moveGuestData.title') }}</h2>
-            <p>{{ t('dialogs.moveGuestData.body', { folders: guest.folders.length, notes: guest.notes.length }) }}</p>
-            <ul class="plan">
-              <li v-for="m in movePlan">
-                <span class="ms" aria-hidden="true">{{ m.merged ? 'merge' : 'create_new_folder' }}</span>
-                <strong>{{ label(m.from) }}</strong>
-                <span class="muted">{{ m.merged ? t('dialogs.moveGuestData.mergesInto', { folder: label(m.into) }) : t('dialogs.moveGuestData.newFolder') }}</span>
-              </li>
-            </ul>
-            <div class="actions">
-              <button type="button" class="btn-outline" @click="dialog = null">{{ t('dialogs.moveGuestData.skip') }}</button>
-              <button type="button" class="primary" @click="moveGuestData">{{ t('dialogs.moveGuestData.confirm') }}</button>
-            </div>
-          </template>
         </div>
       </div>
 
@@ -395,19 +367,15 @@ var I18N = {
       "uk": "UA"
     },
     "common": {
-      "cancel": "Cancel",
-      "dismiss": "Dismiss"
+      "cancel": "Cancel"
     },
     "login": {
       "tagline": "Short notes in folders. Works offline on your phone and computer.",
       "signInGoogle": "Sign in with Google",
-      "continueGuest": "Continue as guest",
-      "guestHint": "Guest notes stay on this device. You can move them to your Google account later."
+      "syncHint": "Your notes sync across all your devices.",
+      "offline": "You're offline. Connect to sign in."
     },
     "header": {
-      "guestOnDevice": "Guest · on this device",
-      "signIn": "Sign in",
-      "signInGoogle": "Sign in with Google",
       "signOut": "Sign out",
       "openFolders": "Open folders",
       "closeFolders": "Close folders"
@@ -459,15 +427,6 @@ var I18N = {
         "title": "Delete this note?",
         "body": "“{{note}}” will be deleted. This can't be undone.",
         "confirm": "Delete note"
-      },
-      "moveGuestData": {
-        "title": "Move guest notes to your account?",
-        "body": "From guest mode on this device: folders: {{folders}}, notes: {{notes}}. Folders with the same name are merged and duplicate notes are skipped. After moving, the guest copy is removed from this device.",
-        "mergesInto": "merges into “{{folder}}”",
-        "newFolder": "new folder",
-        "skip": "Not now",
-        "confirm": "Move to account",
-        "done": "Moved to your account. Notes added: {{added}}, duplicates skipped: {{skipped}}, folders created: {{created}}, folders merged: {{merged}}."
       }
     }
   },
@@ -481,19 +440,15 @@ var I18N = {
       "uk": "UA"
     },
     "common": {
-      "cancel": "Скасувати",
-      "dismiss": "Закрити"
+      "cancel": "Скасувати"
     },
     "login": {
       "tagline": "Короткі нотатки в папках. Працює офлайн на телефоні й комп'ютері.",
       "signInGoogle": "Увійти через Google",
-      "continueGuest": "Продовжити як гість",
-      "guestHint": "Нотатки гостя зберігаються лише на цьому пристрої. Пізніше їх можна перенести в обліковий запис Google."
+      "syncHint": "Ваші нотатки синхронізуються на всіх ваших пристроях.",
+      "offline": "Ви офлайн. Під'єднайтеся до інтернету, щоб увійти."
     },
     "header": {
-      "guestOnDevice": "Гість · на цьому пристрої",
-      "signIn": "Увійти",
-      "signInGoogle": "Увійти через Google",
       "signOut": "Вийти",
       "openFolders": "Відкрити папки",
       "closeFolders": "Закрити папки"
@@ -545,15 +500,6 @@ var I18N = {
         "title": "Видалити цю нотатку?",
         "body": "«{{note}}» буде видалено. Цю дію не можна скасувати.",
         "confirm": "Видалити нотатку"
-      },
-      "moveGuestData": {
-        "title": "Перенести нотатки гостя в обліковий запис?",
-        "body": "З режиму гостя на цьому пристрої: папок: {{folders}}, нотаток: {{notes}}. Папки з однаковою назвою об'єднуються, а дублікати нотаток пропускаються. Після перенесення копію гостя буде видалено з цього пристрою.",
-        "mergesInto": "об'єднається з «{{folder}}»",
-        "newFolder": "нова папка",
-        "skip": "Не зараз",
-        "confirm": "Перенести",
-        "done": "Перенесено в обліковий запис. Додано нотаток: {{added}}, пропущено дублікатів: {{skipped}}, створено папок: {{created}}, об'єднано папок: {{merged}}."
       }
     }
   }
@@ -580,22 +526,6 @@ function initialLang() {
   return (navigator.language || '').toLowerCase().indexOf('uk') === 0 ? 'uk' : 'en';
 }
 
-function seedGuest() {
-  return {
-    folders: [
-      { id: 'g-gen', name: '', isDefault: true, createdAt: T0 },
-      { id: 'g-shop', name: 'Shopping', isDefault: false, createdAt: T0 + DAY },
-      { id: 'g-work', name: 'work ', isDefault: false, createdAt: T0 + 2 * DAY }
-    ],
-    notes: [
-      { id: 'gn1', folderId: 'g-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, createdAt: T0 + 3 * DAY },
-      { id: 'gn2', folderId: 'g-gen', title: '', text: 'Return library books before Friday', completed: true, createdAt: T0 + 4 * DAY },
-      { id: 'gn3', folderId: 'g-shop', title: 'Groceries', text: 'Milk, eggs, spinach, rye bread', completed: false, createdAt: T0 + 5 * DAY },
-      { id: 'gn4', folderId: 'g-work', title: 'Standup', text: 'Share the sync bug findings', completed: true, createdAt: T0 + 6 * DAY }
-    ]
-  };
-}
-
 function seedAccount() {
   return {
     folders: [
@@ -606,17 +536,13 @@ function seedAccount() {
     notes: [
       { id: 'an1', folderId: 'acc-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, createdAt: T0 - 2 * DAY },
       { id: 'an2', folderId: 'acc-gen', title: '', text: 'Renew bike insurance\nPolicy ends 30 Oct', completed: false, createdAt: T0 - 3 * DAY },
+      { id: 'an7', folderId: 'acc-gen', title: '', text: 'Return library books before Friday', completed: true, createdAt: T0 - 6 * DAY },
       { id: 'an3', folderId: 'acc-work', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.', completed: false, createdAt: T0 - 1 * DAY },
-      { id: 'an4', folderId: 'acc-work', title: 'standup', text: 'Share the sync bug findings ', completed: false, createdAt: T0 - 4 * DAY },
+      { id: 'an4', folderId: 'acc-work', title: 'Standup', text: 'Share the sync bug findings', completed: false, createdAt: T0 - 4 * DAY },
       { id: 'an5', folderId: 'acc-work', title: 'Expenses', text: 'Submit September receipts', completed: true, createdAt: T0 - 9 * DAY },
       { id: 'an6', folderId: 'acc-travel', title: 'Packing list', text: 'Passport, charger, rain jacket, adapters', completed: false, createdAt: T0 - 5 * DAY }
     ]
   };
-}
-
-// Anything beyond an empty Default folder? (checked by marker, not by name)
-function hasGuestData(g) {
-  return g.notes.length > 0 || g.folders.some(function (f) { return !f.isDefault; });
 }
 
 // The Default folder stores no name: it is shown as the folders.defaultName
@@ -629,69 +555,35 @@ function isReservedName(name) {
   return Object.keys(I18N).some(function (l) { return norm(translate(l, 'folders.defaultName')) === k; });
 }
 
+// An Account's first sign-in creates its Default folder.
 function ensureDefault(d) {
   if (d.folders.some(function (f) { return f.isDefault; })) return d;
   return { folders: [{ id: uid(), name: '', isDefault: true, createdAt: Date.now() }].concat(d.folders), notes: d.notes };
 }
 
-// Folder merge + Duplicate note rule. ADR-0006.
-// Default folders always merge with each other (by marker); every other folder merges by name.
-// Plan entries keep the folder objects so the dialog can label them in the current language.
-function mergeGuestData(guest, account) {
-  var folders = account.folders.slice();
-  var notes = account.notes.map(function (n) { return Object.assign({}, n); });
-  var accDefault = folders.find(function (f) { return f.isDefault; });
-  var byKey = {};
-  folders.forEach(function (f) { if (!f.isDefault) byKey[norm(f.name)] = f; });
-  var plan = [];
-  var stats = { created: 0, merged: 0, added: 0, skipped: 0 };
-  guest.folders.slice().sort(byCreatedAsc).forEach(function (gf) {
-    var target = gf.isDefault ? accDefault : byKey[norm(gf.name)];
-    if (target) {
-      stats.merged++;
-      plan.push({ from: gf, merged: true, into: target });
-    } else {
-      target = { id: uid(), name: gf.isDefault ? '' : gf.name.trim(), isDefault: !!gf.isDefault, createdAt: Date.now() + stats.created };
-      folders.push(target);
-      if (target.isDefault) accDefault = target; else byKey[norm(target.name)] = target;
-      stats.created++;
-      plan.push({ from: gf, merged: false });
-    }
-    guest.notes.filter(function (n) { return n.folderId === gf.id; }).forEach(function (gn) {
-      var dup = notes.find(function (n) {
-        return n.folderId === target.id && norm(n.title) === norm(gn.title) && norm(n.text) === norm(gn.text);
-      });
-      if (dup) { stats.skipped++; if (gn.completed) dup.completed = true; }
-      else { notes.push(Object.assign({}, gn, { id: uid(), folderId: target.id })); stats.added++; }
-    });
-  });
-  return { data: { folders: folders, notes: notes }, plan: plan, stats: stats };
-}
-
 function initState(preset) {
   var s = {
-    screen: 'login', mode: null, guest: seedGuest(), account: seedAccount(), sel: null,
-    folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false, banner: null
+    screen: 'login', account: seedAccount(), sel: null, offline: preset === 'offline',
+    folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false
   };
-  function open(mode) {
+  function open() {
+    s.account = ensureDefault(s.account);
     s.screen = 'app';
-    s.mode = mode;
-    s.sel = (mode === 'google' ? s.account : s.guest).folders.slice().sort(byCreatedAsc)[0].id;
+    s.sel = s.account.folders.slice().sort(byCreatedAsc)[0].id;
   }
-  if (preset === 'app') open('google');
-  if (preset === 'guest') open('guest');
+  if (preset === 'app') open();
+  if (preset === 'new-account') { s.account = { folders: [], notes: [] }; open(); }
   if (preset === 'desktop-editing') {
-    open('google');
+    open();
     s.sel = 'acc-work';
     s.noteEdit = { id: 'an3', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.' };
     s.folderForm = { mode: 'new', id: null, value: 'work ', error: 'folders.errors.taken' };
   }
-  if (preset === 'delete-folder') { open('google'); s.sel = 'acc-work'; s.dialog = { kind: 'deleteFolder', id: 'acc-work' }; }
-  if (preset === 'move-guest-data') { open('google'); s.dialog = { kind: 'move' }; }
-  if (preset === 'mobile-drawer') { open('google'); s.drawer = true; }
-  if (preset === 'new-note') { open('guest'); s.noteEdit = { id: 'new', title: '', text: 'Pick up the parcel at the post office' }; }
+  if (preset === 'delete-folder') { open(); s.sel = 'acc-work'; s.dialog = { kind: 'deleteFolder', id: 'acc-work' }; }
+  if (preset === 'mobile-drawer') { open(); s.drawer = true; }
+  if (preset === 'new-note') { open(); s.noteEdit = { id: 'new', title: '', text: 'Pick up the parcel at the post office' }; }
   if (preset === 'empty') {
-    open('google');
+    open();
     s.account.folders.push({ id: 'acc-ideas', name: 'Ideas', isDefault: false, createdAt: T0 });
     s.sel = 'acc-ideas';
   }
@@ -700,13 +592,13 @@ function initState(preset) {
 
 var PRESETS = [
   { id: 'login', label: 'Login' },
-  { id: 'guest', label: 'Guest: notes list' },
+  { id: 'offline', label: 'Login: offline, never signed in' },
   { id: 'app', label: 'Signed in: notes list' },
+  { id: 'new-account', label: 'First sign-in: only the Default folder' },
   { id: 'desktop-editing', label: 'Editing a note + duplicate folder name' },
   { id: 'delete-folder', label: 'Delete folder dialog' },
-  { id: 'move-guest-data', label: 'Move guest data dialog' },
   { id: 'mobile-drawer', label: 'Folders drawer open (phone)' },
-  { id: 'new-note', label: 'New note row (guest)' },
+  { id: 'new-note', label: 'New note row' },
   { id: 'empty', label: 'Empty folder' }
 ];
 
@@ -723,11 +615,14 @@ Vue.createApp({
   mounted: function () {
     var self = this;
     window.addEventListener('resize', function () { self.w = window.innerWidth; });
+    window.addEventListener('offline', function () { self.offline = true; });
+    window.addEventListener('online', function () { self.offline = false; });
+    if (!navigator.onLine) this.offline = true;
     document.documentElement.lang = this.lang;
   },
   computed: {
     narrow: function () { return this.view === 'phone' || this.w < 900; },
-    data: function () { return this.mode === 'google' ? this.account : this.guest; },
+    data: function () { return this.account; },
     folders: function () { return this.data.folders.slice().sort(byCreatedAsc); },
     currentName: function () { return this.current ? folderLabel(this.current, this.lang) : ''; },
     current: function () {
@@ -746,8 +641,7 @@ Vue.createApp({
     summary: function () {
       var done = this.folderNotes.filter(function (n) { return n.completed; }).length;
       return this.t('notes.count', { count: this.folderNotes.length }) + (done ? ' · ' + this.t('notes.completed', { count: done }) : '');
-    },
-    movePlan: function () { return mergeGuestData(this.guest, this.account).plan; }
+    }
   },
   methods: {
     t: function (key, params) { return translate(this.lang, key, params); },
@@ -770,23 +664,19 @@ Vue.createApp({
       var n = this.data.notes.find(function (x) { return x.id === id; }) || { title: '', text: '' };
       return n.title || n.text.slice(0, 60);
     },
-    setData: function (d) { if (this.mode === 'google') this.account = d; else this.guest = d; },
+    setData: function (d) { this.account = d; },
 
     // Session
-    continueGuest: function () {
-      this.guest = ensureDefault(this.guest);
-      Object.assign(this, { screen: 'app', mode: 'guest', sel: this.guest.folders.slice().sort(byCreatedAsc)[0].id, banner: null });
-    },
     signIn: function () {
+      if (this.offline) return;
       this.account = ensureDefault(this.account);
       Object.assign(this, {
-        screen: 'app', mode: 'google', sel: this.account.folders.slice().sort(byCreatedAsc)[0].id,
-        folderForm: null, noteEdit: null, search: '', drawer: false,
-        dialog: hasGuestData(this.guest) ? { kind: 'move' } : null
+        screen: 'app', sel: this.account.folders.slice().sort(byCreatedAsc)[0].id,
+        folderForm: null, noteEdit: null, search: '', drawer: false, dialog: null
       });
     },
     signOut: function () {
-      Object.assign(this, { screen: 'login', mode: null, sel: null, folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false, banner: null });
+      Object.assign(this, { screen: 'login', sel: null, folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false });
     },
 
     // Folders
@@ -839,15 +729,6 @@ Vue.createApp({
     deleteNote: function (id) {
       this.setData({ folders: this.data.folders, notes: this.data.notes.filter(function (x) { return x.id !== id; }) });
       this.dialog = null;
-    },
-
-    // Move guest data
-    moveGuestData: function () {
-      var r = mergeGuestData(this.guest, this.account);
-      this.account = r.data;
-      this.guest = { folders: [], notes: [] };
-      this.dialog = null;
-      this.banner = r.stats; // rendered via dialogs.moveGuestData.done, so it follows the language toggle
     }
   }
 }).mount('#app');
