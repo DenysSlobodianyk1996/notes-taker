@@ -20,7 +20,7 @@ Angular 22 (standalone, signals, Signal Forms), ngx-translate (EN/UA), plain SCS
 | Decisions (ADRs) | [docs/adr/](docs/adr/) |
 | Firebase setup | [docs/setup/firebase.md](docs/setup/firebase.md) |
 | CI and deploy | [docs/setup/deploy.md](docs/setup/deploy.md) |
-| Design (Claude Design canvas + standalone HTML prototype) | [docs/design/](docs/design/) · [open prototype](docs/design/notes-taker-design.html) |
+| Design (Claude Design canvas + standalone HTML prototype) | [Claude Design canvas](https://claude.ai/artifact/TXP1WiDr5cb8hvjZvpV68G) · [docs/design/](docs/design/) · [open prototype](docs/design/notes-taker-design.html) |
 | Spec and tickets | `.scratch/notes-app/` |
 
 ## Branches
