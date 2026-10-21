@@ -28,16 +28,20 @@ body{margin:0}
     <h1 style="margin: 0; font-size: 26px; font-weight: 700">{{t.app.name}}</h1>
     <p style="margin: 0; color: #5F5F64">{{t.login.tagline}}</p>
     <div style="width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 14px">
-      <button type="button" onClick="{{signIn}}" style="height: 48px; border-radius: 10px; border: 1px solid #D4D3CE; background: #FFFFFF; font: inherit; font-weight: 600; color: #1C1C1E; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer">
+      <button type="button" onClick="{{signIn}}" disabled="{{offline}}" style="height: 48px; border-radius: 10px; border: 1px solid #D4D3CE; background: #FFFFFF; font: inherit; font-weight: 600; color: #1C1C1E; opacity: {{signInOpacity}}; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer">
         <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">account_circle</span>
         {{t.login.signInGoogle}}
       </button>
-      <button type="button" onClick="{{continueGuest}}" style="height: 48px; border-radius: 10px; border: 0; background: #F1F0EC; font: inherit; font-weight: 600; color: #1C1C1E; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer">
-        <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">smartphone</span>
-        {{t.login.continueGuest}}
-      </button>
     </div>
-    <p style="margin: 6px 0 0; font-size: 13px; color: #5F5F64">{{t.login.guestHint}}</p>
+    <sc-if value="{{offline}}" hint-placeholder-val="{{false}}">
+      <p role="status" style="margin: 6px 0 0; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; color: #92400E">
+        <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px">wifi_off</span>
+        {{t.login.offline}}
+      </p>
+    </sc-if>
+    <sc-if value="{{online}}" hint-placeholder-val="{{true}}">
+      <p style="margin: 6px 0 0; font-size: 13px; color: #5F5F64">{{t.login.syncHint}}</p>
+    </sc-if>
   </div>
 </main>
 </sc-if>
@@ -60,29 +64,15 @@ body{margin:0}
     <button type="button" aria-pressed="{{enPressed}}" onClick="{{setEn}}" style="min-width: 38px; border: 0; padding: 0 8px; font: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; background: {{enBg}}; color: {{enColor}}; cursor: pointer">{{t.lang.en}}</button>
     <button type="button" aria-pressed="{{ukPressed}}" onClick="{{setUk}}" style="min-width: 38px; border: 0; border-left: 1px solid #D4D3CE; padding: 0 8px; font: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; background: {{ukBg}}; color: {{ukColor}}; cursor: pointer">{{t.lang.uk}}</button>
   </div>
-  <sc-if value="{{isGuest}}" hint-placeholder-val="{{true}}">
-    <sc-if value="{{wide}}" hint-placeholder-val="{{true}}">
-      <span style="display: flex; align-items: center; gap: 4px; font-size: 13px; color: #5F5F64; padding: 4px 10px; border-radius: 999px; background: #F1F0EC; white-space: nowrap">
-        <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 16px">smartphone</span>
-        {{t.header.guestOnDevice}}
-      </span>
-    </sc-if>
-    <button type="button" onClick="{{signIn}}" style="height: 40px; flex-shrink: 0; padding: 0 {{btnPad}}; border-radius: 10px; border: 1px solid #D4D3CE; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1C1C1E; display: flex; align-items: center; gap: 6px; white-space: nowrap; cursor: pointer">
-      <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px">login</span>
-      {{signInLabel}}
-    </button>
+  <sc-if value="{{wide}}" hint-placeholder-val="{{true}}">
+    <span aria-hidden="true" style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: #FEF3C7; color: #92400E; display: flex; align-items: center; justify-content: center">
+      <span class="material-symbols-outlined" style="font-size: 20px">person</span>
+    </span>
   </sc-if>
-  <sc-if value="{{isGoogle}}" hint-placeholder-val="{{false}}">
-    <sc-if value="{{wide}}" hint-placeholder-val="{{true}}">
-      <span aria-hidden="true" style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: #FEF3C7; color: #92400E; display: flex; align-items: center; justify-content: center">
-        <span class="material-symbols-outlined" style="font-size: 20px">person</span>
-      </span>
-    </sc-if>
-    <button type="button" onClick="{{signOut}}" style="height: 40px; flex-shrink: 0; padding: 0 {{btnPad}}; border-radius: 10px; border: 0; background: none; font: inherit; font-size: 14px; font-weight: 600; color: #5F5F64; display: flex; align-items: center; gap: 6px; white-space: nowrap; cursor: pointer">
-      <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px">logout</span>
-      {{t.header.signOut}}
-    </button>
-  </sc-if>
+  <button type="button" onClick="{{signOut}}" style="height: 40px; flex-shrink: 0; padding: 0 {{btnPad}}; border-radius: 10px; border: 0; background: none; font: inherit; font-size: 14px; font-weight: 600; color: #5F5F64; display: flex; align-items: center; gap: 6px; white-space: nowrap; cursor: pointer">
+    <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px">logout</span>
+    {{t.header.signOut}}
+  </button>
 </header>
 
 <div style="flex: 1; display: flex; position: relative; min-height: 0">
@@ -168,15 +158,6 @@ body{margin:0}
   <main style="flex: 1; min-width: 0; box-sizing: border-box; padding: {{mainPad}}; overflow-y: auto">
     <div style="max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px">
 
-      <sc-if value="{{hasBanner}}" hint-placeholder-val="{{false}}">
-        <div role="status" style="display: flex; align-items: flex-start; gap: 10px; padding: 12px 12px 12px 14px; border-radius: 12px; background: #FEF3C7; color: #78350F">
-          <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">cloud_done</span>
-          <p style="flex: 1; margin: 0; font-size: 14px">{{banner}}</p>
-          <button type="button" aria-label="{{t.common.dismiss}}" onClick="{{dismissBanner}}" style="width: 32px; height: 32px; margin: -6px -4px -6px 0; border: 0; border-radius: 8px; background: none; color: #78350F; display: flex; align-items: center; justify-content: center; cursor: pointer">
-            <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px">close</span>
-          </button>
-        </div>
-      </sc-if>
 
       <div style="min-width: 0">
         <h1 style="margin: 0; font-size: 26px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{folderName}}</h1>
@@ -287,17 +268,6 @@ body{margin:0}
   <div role="dialog" aria-modal="true" aria-labelledby="dlg-title" style="width: 100%; max-width: 420px; box-sizing: border-box; background: #FFFFFF; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18)">
     <h2 id="dlg-title" style="margin: 0; font-size: 19px; font-weight: 700">{{dialogTitle}}</h2>
     <p style="margin: 0; color: #5F5F64; font-size: 15px">{{dialogBody}}</p>
-    <sc-if value="{{isMoveDialog}}" hint-placeholder-val="{{false}}">
-      <ul style="margin: 4px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px">
-        <sc-for list="{{movePlan}}" as="m" hint-placeholder-count="3">
-          <li style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; background: #F7F6F3; font-size: 14px">
-            <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px; color: #92400E">{{m.icon}}</span>
-            <span style="font-weight: 600">{{m.from}}</span>
-            <span style="color: #5F5F64">{{m.outcome}}</span>
-          </li>
-        </sc-for>
-      </ul>
-    </sc-if>
     <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; flex-wrap: wrap">
       <button type="button" onClick="{{dialogCancel}}" style="height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #D4D3CE; background: #FFFFFF; font: inherit; font-weight: 600; color: #1C1C1E; cursor: pointer">{{dialogCancelLabel}}</button>
       <button type="button" onClick="{{dialogConfirm}}" style="height: 44px; padding: 0 16px; border-radius: 10px; border: 0; background: {{dialogConfirmBg}}; font: inherit; font-weight: 600; color: {{dialogConfirmColor}}; cursor: pointer">{{dialogConfirmLabel}}</button>
@@ -308,7 +278,7 @@ body{margin:0}
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"preset":{"editor":"enum","default":"login","options":["login","app","guest","desktop-editing","delete-folder","move-guest-data","mobile-drawer","new-note","empty"],"section":"Start state"},"lang":{"editor":"enum","default":"en","options":["en","uk"],"section":"Start state"},"accent":{"editor":"color","default":"#F59E0B","options":["#F59E0B","#FBBF24","#FB923C"]},"$preview":{"width":1280,"height":800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"preset":{"editor":"enum","default":"login","options":["login","offline","app","new-account","desktop-editing","delete-folder","mobile-drawer","new-note","empty"],"section":"Start state"},"lang":{"editor":"enum","default":"en","options":["en","uk"],"section":"Start state"},"accent":{"editor":"color","default":"#F59E0B","options":["#F59E0B","#FBBF24","#FB923C"]},"$preview":{"width":1280,"height":800}}'>
 /* I18N:BEGIN */
 var I18N = {
   "en": {
@@ -321,19 +291,15 @@ var I18N = {
       "uk": "UA"
     },
     "common": {
-      "cancel": "Cancel",
-      "dismiss": "Dismiss"
+      "cancel": "Cancel"
     },
     "login": {
       "tagline": "Short notes in folders. Works offline on your phone and computer.",
       "signInGoogle": "Sign in with Google",
-      "continueGuest": "Continue as guest",
-      "guestHint": "Guest notes stay on this device. You can move them to your Google account later."
+      "syncHint": "Your notes sync across all your devices.",
+      "offline": "You're offline. Connect to sign in."
     },
     "header": {
-      "guestOnDevice": "Guest · on this device",
-      "signIn": "Sign in",
-      "signInGoogle": "Sign in with Google",
       "signOut": "Sign out",
       "openFolders": "Open folders",
       "closeFolders": "Close folders"
@@ -385,15 +351,6 @@ var I18N = {
         "title": "Delete this note?",
         "body": "“{{note}}” will be deleted. This can't be undone.",
         "confirm": "Delete note"
-      },
-      "moveGuestData": {
-        "title": "Move guest notes to your account?",
-        "body": "From guest mode on this device: folders: {{folders}}, notes: {{notes}}. Folders with the same name are merged and duplicate notes are skipped. After moving, the guest copy is removed from this device.",
-        "mergesInto": "merges into “{{folder}}”",
-        "newFolder": "new folder",
-        "skip": "Not now",
-        "confirm": "Move to account",
-        "done": "Moved to your account. Notes added: {{added}}, duplicates skipped: {{skipped}}, folders created: {{created}}, folders merged: {{merged}}."
       }
     }
   },
@@ -407,19 +364,15 @@ var I18N = {
       "uk": "UA"
     },
     "common": {
-      "cancel": "Скасувати",
-      "dismiss": "Закрити"
+      "cancel": "Скасувати"
     },
     "login": {
       "tagline": "Короткі нотатки в папках. Працює офлайн на телефоні й комп'ютері.",
       "signInGoogle": "Увійти через Google",
-      "continueGuest": "Продовжити як гість",
-      "guestHint": "Нотатки гостя зберігаються лише на цьому пристрої. Пізніше їх можна перенести в обліковий запис Google."
+      "syncHint": "Ваші нотатки синхронізуються на всіх ваших пристроях.",
+      "offline": "Ви офлайн. Під'єднайтеся до інтернету, щоб увійти."
     },
     "header": {
-      "guestOnDevice": "Гість · на цьому пристрої",
-      "signIn": "Увійти",
-      "signInGoogle": "Увійти через Google",
       "signOut": "Вийти",
       "openFolders": "Відкрити папки",
       "closeFolders": "Закрити папки"
@@ -471,15 +424,6 @@ var I18N = {
         "title": "Видалити цю нотатку?",
         "body": "«{{note}}» буде видалено. Цю дію не можна скасувати.",
         "confirm": "Видалити нотатку"
-      },
-      "moveGuestData": {
-        "title": "Перенести нотатки гостя в обліковий запис?",
-        "body": "З режиму гостя на цьому пристрої: папок: {{folders}}, нотаток: {{notes}}. Папки з однаковою назвою об'єднуються, а дублікати нотаток пропускаються. Після перенесення копію гостя буде видалено з цього пристрою.",
-        "mergesInto": "об'єднається з «{{folder}}»",
-        "newFolder": "нова папка",
-        "skip": "Не зараз",
-        "confirm": "Перенести",
-        "done": "Перенесено в обліковий запис. Додано нотаток: {{added}}, пропущено дублікатів: {{skipped}}, створено папок: {{created}}, об'єднано папок: {{merged}}."
       }
     }
   }
@@ -499,22 +443,6 @@ function translate(lang, key, params) {
   return v.replace(/\{\{\s*(\w+)\s*\}\}/g, function (_, p) { return params && params[p] != null ? params[p] : ''; });
 }
 
-function seedGuest() {
-  return {
-    folders: [
-      { id: 'g-gen', name: '', isDefault: true, createdAt: T0 },
-      { id: 'g-shop', name: 'Shopping', isDefault: false, createdAt: T0 + DAY },
-      { id: 'g-work', name: 'work ', isDefault: false, createdAt: T0 + 2 * DAY }
-    ],
-    notes: [
-      { id: 'gn1', folderId: 'g-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, createdAt: T0 + 3 * DAY },
-      { id: 'gn2', folderId: 'g-gen', title: '', text: 'Return library books before Friday', completed: true, createdAt: T0 + 4 * DAY },
-      { id: 'gn3', folderId: 'g-shop', title: 'Groceries', text: 'Milk, eggs, spinach, rye bread', completed: false, createdAt: T0 + 5 * DAY },
-      { id: 'gn4', folderId: 'g-work', title: 'Standup', text: 'Share the sync bug findings', completed: true, createdAt: T0 + 6 * DAY }
-    ]
-  };
-}
-
 function seedAccount() {
   return {
     folders: [
@@ -525,17 +453,13 @@ function seedAccount() {
     notes: [
       { id: 'an1', folderId: 'acc-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, createdAt: T0 - 2 * DAY },
       { id: 'an2', folderId: 'acc-gen', title: '', text: 'Renew bike insurance\nPolicy ends 30 Oct', completed: false, createdAt: T0 - 3 * DAY },
+      { id: 'an7', folderId: 'acc-gen', title: '', text: 'Return library books before Friday', completed: true, createdAt: T0 - 6 * DAY },
       { id: 'an3', folderId: 'acc-work', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.', completed: false, createdAt: T0 - 1 * DAY },
-      { id: 'an4', folderId: 'acc-work', title: 'standup', text: 'Share the sync bug findings ', completed: false, createdAt: T0 - 4 * DAY },
+      { id: 'an4', folderId: 'acc-work', title: 'Standup', text: 'Share the sync bug findings', completed: false, createdAt: T0 - 4 * DAY },
       { id: 'an5', folderId: 'acc-work', title: 'Expenses', text: 'Submit September receipts', completed: true, createdAt: T0 - 9 * DAY },
       { id: 'an6', folderId: 'acc-travel', title: 'Packing list', text: 'Passport, charger, rain jacket, adapters', completed: false, createdAt: T0 - 5 * DAY }
     ]
   };
-}
-
-// Anything beyond an empty Default folder? (checked by marker, not by name)
-function hasGuestData(g) {
-  return g.notes.length > 0 || g.folders.some(function (f) { return !f.isDefault; });
 }
 
 // The Default folder stores no name: it is shown as the folders.defaultName
@@ -548,43 +472,10 @@ function isReservedName(name) {
   return Object.keys(I18N).some(function (l) { return norm(translate(l, 'folders.defaultName')) === k; });
 }
 
+// An Account's first sign-in creates its Default folder.
 function ensureDefault(d) {
   if (d.folders.some(function (f) { return f.isDefault; })) return d;
   return { folders: [{ id: uid(), name: '', isDefault: true, createdAt: Date.now() }].concat(d.folders), notes: d.notes };
-}
-
-// Folder merge + Duplicate note rule. ADR-0006.
-// Default folders always merge with each other (by marker); every other folder merges by name.
-// Plan entries keep the folder objects so the dialog can label them in the current language.
-function mergeGuestData(guest, account) {
-  var folders = account.folders.slice();
-  var notes = account.notes.map(function (n) { return Object.assign({}, n); });
-  var accDefault = folders.find(function (f) { return f.isDefault; });
-  var byKey = {};
-  folders.forEach(function (f) { if (!f.isDefault) byKey[norm(f.name)] = f; });
-  var plan = [];
-  var stats = { created: 0, merged: 0, added: 0, skipped: 0 };
-  guest.folders.slice().sort(byCreatedAsc).forEach(function (gf) {
-    var target = gf.isDefault ? accDefault : byKey[norm(gf.name)];
-    if (target) {
-      stats.merged++;
-      plan.push({ from: gf, merged: true, into: target });
-    } else {
-      target = { id: uid(), name: gf.isDefault ? '' : gf.name.trim(), isDefault: !!gf.isDefault, createdAt: Date.now() + stats.created };
-      folders.push(target);
-      if (target.isDefault) accDefault = target; else byKey[norm(target.name)] = target;
-      stats.created++;
-      plan.push({ from: gf, merged: false });
-    }
-    guest.notes.filter(function (n) { return n.folderId === gf.id; }).forEach(function (gn) {
-      var dup = notes.find(function (n) {
-        return n.folderId === target.id && norm(n.title) === norm(gn.title) && norm(n.text) === norm(gn.text);
-      });
-      if (dup) { stats.skipped++; if (gn.completed) dup.completed = true; }
-      else { notes.push(Object.assign({}, gn, { id: uid(), folderId: target.id })); stats.added++; }
-    });
-  });
-  return { data: { folders: folders, notes: notes }, plan: plan, stats: stats };
 }
 
 class Component extends DCLogic {
@@ -596,29 +487,28 @@ class Component extends DCLogic {
 
   initState(preset, lang) {
     var s = {
-      lang: lang, screen: 'login', mode: null, guest: seedGuest(), account: seedAccount(), sel: null,
-      folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false, banner: null,
+      lang: lang, screen: 'login', account: seedAccount(), sel: null, offline: preset === 'offline',
+      folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false,
       w: typeof window !== 'undefined' ? window.innerWidth : 1280
     };
-    function open(mode) {
+    function open() {
+      s.account = ensureDefault(s.account);
       s.screen = 'app';
-      s.mode = mode;
-      s.sel = (mode === 'google' ? s.account : s.guest).folders.slice().sort(byCreatedAsc)[0].id;
+      s.sel = s.account.folders.slice().sort(byCreatedAsc)[0].id;
     }
-    if (preset === 'app') open('google');
-    if (preset === 'guest') open('guest');
+    if (preset === 'app') open();
+    if (preset === 'new-account') { s.account = { folders: [], notes: [] }; open(); }
     if (preset === 'desktop-editing') {
-      open('google');
+      open();
       s.sel = 'acc-work';
       s.noteEdit = { id: 'an3', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.' };
       s.folderForm = { mode: 'new', id: null, value: 'work ', error: 'folders.errors.taken' };
     }
-    if (preset === 'delete-folder') { open('google'); s.sel = 'acc-work'; s.dialog = { kind: 'deleteFolder', id: 'acc-work' }; }
-    if (preset === 'move-guest-data') { open('google'); s.dialog = { kind: 'move' }; }
-    if (preset === 'mobile-drawer') { open('google'); s.drawer = true; }
-    if (preset === 'new-note') { open('guest'); s.noteEdit = { id: 'new', title: '', text: 'Pick up the parcel at the post office' }; }
+    if (preset === 'delete-folder') { open(); s.sel = 'acc-work'; s.dialog = { kind: 'deleteFolder', id: 'acc-work' }; }
+    if (preset === 'mobile-drawer') { open(); s.drawer = true; }
+    if (preset === 'new-note') { open(); s.noteEdit = { id: 'new', title: '', text: 'Pick up the parcel at the post office' }; }
     if (preset === 'empty') {
-      open('google');
+      open();
       s.account = { folders: s.account.folders.concat([{ id: 'acc-ideas', name: 'Ideas', isDefault: false, createdAt: T0 }]), notes: s.account.notes };
       s.sel = 'acc-ideas';
     }
@@ -627,19 +517,24 @@ class Component extends DCLogic {
 
   componentDidMount() {
     this.onResize = () => this.setState({ w: window.innerWidth });
+    this.onOffline = () => this.setState({ offline: true });
+    this.onOnline = () => this.setState({ offline: false });
     window.addEventListener('resize', this.onResize);
+    window.addEventListener('offline', this.onOffline);
+    window.addEventListener('online', this.onOnline);
+    if (!navigator.onLine) this.setState({ offline: true });
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('offline', this.onOffline);
+    window.removeEventListener('online', this.onOnline);
   }
 
   tr(key, params) { return translate(this.state.lang, key, params); }
-  key() { return this.state.mode === 'google' ? 'account' : 'guest'; }
-  active() { return this.state[this.key()]; }
+  active() { return this.state.account; }
   setData(fn) {
-    var k = this.key();
-    this.setState((st) => { var o = {}; o[k] = fn(st[k]); return o; });
+    this.setState((st) => ({ account: fn(st.account) }));
   }
   sortedFolders() { return this.active().folders.slice().sort(byCreatedAsc); }
   currentFolder() {
@@ -648,20 +543,16 @@ class Component extends DCLogic {
   }
 
   // Session
-  continueGuest() {
-    var g = ensureDefault(this.state.guest);
-    this.setState({ screen: 'app', mode: 'guest', guest: g, sel: g.folders.slice().sort(byCreatedAsc)[0].id, banner: null });
-  }
   signIn() {
+    if (this.state.offline) return;
     var a = ensureDefault(this.state.account);
     this.setState({
-      screen: 'app', mode: 'google', account: a, sel: a.folders.slice().sort(byCreatedAsc)[0].id,
-      folderForm: null, noteEdit: null, search: '', drawer: false,
-      dialog: hasGuestData(this.state.guest) ? { kind: 'move' } : null
+      screen: 'app', account: a, sel: a.folders.slice().sort(byCreatedAsc)[0].id,
+      folderForm: null, noteEdit: null, search: '', drawer: false, dialog: null
     });
   }
   signOut() {
-    this.setState({ screen: 'login', mode: null, sel: null, folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false, banner: null });
+    this.setState({ screen: 'login', sel: null, folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false });
   }
 
   // Folders
@@ -722,12 +613,6 @@ class Component extends DCLogic {
     this.setState({ dialog: null });
   }
 
-  // Move guest data
-  moveGuestData() {
-    var r = mergeGuestData(this.state.guest, this.state.account);
-    this.setState({ account: r.data, guest: { folders: [], notes: [] }, dialog: null, banner: r.stats });
-  }
-
   renderVals() {
     var s = this.state;
     var t = I18N[s.lang] || {};
@@ -737,13 +622,12 @@ class Component extends DCLogic {
     var isEn = s.lang === 'en';
     var vals = {
       t: t, lang: s.lang, accent: accent, narrow: narrow, wide: !narrow, isLogin: !isApp, isApp: isApp,
-      signIn: () => this.signIn(), continueGuest: () => this.continueGuest(), signOut: () => this.signOut(),
+      signIn: () => this.signIn(), signOut: () => this.signOut(),
+      offline: !!s.offline, online: !s.offline, signInOpacity: s.offline ? 0.45 : 1,
       setEn: () => this.setState({ lang: 'en' }), setUk: () => this.setState({ lang: 'uk' }),
       enPressed: isEn ? 'true' : 'false', ukPressed: isEn ? 'false' : 'true',
       enBg: isEn ? '#FEF3C7' : '#FFFFFF', ukBg: isEn ? '#FFFFFF' : '#FEF3C7',
       enColor: isEn ? '#92400E' : '#5F5F64', ukColor: isEn ? '#5F5F64' : '#92400E',
-      isGuest: s.mode === 'guest', isGoogle: s.mode === 'google',
-      signInLabel: narrow ? this.tr('header.signIn') : this.tr('header.signInGoogle'),
       btnPad: narrow ? '10px' : '14px',
       hasDialog: false
     };
@@ -844,14 +728,9 @@ class Component extends DCLogic {
     vals.showNoMatch = all.length > 0 && shown.length === 0;
     vals.noMatchTitle = this.tr('notes.noMatchTitle', { query: s.search.trim() });
 
-    vals.hasBanner = !!s.banner;
-    vals.banner = s.banner ? this.tr('dialogs.moveGuestData.done', s.banner) : '';
-    vals.dismissBanner = () => this.setState({ banner: null });
 
     var dlg = s.dialog;
     vals.hasDialog = !!dlg;
-    vals.isMoveDialog = !!(dlg && dlg.kind === 'move');
-    vals.movePlan = [];
     vals.dialogCancel = () => this.setState({ dialog: null });
     vals.dialogCancelLabel = this.tr('common.cancel');
     vals.dialogConfirmBg = '#B91C1C';
@@ -870,21 +749,6 @@ class Component extends DCLogic {
       vals.dialogBody = this.tr('dialogs.deleteNote.body', { note: dnote.title || dnote.text.slice(0, 60) });
       vals.dialogConfirmLabel = this.tr('dialogs.deleteNote.confirm');
       vals.dialogConfirm = () => this.deleteNote(dlg.id);
-    }
-    if (dlg && dlg.kind === 'move') {
-      var g = s.guest;
-      vals.dialogTitle = this.tr('dialogs.moveGuestData.title');
-      vals.dialogBody = this.tr('dialogs.moveGuestData.body', { folders: g.folders.length, notes: g.notes.length });
-      vals.movePlan = mergeGuestData(g, s.account).plan.map((m) => ({
-        icon: m.merged ? 'merge' : 'create_new_folder',
-        from: folderLabel(m.from, s.lang),
-        outcome: m.merged ? this.tr('dialogs.moveGuestData.mergesInto', { folder: folderLabel(m.into, s.lang) }) : this.tr('dialogs.moveGuestData.newFolder')
-      }));
-      vals.dialogCancelLabel = this.tr('dialogs.moveGuestData.skip');
-      vals.dialogConfirmLabel = this.tr('dialogs.moveGuestData.confirm');
-      vals.dialogConfirmBg = accent;
-      vals.dialogConfirmColor = '#1C1C1E';
-      vals.dialogConfirm = () => this.moveGuestData();
     }
     return vals;
   }

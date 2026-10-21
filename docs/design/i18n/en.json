@@ -8,19 +8,15 @@
     "uk": "UA"
   },
   "common": {
-    "cancel": "Cancel",
-    "dismiss": "Dismiss"
+    "cancel": "Cancel"
   },
   "login": {
     "tagline": "Short notes in folders. Works offline on your phone and computer.",
     "signInGoogle": "Sign in with Google",
-    "continueGuest": "Continue as guest",
-    "guestHint": "Guest notes stay on this device. You can move them to your Google account later."
+    "syncHint": "Your notes sync across all your devices.",
+    "offline": "You're offline. Connect to sign in."
   },
   "header": {
-    "guestOnDevice": "Guest · on this device",
-    "signIn": "Sign in",
-    "signInGoogle": "Sign in with Google",
     "signOut": "Sign out",
     "openFolders": "Open folders",
     "closeFolders": "Close folders"
@@ -72,15 +68,6 @@
       "title": "Delete this note?",
       "body": "“{{note}}” will be deleted. This can't be undone.",
       "confirm": "Delete note"
-    },
-    "moveGuestData": {
-      "title": "Move guest notes to your account?",
-      "body": "From guest mode on this device: folders: {{folders}}, notes: {{notes}}. Folders with the same name are merged and duplicate notes are skipped. After moving, the guest copy is removed from this device.",
-      "mergesInto": "merges into “{{folder}}”",
-      "newFolder": "new folder",
-      "skip": "Not now",
-      "confirm": "Move to account",
-      "done": "Moved to your account. Notes added: {{added}}, duplicates skipped: {{skipped}}, folders created: {{created}}, folders merged: {{merged}}."
     }
   }
 }
