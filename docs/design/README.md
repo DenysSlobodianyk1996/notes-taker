@@ -9,6 +9,7 @@ A clickable Claude Design prototype of every flow, made **before any code**. It 
   - **Reset**
 
   Deep links work too: `notes-taker-design.html?state=offline&view=phone&lang=uk`.
+
 - **Canvas source:** [`project/`](project/). `canvas.json` is the canvas layout, and each `*.dc.html` file is one artboard. These files only render inside Claude Design.
 
 - **Translations:** [`i18n/en.json`](i18n/en.json) and [`i18n/uk.json`](i18n/uk.json). They use ngx-translate's format (nested keys, `{{param}}`, one translation per key) and become the app's `public/i18n/*.json`. Both prototypes embed them: after editing the JSON, run `python3 docs/design/sync-i18n.py`.
@@ -27,15 +28,18 @@ Both copies are throwaway prototype code (Vue in the HTML file, Design Component
 
 Minimal and light, in the style of Apple Notes:
 
-| Token | Value | Use |
-| --- | --- | --- |
-| Accent | `#F59E0B` (amber) | primary buttons, checkbox, active borders, app icon |
-| Accent soft | `#FEF3C7` / text `#92400E` | selected folder, language toggle, offline note |
-| Text | `#1C1C1E` | body |
-| Muted text | `#5F5F64` | secondary text (passes 4.5:1 on white and sidebar) |
-| Sidebar | `#F7F6F3` | folders panel, login background |
-| Border | `#E5E4E0` / `#ECEBE7` | dividers |
-| Danger | `#B91C1C` | delete confirm, form errors |
+| Token          | Value                      | Use                                                 |
+| -------------- | -------------------------- | --------------------------------------------------- |
+| Accent         | `#F59E0B` (amber)          | primary buttons, checkbox, active borders, app icon |
+| Accent soft    | `#FEF3C7` / text `#92400E` | selected folder, language toggle, offline note      |
+| Text           | `#1C1C1E`                  | body                                                |
+| Muted text     | `#5F5F64`                  | secondary text (passes 4.5:1 on white and sidebar)  |
+| Strong border  | `#D4D3CE`                  | outlined buttons, language toggle                   |
+| Chip           | `#F1F0EC`                  | search field, chips                                 |
+| Completed text | `#6B6B70`                  | completed notes (crossed out)                       |
+| Sidebar        | `#F7F6F3`                  | folders panel, login background                     |
+| Border         | `#E5E4E0` / `#ECEBE7`      | dividers                                            |
+| Danger         | `#B91C1C`                  | delete confirm, form errors                         |
 
 - **Font:** the system UI font stack.
 - **Icons:** Material Symbols Outlined (Google Fonts).
@@ -51,19 +55,19 @@ Minimal and light, in the style of Apple Notes:
 
 ## Artboards
 
-| Artboard | Shows |
-| --- | --- |
-| `Main` | **Interactive full flow:** login → Google sign-in → folders CRUD, notes CRUD, completion, search, delete dialogs → sign-out |
-| `Desktop-Editing` | inline note edit row, and the new-folder row with the duplicate-name error |
-| `Desktop-DeleteFolder` | `<dialog>` confirmation for deleting a folder with its notes |
-| `Mobile-Login` | login page |
-| `Mobile-Login-Offline` | login page while offline, before the first sign-in |
-| `Mobile-List` | notes list on a phone |
-| `Mobile-Drawer` | folders drawer open |
-| `Mobile-NewNote` | new-note row at the top of the list |
-| `Mobile-Empty` | empty folder state |
-| `Mobile-Login-UA` | login page in Ukrainian |
-| `Mobile-List-UA` | notes list in Ukrainian, with user content left untranslated |
+| Artboard               | Shows                                                                                                                       |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `Main`                 | **Interactive full flow:** login → Google sign-in → folders CRUD, notes CRUD, completion, search, delete dialogs → sign-out |
+| `Desktop-Editing`      | inline note edit row, and the new-folder row with the duplicate-name error                                                  |
+| `Desktop-DeleteFolder` | `<dialog>` confirmation for deleting a folder with its notes                                                                |
+| `Mobile-Login`         | login page                                                                                                                  |
+| `Mobile-Login-Offline` | login page while offline, before the first sign-in                                                                          |
+| `Mobile-List`          | notes list on a phone                                                                                                       |
+| `Mobile-Drawer`        | folders drawer open                                                                                                         |
+| `Mobile-NewNote`       | new-note row at the top of the list                                                                                         |
+| `Mobile-Empty`         | empty folder state                                                                                                          |
+| `Mobile-Login-UA`      | login page in Ukrainian                                                                                                     |
+| `Mobile-List-UA`       | notes list in Ukrainian, with user content left untranslated                                                                |
 
 The other artboards all reuse `Main`, opened at a fixed starting state (its `preset` and `lang` props). In the standalone HTML, the same states are the **Start state** options, with `?state=` values `login`, `offline`, `app`, `new-account`, `desktop-editing`, `delete-folder`, `mobile-drawer`, `new-note` and `empty`. Add `&lang=uk` for Ukrainian.
 

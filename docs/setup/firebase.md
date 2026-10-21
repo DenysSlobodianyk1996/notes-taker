@@ -2,11 +2,11 @@
 
 Everything here is free on the **Spark** plan, and no credit card is needed.
 
-| Service | Free limit (Spark) |
-| --- | --- |
-| Authentication (Google provider) | 50,000 monthly active users |
-| Firestore | 1 GiB stored, 50K reads / 20K writes / 20K deletes per day |
-| Hosting | 10 GB storage, 360 MB/day transfer |
+| Service                          | Free limit (Spark)                                         |
+| -------------------------------- | ---------------------------------------------------------- |
+| Authentication (Google provider) | 50,000 monthly active users                                |
+| Firestore                        | 1 GiB stored, 50K reads / 20K writes / 20K deletes per day |
+| Hosting                          | 10 GB storage, 360 MB/day transfer                         |
 
 Limits: <https://firebase.google.com/pricing>
 

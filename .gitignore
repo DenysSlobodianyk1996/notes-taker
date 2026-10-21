@@ -1,9 +1,14 @@
 # deps / build
-node_modules/
-dist/
-.angular/
-coverage/
-out-tsc/
+/node_modules
+/dist
+/tmp
+/out-tsc
+/.angular/cache
+/coverage
+.sass-cache/
+npm-debug.log
+yarn-error.log
+__screenshots__/
 
 # firebase
 .firebase/
@@ -14,8 +19,12 @@ firebase-debug.*.log
 .env
 .env.*
 .DS_Store
+Thumbs.db
 .idea/
 .vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 !.vscode/extensions.json
 
 # claude local

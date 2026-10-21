@@ -1,0 +1,73 @@
+{
+  "app": {
+    "name": "Notes"
+  },
+  "lang": {
+    "label": "Language",
+    "en": "EN",
+    "uk": "UA"
+  },
+  "common": {
+    "cancel": "Cancel"
+  },
+  "login": {
+    "tagline": "Short notes in folders. Works offline on your phone and computer.",
+    "signInGoogle": "Sign in with Google",
+    "syncHint": "Your notes sync across all your devices.",
+    "offline": "You're offline. Connect to sign in."
+  },
+  "header": {
+    "signOut": "Sign out",
+    "openFolders": "Open folders",
+    "closeFolders": "Close folders"
+  },
+  "folders": {
+    "title": "Folders",
+    "new": "New folder",
+    "name": "Folder name",
+    "create": "Create folder",
+    "saveName": "Save folder name",
+    "rename": "Rename folder",
+    "delete": "Delete folder",
+    "defaultLocked": "The default folder can't be renamed or deleted",
+    "defaultName": "General",
+    "errors": {
+      "required": "Enter a folder name",
+      "maxLength": "Use 50 characters or fewer",
+      "taken": "A folder with this name already exists"
+    }
+  },
+  "notes": {
+    "count": "Notes: {{count}}",
+    "completed": "Completed: {{count}}",
+    "searchLabel": "Search notes in this folder",
+    "searchIn": "Search in {{folder}}",
+    "new": "New note",
+    "titlePlaceholder": "Title (optional)",
+    "textLabel": "Note text",
+    "textPlaceholder": "Write a note…",
+    "shortcuts": "Ctrl/⌘+Enter to save · Esc to cancel",
+    "save": "Save note",
+    "markCompleted": "Mark as completed: {{note}}",
+    "markNotCompleted": "Mark as not completed: {{note}}",
+    "edit": "Edit note: {{note}}",
+    "delete": "Delete note",
+    "emptyTitle": "No notes in {{folder}} yet",
+    "emptyHint": "Tap + to add your first note.",
+    "noMatchTitle": "No notes match “{{query}}”",
+    "noMatchHint": "Search looks at titles and text in this folder only."
+  },
+  "dialogs": {
+    "deleteFolder": {
+      "title": "Delete “{{folder}}”?",
+      "body": "The folder and all its notes (notes: {{count}}) will be deleted. This can't be undone.",
+      "bodyEmpty": "This empty folder will be deleted.",
+      "confirm": "Delete folder"
+    },
+    "deleteNote": {
+      "title": "Delete this note?",
+      "body": "“{{note}}” will be deleted. This can't be undone.",
+      "confirm": "Delete note"
+    }
+  }
+}
