@@ -3,7 +3,7 @@
 .toggle {
   display: inline-flex;
   flex-shrink: 0;
-  height: 32px;
+  height: 36px; // design: touch targets >= 36px
   border: 1px solid $border-strong;
   border-radius: 8px;
   overflow: hidden;
@@ -11,7 +11,7 @@
 }
 
 button {
-  min-width: 38px;
+  min-width: 40px;
   padding: 0 8px;
   border: 0;
   background: none;

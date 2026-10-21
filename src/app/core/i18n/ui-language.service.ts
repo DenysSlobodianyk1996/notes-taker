@@ -16,8 +16,12 @@ export class UiLanguageService {
 
   /** Applies the saved or browser language. Call once at startup. */
   init(): Promise<void> {
-    const browser = this.document.defaultView?.navigator.language ?? '';
+    const browser = this.window?.navigator.language ?? '';
     return this.apply(initialUiLanguage(this.readSaved(), browser));
+  }
+
+  private get window(): Window | null {
+    return this.document.defaultView;
   }
 
   async use(lang: UiLanguage): Promise<void> {
@@ -33,7 +37,7 @@ export class UiLanguageService {
 
   private readSaved(): string | null {
     try {
-      return localStorage.getItem(UI_LANGUAGE_STORAGE_KEY);
+      return this.window?.localStorage.getItem(UI_LANGUAGE_STORAGE_KEY) ?? null;
     } catch {
       return null;
     }
@@ -41,7 +45,7 @@ export class UiLanguageService {
 
   private save(lang: UiLanguage): void {
     try {
-      localStorage.setItem(UI_LANGUAGE_STORAGE_KEY, lang);
+      this.window?.localStorage.setItem(UI_LANGUAGE_STORAGE_KEY, lang);
     } catch {
       // Storage can be unavailable (private mode); the choice then lasts for this session only.
     }

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { getButton as button } from '../../../testing/dom';
+import { getButton } from '../../../testing/dom';
 import { provideTestTranslations } from '../../../testing/translations';
 import { UiLanguageService } from '../../core/i18n/ui-language.service';
 import { LoginPage } from './login-page';
@@ -21,7 +21,7 @@ describe('LoginPage', () => {
   it('shows the app name, the Google sign-in button and the sync hint in English', async () => {
     const root = (await render()).nativeElement as HTMLElement;
     expect(root.querySelector('h1')?.textContent?.trim()).toBe('Notes');
-    expect(button(root, 'Sign in with Google')).toBeTruthy();
+    expect(getButton(root, 'Sign in with Google')).toBeTruthy();
     expect(root.textContent).toContain('Your notes sync across all your devices.');
   });
 
@@ -34,12 +34,12 @@ describe('LoginPage', () => {
     const fixture = await render();
     const root = fixture.nativeElement as HTMLElement;
 
-    button(root, 'UA').click();
+    getButton(root, 'UA').click();
     await fixture.whenStable();
 
     expect(root.querySelector('h1')?.textContent?.trim()).toBe('Нотатки');
-    expect(button(root, 'Увійти через Google')).toBeTruthy();
-    expect(button(root, 'UA').getAttribute('aria-pressed')).toBe('true');
-    expect(button(root, 'EN').getAttribute('aria-pressed')).toBe('false');
+    expect(getButton(root, 'Увійти через Google')).toBeTruthy();
+    expect(getButton(root, 'UA').getAttribute('aria-pressed')).toBe('true');
+    expect(getButton(root, 'EN').getAttribute('aria-pressed')).toBe('false');
   });
 });
