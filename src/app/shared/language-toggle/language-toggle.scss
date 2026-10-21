@@ -1,0 +1,33 @@
+@use '../../../styles/tokens' as *;
+
+.toggle {
+  display: inline-flex;
+  flex-shrink: 0;
+  height: 32px;
+  border: 1px solid $border-strong;
+  border-radius: 8px;
+  overflow: hidden;
+  background: $surface;
+}
+
+button {
+  min-width: 38px;
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: $muted;
+  cursor: pointer;
+
+  & + & {
+    border-left: 1px solid $border-strong;
+  }
+
+  &[aria-pressed='true'] {
+    background: $accent-soft;
+    color: $accent-ink;
+  }
+}
