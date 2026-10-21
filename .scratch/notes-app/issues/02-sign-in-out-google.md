@@ -15,3 +15,18 @@
 - [ ] `firestore.rules` allows `users/{uid}/**` only when `request.auth.uid == uid`; `.firebaserc` committed.
 - [ ] Tests (services replaced through DI by test doubles): the offline login state, the sign-in click, sign-out calling the service, and the guard redirects.
 - [ ] Manual: sign in locally (`localhost` authorised), reload and stay signed in, sign out.
+
+## Comments
+
+**Firebase web config (project `notes-taker-df334`).** These values are public and safe to commit. Paste them into `src/environments/environment.ts` and `environment.prod.ts` as `environment.firebase`. `authDomain` is set to `web.app` on purpose (see ADR-0003):
+
+```ts
+firebase: {
+  apiKey: 'AIzaSyBvaf1aWBltfv17HkozXEl5t4ec_HV5ipI',
+  authDomain: 'notes-taker-df334.web.app',
+  projectId: 'notes-taker-df334',
+  storageBucket: 'notes-taker-df334.firebasestorage.app',
+  messagingSenderId: '443702703956',
+  appId: '1:443702703956:web:e5598de0f8763276b43ac1',
+},
+```
