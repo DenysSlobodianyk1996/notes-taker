@@ -4,7 +4,8 @@ The interface is available in English and Ukrainian, using `@ngx-translate/core`
 
 - **Choosing the language:** on the first visit the browser language decides (`uk*` → Ukrainian, anything else → English). After that, the choice is saved in `localStorage` on the device only, and is not synced to the Account.
 - **Switching:** an "EN | UA" toggle in the header and on the login card switches instantly, with no reload. Each switch also updates `<html lang>`.
-- **User content is never translated:** Folder names, Titles and Text stay as typed. The Default folder is named in the UI language at the moment it's created, then behaves like any other name.
+- **User content is never translated:** Folder names, Titles and Text stay as typed.
+- **The Default folder is the exception:** it stores no name (`isDefault: true`, `name: ''`) and is shown as `folders.defaultName` ("General" / "Загальне"), so it follows the toggle. This works only because it can't be renamed. Storing the translation key itself in `name` was rejected: the marker already identifies the folder, and a key in `name` could leak into search, sorting or exports.
 - The PWA manifest stays in English.
 
 ## Considered options
