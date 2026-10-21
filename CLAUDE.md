@@ -1,9 +1,9 @@
 # Notes Taker
 
-An Angular 22 PWA for notes grouped into folders. It works as a Guest (IndexedDB on the device) or with a Google Account (Firebase Auth and Firestore), and is hosted on Firebase Hosting.
+An Angular 22 PWA for notes grouped into folders. Sign-in is Google only; all data lives in Firestore (Firebase Auth and Firestore, with an offline cache), and it is hosted on Firebase Hosting. There is no guest mode (ADR-0009).
 
 - Plan: `docs/plan.md`
-- Glossary: `CONTEXT.md`. Use its terms (Folder, Note, Guest, Account, Move guest data…) in code, tests and tickets.
+- Glossary: `CONTEXT.md`. Use its terms (Folder, Default folder, Note, Account, UI language…) in code, tests and tickets.
 - Decisions: `docs/adr/`
 - Setup: `docs/setup/firebase.md` and `docs/setup/deploy.md`
 - Design: `docs/design/`. This is the source of truth for UI and flows: `notes-taker-design.html` is the standalone prototype, `project/` is the Claude Design canvas source, and the canvas link is in `docs/design/README.md`.
