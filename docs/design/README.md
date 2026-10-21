@@ -28,15 +28,18 @@ Both copies are throwaway prototype code (Vue in the HTML file, Design Component
 
 Minimal and light, in the style of Apple Notes:
 
-| Token       | Value                      | Use                                                 |
-| ----------- | -------------------------- | --------------------------------------------------- |
-| Accent      | `#F59E0B` (amber)          | primary buttons, checkbox, active borders, app icon |
-| Accent soft | `#FEF3C7` / text `#92400E` | selected folder, language toggle, offline note      |
-| Text        | `#1C1C1E`                  | body                                                |
-| Muted text  | `#5F5F64`                  | secondary text (passes 4.5:1 on white and sidebar)  |
-| Sidebar     | `#F7F6F3`                  | folders panel, login background                     |
-| Border      | `#E5E4E0` / `#ECEBE7`      | dividers                                            |
-| Danger      | `#B91C1C`                  | delete confirm, form errors                         |
+| Token          | Value                      | Use                                                 |
+| -------------- | -------------------------- | --------------------------------------------------- |
+| Accent         | `#F59E0B` (amber)          | primary buttons, checkbox, active borders, app icon |
+| Accent soft    | `#FEF3C7` / text `#92400E` | selected folder, language toggle, offline note      |
+| Text           | `#1C1C1E`                  | body                                                |
+| Muted text     | `#5F5F64`                  | secondary text (passes 4.5:1 on white and sidebar)  |
+| Strong border  | `#D4D3CE`                  | outlined buttons, language toggle                   |
+| Chip           | `#F1F0EC`                  | search field, chips                                 |
+| Completed text | `#6B6B70`                  | completed notes (crossed out)                       |
+| Sidebar        | `#F7F6F3`                  | folders panel, login background                     |
+| Border         | `#E5E4E0` / `#ECEBE7`      | dividers                                            |
+| Danger         | `#B91C1C`                  | delete confirm, form errors                         |
 
 - **Font:** the system UI font stack.
 - **Icons:** Material Symbols Outlined (Google Fonts).
