@@ -93,3 +93,17 @@ h1 {
   font-size: 13px;
   color: $muted;
 }
+
+.offline {
+  margin: 6px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  color: $accent-ink;
+
+  .material-symbols-outlined {
+    font-size: 18px;
+  }
+}

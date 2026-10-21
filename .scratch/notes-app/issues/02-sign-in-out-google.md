@@ -6,14 +6,14 @@
 
 **Status:** ready-for-agent
 
-- [ ] `@angular/fire` wired with the owner's config (`authDomain` = `<project>.web.app`); Firestore uses `persistentLocalCache` with multi-tab support.
-- [ ] Auth service: the current user as a signal; `signIn()` uses a popup on desktop and a redirect on mobile or standalone display mode, and completes a pending redirect result on startup; `signOut()` signs out, terminates Firestore and clears its persistent cache.
-- [ ] Online-status signal driven by `navigator.onLine` and the online/offline events.
-- [ ] Login page: the button calls `signIn()`; when offline, the button is disabled and the offline note is shown instead of the sync hint.
-- [ ] `authGuard` sends anyone not signed in to `/login`; `/login` sends signed-in users to `/folders`; `**` goes to `/folders`.
-- [ ] App shell with a header (brand, toggle, avatar, Sign out) and a router outlet; `/folders` shows a placeholder.
-- [ ] `firestore.rules` allows `users/{uid}/**` only when `request.auth.uid == uid`; `.firebaserc` committed.
-- [ ] Tests (services replaced through DI by test doubles): the offline login state, the sign-in click, sign-out calling the service, and the guard redirects.
+- [x] Firebase SDK (not `@angular/fire`, see ADR-0009) wired with the owner's config (`authDomain` = `<project>.web.app`); Firestore uses `persistentLocalCache` with multi-tab support.
+- [x] Auth service: the current user as a signal; `signIn()` uses a popup on desktop and a redirect on mobile or standalone display mode, and completes a pending redirect result on startup; `signOut()` signs out, terminates Firestore and clears its persistent cache.
+- [x] Online-status signal driven by `navigator.onLine` and the online/offline events.
+- [x] Login page: the button calls `signIn()`; when offline, the button is disabled and the offline note is shown instead of the sync hint.
+- [x] `authGuard` sends anyone not signed in to `/login`; `/login` sends signed-in users to `/folders`; `**` goes to `/folders`.
+- [x] App shell with a header (brand, toggle, avatar, Sign out) and a router outlet; `/folders` shows a placeholder.
+- [x] `firestore.rules` allows `users/{uid}/**` only when `request.auth.uid == uid`; `.firebaserc` committed.
+- [x] Tests (services replaced through DI by test doubles): the offline login state, the sign-in click, sign-out calling the service, and the guard redirects.
 - [ ] Manual: sign in locally (`localhost` authorised), reload and stay signed in, sign out.
 
 ## Comments
