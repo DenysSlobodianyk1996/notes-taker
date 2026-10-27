@@ -19,7 +19,7 @@ The one Folder each Account gets automatically on its first sign-in. It has no s
 _Avoid_: Inbox, root folder, main folder
 
 **Note**:
-A single entry inside exactly one Folder. It has an optional Title, required Text, and can be Completed.
+A single entry inside exactly one Folder. It has an optional Title, required Text, an optional Due date, and can be Completed.
 _Avoid_: Item, todo, task, entry
 
 **Title**:
@@ -28,6 +28,14 @@ The optional short heading of a Note.
 **Text**:
 The required body of a Note, up to 1000 characters.
 _Avoid_: Description, content, body
+
+**Due date**:
+The optional day (no time) by which a Note should be Completed. It can be set, changed or cleared. It never changes the order of Notes.
+_Avoid_: Deadline, reminder, due time
+
+**Overdue**:
+A Note whose Due date is before today and that isn't Completed. It is highlighted in red.
+_Avoid_: Late, expired
 
 **Completed**:
 A state of a Note, switched on or off with its checkbox. A Completed Note stays in the list but is shown crossed out.
