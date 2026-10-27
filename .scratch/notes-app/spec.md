@@ -79,6 +79,12 @@ A small installable web app (PWA) called **Notes**:
 49. As a user, I want the Folder header to show the Folder name, the number of Notes and the number Completed, so that I can see progress.
 50. As a user, I want a friendly empty state ("No notes in <Folder> yet") when a Folder has no Notes, so that I know what to do next.
 
+### Due date
+74. As a user, I want to give a Note an optional Due date (a day, no time) in its new or edit form row, so that I can see when something must be done.
+75. As a user, I want to clear a Note's Due date, so that a Note I no longer have to finish by a day goes back to having none.
+76. As a user, I want each Note with a Due date to show it, formatted in the current UI language, so that I see deadlines at a glance.
+77. As a user, I want an Overdue Note (its Due date is before today and it isn't Completed) highlighted in red, so that I notice what I missed. Due dates don't change the order: Notes stay newest first.
+
 ### Search
 51. As a user, I want a search box above the Note list that filters as I type, so that I can find a Note quickly.
 52. As a user, I want search to match the Title and Text, ignoring case, within the current Folder only, so that results are predictable.
@@ -118,11 +124,11 @@ A small installable web app (PWA) called **Notes**:
 - Tooling: Vitest through Angular's unit-test builder, angular-eslint, Prettier, Husky with lint-staged.
 
 ### Modules (deep modules, small interfaces)
-- **Domain rules** (pure functions, no Angular): folder-name normalisation; the "name taken" check (against existing names, excluding the folder being renamed, ignoring the Default folder, and rejecting every language's Default-folder display name); the folder label (translated name for the Default folder, otherwise the stored name); note filtering by query; folder and note validation (required, max lengths, trimming); sorting (folders oldest first, notes newest first).
+- **Domain rules** (pure functions, no Angular): folder-name normalisation; the "name taken" check (against existing names, excluding the folder being renamed, ignoring the Default folder, and rejecting every language's Default-folder display name); the folder label (translated name for the Default folder, otherwise the stored name); note filtering by query; the Overdue check (Due date before today's local date and not Completed); folder and note validation (required, max lengths, trimming); sorting (folders oldest first, notes newest first).
 - **Auth service:** the current user as a signal; `signIn()` chooses popup on desktop and redirect on mobile or standalone display mode, and completes a pending redirect result on startup; `signOut()` signs out, then terminates Firestore and clears its persistent cache.
 - **Online status:** a signal driven by `navigator.onLine` and the online/offline events.
 - **Folders service:** a live, sorted folder list signal for the current user; `createFolder(name)`, `renameFolder(id, name)`, `deleteFolder(id)` (deletes the folder and all its notes in one batched write; refuses the Default folder), and `ensureDefaultFolder()` (creates the Default folder only if the Account has no folder marked default; idempotent).
-- **Notes service:** a live note list per folder; `createNote`, `updateNote`, `toggleNote`, `deleteNote`; it also provides note counts per folder for the sidebar.
+- **Notes service:** a live note list per folder; `createNote`, `updateNote` (both take an optional Due date), `toggleNote`, `deleteNote`; it also provides note counts per folder for the sidebar.
 - The services talk to Firestore directly; there is no store interface (ADR-0009). Validation runs in the UI through the domain rules, and the services assume valid input apart from the Default-folder guard.
 - **UI-language service:** picks the initial language (saved choice, then the browser language), `use(lang)` (switches ngx-translate, saves the choice, sets `<html lang>`), and exposes the current language as a signal.
 - **Features:** a login page; a shell (header with brand, language toggle, avatar and sign-out; responsive sidebar or drawer; outlet); a folders sidebar (list, inline new/rename form row, lock on the Default folder); a notes view (header with counts, search, inline new/edit form row, note rows, empty and no-match states); a shared confirm dialog built on native `<dialog>`; a shared language toggle.
@@ -134,7 +140,8 @@ A small installable web app (PWA) called **Notes**:
 
 ### Data model (Firestore)
 - `users/{uid}/folders/{folderId}`: `{ name: string, nameKey: string, isDefault: boolean, createdAt: Timestamp }`. The Default folder stores `name: ''`, `nameKey: ''`, `isDefault: true`. `nameKey = name.trim().toLowerCase()`.
-- `users/{uid}/notes/{noteId}`: `{ folderId: string, title: string, text: string, completed: boolean, createdAt: Timestamp, updatedAt: Timestamp }`.
+- `users/{uid}/notes/{noteId}`: `{ folderId: string, title: string, text: string, completed: boolean, dueDate: string | null, createdAt: Timestamp, updatedAt: Timestamp }`.
+- `dueDate` is a local calendar day as `'YYYY-MM-DD'`, or `null` for none (clearing sets `null`). A string, not a Timestamp, so the day never shifts across time zones. Notes written before this field existed have no `dueDate` and are read as `null`.
 - IDs come from `crypto.randomUUID()`, set on the client, so writes work offline.
 - Limits: folder name 1–50 characters after trimming; title 0–200; text 1–1000 after trimming (stored trimmed).
 - Security rules: read and write on `users/{uid}/**` only when `request.auth.uid == uid`.
@@ -165,6 +172,7 @@ A small installable web app (PWA) called **Notes**:
   - folder-name normalisation and "name taken", including reserved "General"/"Загальне" in any case and with spaces, and renaming a folder to its own name
   - the folder label for the Default folder in EN and UA
   - note filtering (title and text, case-insensitive, current folder only)
+  - the Overdue check (yesterday Overdue, today and tomorrow not, Completed never)
   - validation limits
   - sort orders
 - **Seam 2, pages and components through Angular TestBed:** render the login page, the shell, the folders sidebar and the notes view with the Auth, Folders, Notes and online-status services replaced through Angular DI by simple test doubles (plain objects with signals and spy methods; no extra interface in app code). Assert on what the user sees and on which service method is called. Cover:
@@ -193,7 +201,7 @@ A small installable web app (PWA) called **Notes**:
 - Rich text or Markdown, images, attachments, checklists inside a Note, reminders, push notifications.
 - Global search across folders, tags, pinning, trash or undo, archive.
 - Sharing or collaboration between Accounts.
-- Dark mode, more languages, plural-aware translations, a translated PWA manifest, date display.
+- Dark mode, more languages, plural-aware translations, a translated PWA manifest, date display other than the Due date. Due-date reminders or notifications, a time of day on the Due date, and sorting or filtering by Due date.
 - End-to-end encryption (the project owner can read data in the Firebase console).
 - A Firebase emulator and end-to-end test suites (may come later).
 

@@ -5,6 +5,8 @@ const tseslint = require('typescript-eslint');
 const angular = require('angular-eslint');
 
 module.exports = defineConfig([
+  // The design prototypes are throwaway Vue / Claude Design code, not Angular templates.
+  { ignores: ['docs/design/**'] },
   {
     files: ['**/*.ts'],
     extends: [

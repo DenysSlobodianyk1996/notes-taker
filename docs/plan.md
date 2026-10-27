@@ -50,7 +50,8 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 
 **Notes**
 
-- Fields: optional title (≤200), required text (≤1000, not just spaces, with a live character count), `completed`, `createdAt`, `updatedAt`.
+- Fields: optional title (≤200), required text (≤1000, not just spaces, with a live character count), `completed`, optional `dueDate` (a day, `'YYYY-MM-DD'` or `null`; can be cleared), `createdAt`, `updatedAt`.
+- A Note with a due date shows it in the UI language's date format. An overdue Note (due date before today, not completed) shows it in red. Due dates don't change the newest-first order (ticket 07a).
 - Shown in full with no preview truncation, newest first. Completed notes stay in place, crossed out and dimmed.
 - Each row has a checkbox on the left that toggles completion either way, and a delete icon that asks in a `<dialog>`.
 - Clicking a row edits it inline with ✓ and ✕ buttons; no autosave. Only one row is edited at a time.
@@ -72,7 +73,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 **Data model**
 
 - Firestore: `users/{uid}/folders/{folderId}` holds `{name, nameKey, isDefault, createdAt}`.
-- Firestore: `users/{uid}/notes/{noteId}` holds `{folderId, title, text, completed, createdAt, updatedAt}`.
+- Firestore: `users/{uid}/notes/{noteId}` holds `{folderId, title, text, completed, dueDate, createdAt, updatedAt}`.
 - Security rules allow access only when `request.auth.uid == uid`.
 - Name uniqueness is checked in the client against the loaded list, since Firestore can't enforce it offline.
 
