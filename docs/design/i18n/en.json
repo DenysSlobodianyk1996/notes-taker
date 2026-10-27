@@ -55,7 +55,11 @@
     "emptyTitle": "No notes in {{folder}} yet",
     "emptyHint": "Tap + to add your first note.",
     "noMatchTitle": "No notes match “{{query}}”",
-    "noMatchHint": "Search looks at titles and text in this folder only."
+    "noMatchHint": "Search looks at titles and text in this folder only.",
+    "dueDateLabel": "Due date",
+    "clearDueDate": "Clear due date",
+    "due": "Due {{date}}",
+    "overdue": "Overdue · {{date}}"
   },
   "dialogs": {
     "deleteFolder": {
