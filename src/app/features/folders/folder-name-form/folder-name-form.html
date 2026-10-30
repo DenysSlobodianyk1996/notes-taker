@@ -1,0 +1,32 @@
+<form class="folder-form" novalidate (submit)="save($event)">
+  <div class="row">
+    <label class="field">
+      <span class="visually-hidden">{{ 'folders.name' | translate }}</span>
+      <input
+        #nameInput
+        [formField]="nameForm.name"
+        [placeholder]="'folders.name' | translate"
+        autocomplete="off"
+        [attr.aria-invalid]="error() ? true : null"
+        [attr.aria-describedby]="error() ? 'folder-name-error' : null"
+        (keydown.escape)="cancelled.emit()"
+      />
+    </label>
+    <button
+      type="button"
+      class="icon-btn cancel"
+      [attr.aria-label]="'common.cancel' | translate"
+      (click)="cancelled.emit()"
+    >
+      <span class="material-symbols-outlined" aria-hidden="true">close</span>
+    </button>
+    <button type="submit" class="icon-btn ok" [attr.aria-label]="saveLabel() | translate">
+      <span class="material-symbols-outlined" aria-hidden="true">check</span>
+    </button>
+  </div>
+  @if (error(); as error) {
+    <p id="folder-name-error" class="error" role="alert">
+      {{ 'folders.errors.' + error | translate }}
+    </p>
+  }
+</form>

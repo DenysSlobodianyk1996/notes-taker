@@ -1,0 +1,14 @@
+// A square, icon-only button (36px touch target), as in the design's folder rows and forms.
+@mixin icon-button {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  cursor: pointer;
+}

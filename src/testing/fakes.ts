@@ -58,6 +58,12 @@ export class FakeFoldersService {
     }
   });
   readonly whenLoaded = vi.fn(async () => this.folders());
+  readonly createFolder = vi.fn((name: string) => {
+    const folder = aFolder({ id: 'new-folder', name, createdAt: new Date('2026-12-01') });
+    this.folders.update((list) => [...list, folder]);
+    return folder.id;
+  });
+  readonly renameFolder = vi.fn();
 }
 
 export function provideFakeFolders(fake = new FakeFoldersService()): Provider {

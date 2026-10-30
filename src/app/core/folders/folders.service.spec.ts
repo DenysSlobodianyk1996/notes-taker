@@ -132,4 +132,44 @@ describe('FoldersService', () => {
     auth.signInAs({ uid: 'u1' });
     expect((await folders.whenLoaded()).map((f) => f.id)).toEqual(['default', 'work']);
   });
+
+  it('creates a Folder with the trimmed name and its nameKey, listed straight away', async () => {
+    seedFolder('default', { name: '', nameKey: '', isDefault: true });
+    const folders = setup();
+    await folders.whenLoaded();
+
+    const id = folders.createFolder('  Work Ideas ');
+
+    expect(id).toMatch(/^[0-9a-f-]{36}$/);
+    // Listed before Firestore reports back, so navigating to it right away works.
+    expect(folders.folders().map((f) => f.name)).toEqual(['', 'Work Ideas']);
+    await flushSnapshots();
+    const { path, data } = fakeDb.writes[0];
+    expect(path).toBe(`users/u1/folders/${id}`);
+    expect(data).toMatchObject({ name: 'Work Ideas', nameKey: 'work ideas', isDefault: false });
+    expect(data['createdAt']).toBeInstanceOf(FakeTimestamp);
+    expect(folders.folders()).toHaveLength(2);
+  });
+
+  it('renames a Folder, updating its name and nameKey', async () => {
+    seedFolder('default', { name: '', nameKey: '', isDefault: true });
+    seedFolder('work', { name: 'Work' });
+    const folders = setup();
+    await folders.whenLoaded();
+
+    folders.renameFolder('work', ' Office ');
+    await flushSnapshots();
+
+    expect(fakeDb.writes[0].data).toMatchObject({ name: 'Office', nameKey: 'office' });
+    expect(folders.folders()[1]).toMatchObject({ id: 'work', name: 'Office' });
+  });
+
+  it('refuses to rename the Default folder', async () => {
+    seedFolder('default', { name: '', nameKey: '', isDefault: true });
+    const folders = setup();
+    await folders.whenLoaded();
+
+    expect(() => folders.renameFolder('default', 'Inbox')).toThrow();
+    expect(fakeDb.writes).toHaveLength(0);
+  });
 });
