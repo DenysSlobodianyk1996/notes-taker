@@ -1,0 +1,53 @@
+@use '../../../../styles/tokens' as *;
+@use '../../../../styles/mixins' as *;
+
+.folder-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1.5px solid $accent;
+  border-radius: 10px;
+  background: $surface;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.field {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  padding: 0 6px;
+  border: 0;
+  outline: none;
+  background: transparent;
+}
+
+.icon-btn {
+  @include icon-button;
+}
+
+.cancel {
+  color: $muted;
+}
+
+.ok {
+  background: $accent;
+}
+
+.error {
+  margin: 0;
+  padding: 0 6px;
+  font-size: 13px;
+  color: $danger;
+}

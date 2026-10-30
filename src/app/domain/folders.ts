@@ -35,3 +35,38 @@ export function folderLabel(
 ): string {
   return folder.isDefault ? defaultName : folder.name;
 }
+
+export const FOLDER_NAME_MAX_LENGTH = 50;
+
+/** Why a Folder name can't be used; matches the `folders.errors.*` translation keys. */
+export type FolderNameError = 'required' | 'maxLength' | 'taken';
+
+/**
+ * The form Folder names are compared in (and stored as `nameKey`): one Unicode form (so "é" typed
+ * or pasted matches), trimmed, lowercased.
+ */
+export function normalizeFolderName(name: string): string {
+  return name.normalize('NFC').trim().toLowerCase();
+}
+
+/**
+ * Checks a Folder name for create or rename (ADR-0005). `reserved` holds the Default folder's name
+ * in every UI language, which no other Folder may use; `renamingId` is the Folder being renamed,
+ * which may keep its own name.
+ */
+export function folderNameError(
+  name: string,
+  folders: readonly Folder[],
+  options: { reserved: readonly string[]; renamingId?: string },
+): FolderNameError | null {
+  const trimmed = name.trim();
+  if (!trimmed) return 'required';
+  // Counted in characters, not UTF-16 units, so an emoji counts once.
+  if ([...trimmed].length > FOLDER_NAME_MAX_LENGTH) return 'maxLength';
+  const key = normalizeFolderName(trimmed);
+  const reserved = options.reserved.some((n) => normalizeFolderName(n) === key);
+  const used = folders.some(
+    (f) => !f.isDefault && f.id !== options.renamingId && f.nameKey === key,
+  );
+  return reserved || used ? 'taken' : null;
+}
