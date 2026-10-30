@@ -1,4 +1,5 @@
 @use '../../../../styles/tokens' as *;
+@use '../../../../styles/mixins' as *;
 
 :host {
   display: flex;
@@ -33,6 +34,11 @@
     text-transform: uppercase;
     color: $muted;
   }
+}
+
+.add-folder {
+  @include icon-button;
+  background: $button-soft;
 }
 
 .folder {
@@ -90,5 +96,15 @@
 
   .material-symbols-outlined {
     font-size: 17px;
+  }
+}
+
+.icon-btn {
+  @include icon-button;
+  margin-right: 4px;
+  color: $muted;
+
+  .material-symbols-outlined {
+    font-size: 19px;
   }
 }

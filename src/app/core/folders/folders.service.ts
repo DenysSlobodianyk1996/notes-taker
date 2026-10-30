@@ -8,8 +8,9 @@ import {
   getDoc,
   onSnapshot,
   setDoc,
+  updateDoc,
 } from 'firebase/firestore';
-import { DEFAULT_FOLDER_ID, Folder, sortFolders } from '../../domain/folders';
+import { DEFAULT_FOLDER_ID, Folder, normalizeFolderName, sortFolders } from '../../domain/folders';
 import { AuthService } from '../auth/auth.service';
 import { FIRESTORE } from '../firebase/firebase';
 
@@ -64,6 +65,50 @@ export class FoldersService {
     return this.ensuring;
   }
 
+  /**
+   * Creates a Folder and returns its id. The name must already be valid (`folderNameError`). The
+   * Folder is listed straight away, so the app can navigate to it before Firestore reports back.
+   */
+  createFolder(name: string): string {
+    const folder: Folder = {
+      id: crypto.randomUUID(),
+      name: name.trim(),
+      nameKey: normalizeFolderName(name),
+      isDefault: false,
+      createdAt: new Date(),
+    };
+    const { id, ...data } = folder;
+    this.save(
+      setDoc(doc(this.collection(), id), {
+        ...data,
+        createdAt: Timestamp.fromDate(data.createdAt),
+      }),
+    );
+    this.list.update((list) => sortFolders([...list, folder]));
+    return id;
+  }
+
+  /** Renames a Folder. The name must already be valid. The Default folder can't be renamed. */
+  renameFolder(id: string, name: string): void {
+    if (id === DEFAULT_FOLDER_ID || this.list().find((f) => f.id === id)?.isDefault) {
+      throw new Error("The Default folder can't be renamed");
+    }
+    this.save(
+      updateDoc(doc(this.collection(), id), {
+        name: name.trim(),
+        nameKey: normalizeFolderName(name),
+      }),
+    );
+  }
+
+  /**
+   * Writes aren't awaited: offline, the promise only settles once the server has the write. The
+   * local cache, and so the live list, has it straight away.
+   */
+  private save(write: Promise<void>): void {
+    write.catch((error) => console.error('Could not save a folder change', error));
+  }
+
   private async createDefaultIfMissing(): Promise<void> {
     this.listen();
     if (this.list().some((f) => f.isDefault)) return;
@@ -74,11 +119,7 @@ export class FoldersService {
     } catch {
       // Offline with nothing cached: write anyway. Rewriting the same document is harmless.
     }
-    // Not awaited: offline, the promise only settles once the server has the write. The local
-    // cache, and so the live list, has it straight away.
-    setDoc(ref, { name: '', nameKey: '', isDefault: true, createdAt: Timestamp.now() }).catch(
-      (error) => console.error('Could not save the Default folder', error),
-    );
+    this.save(setDoc(ref, { name: '', nameKey: '', isDefault: true, createdAt: Timestamp.now() }));
   }
 
   /** Follows the signed-in Account's Folders; switches over if the Account changed. */

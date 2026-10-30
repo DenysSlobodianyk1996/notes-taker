@@ -1,24 +1,61 @@
 <nav class="folders" aria-labelledby="folders-heading">
   <div class="folders-head">
     <h2 id="folders-heading">{{ 'folders.title' | translate }}</h2>
+    <button
+      type="button"
+      class="add-folder"
+      [attr.aria-label]="'folders.new' | translate"
+      (click)="editing.set({ mode: 'new' })"
+    >
+      <span class="material-symbols-outlined" aria-hidden="true">create_new_folder</span>
+    </button>
   </div>
+
+  @if (editing()?.mode === 'new') {
+    <app-folder-name-form
+      saveLabel="folders.create"
+      [check]="checkNew"
+      (saved)="create($event)"
+      (cancelled)="editing.set(null)"
+    />
+  }
+
   @for (folder of folders(); track folder.id) {
-    @let selected = folder.id === selectedId();
-    <div class="folder" [class.selected]="selected">
-      <a
-        class="folder-pick"
-        [routerLink]="['/folders', folder.id]"
-        [attr.aria-current]="selected ? 'page' : null"
-      >
-        <span class="material-symbols-outlined" aria-hidden="true">folder</span>
-        <span class="folder-name">{{ label(folder) }}</span>
-      </a>
-      @if (folder.isDefault) {
-        <span class="lock" [title]="'folders.defaultLocked' | translate">
-          <span class="material-symbols-outlined" aria-hidden="true">lock</span>
-          <span class="visually-hidden">{{ 'folders.defaultLocked' | translate }}</span>
-        </span>
-      }
-    </div>
+    @if (renaming(folder)) {
+      <app-folder-name-form
+        saveLabel="folders.saveName"
+        [initialName]="folder.name"
+        [check]="checkRename"
+        (saved)="rename(folder, $event)"
+        (cancelled)="editing.set(null)"
+      />
+    } @else {
+      @let selected = folder.id === selectedId();
+      <div class="folder" [class.selected]="selected">
+        <a
+          class="folder-pick"
+          [routerLink]="['/folders', folder.id]"
+          [attr.aria-current]="selected ? 'page' : null"
+        >
+          <span class="material-symbols-outlined" aria-hidden="true">folder</span>
+          <span class="folder-name">{{ label(folder) }}</span>
+        </a>
+        @if (folder.isDefault) {
+          <span class="lock" [title]="'folders.defaultLocked' | translate">
+            <span class="material-symbols-outlined" aria-hidden="true">lock</span>
+            <span class="visually-hidden">{{ 'folders.defaultLocked' | translate }}</span>
+          </span>
+        } @else if (selected) {
+          <button
+            type="button"
+            class="icon-btn"
+            [attr.aria-label]="'folders.rename' | translate"
+            (click)="editing.set({ mode: 'rename', id: folder.id })"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+          </button>
+        }
+      </div>
+    }
   }
 </nav>
