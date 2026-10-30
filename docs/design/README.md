@@ -22,7 +22,8 @@ Both copies are throwaway prototype code (Vue in the HTML file, Design Component
 - On the first visit the browser language is used (`uk*` gives UA, anything else EN). After that, the choice is saved on the device.
 - **User content is never translated.** Folder names, titles and note text stay exactly as typed.
 - The **Default folder** stores no name and is always shown in the current language ("General" in EN, "Загальне" in UA), so it changes with the toggle. It can't be renamed or deleted, so its row shows a lock icon (tooltip "The default folder can't be renamed or deleted") instead of edit and delete. Both names are reserved: a new folder called "general" or "Загальне" gets the "already exists" error.
-- Ukrainian strings are longer, so on phones the header hides the avatar and keeps only the toggle and "Sign out" / "Вийти".
+- Ukrainian strings are longer, so on phones the header hides the avatar.
+- **Sign out** is an icon-only button (`logout`); "Sign out" / "Вийти" is its tooltip and accessible name.
 
 ## Look
 
