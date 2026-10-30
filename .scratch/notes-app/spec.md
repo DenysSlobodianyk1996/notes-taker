@@ -91,6 +91,14 @@ A small installable web app (PWA) called **Notes**:
 53. As a user, I want a "No notes match '<query>'" state when nothing matches, so that I know the search worked.
 54. As a user, I want the search cleared when I switch Folders or start a new Note, so that I don't get confused by a stale filter.
 
+### Theme
+78. As a user, I want to pick the app's colour Theme (Orange, Pink or Purple) from a palette button in the header, so that the app feels like mine.
+79. As a user, I want the Theme to change the accent colour (buttons, checkboxes, the selected Folder, form borders) instantly, with no reload, so that I see the result straight away.
+80. As a user, I want my Theme saved in my Account, so that it follows me to every device and browser.
+81. As a user, I want a Theme change on one device to show up on my other open devices, so that they stay consistent.
+82. As a new Account, I want the Orange Theme by default, so that the app looks as designed until I choose otherwise.
+83. As a user, I want the browser tab icon to follow my Theme, so that the tab matches the app. The installed app icon stays Orange.
+
 ### Language
 55. As a Ukrainian speaker, I want the interface in Ukrainian, so that the app feels native.
 56. As a first-time visitor, I want the language picked from my browser (Ukrainian if it's `uk*`, otherwise English), so that it's right without setup.
@@ -151,6 +159,18 @@ A small installable web app (PWA) called **Notes**:
 - Firebase Hosting serves the app. `authDomain` is the app's own `<project>.web.app` (with the OAuth redirect URI added), so redirect sign-in stays on the same origin, including in iOS home-screen apps.
 - `firebase.json` rewrites `**` to `/index.html`.
 - Fallback, if redirect sign-in fails on a real iPhone install: Google Identity Services, then `signInWithCredential` (decided during the Firebase ticket).
+
+### Theme (ADR-0010)
+- Themes change only the accent family: `--accent`, `--accent-soft`, `--accent-ink` and `--accent-tint` (the note form background). Neutrals, Danger and text stay the same; buttons keep dark text on every Theme.
+  - Orange: `#F59E0B` / `#FEF3C7` / `#92400E` / `#FFFDF7`
+  - Pink: `#F472B6` / `#FCE7F3` / `#9D174D` / `#FFFAFC`
+  - Purple: `#A78BFA` / `#EDE9FE` / `#5B21B6` / `#FCFBFF`
+- The SCSS accent tokens become CSS custom properties, set by a `data-theme` attribute on `<html>`.
+- Stored per Account as `theme: 'orange' | 'pink' | 'purple'` on the `users/{uid}` document (`setDoc` with `merge: true`). A missing or unknown value means Orange. The Theme follows that document live, so other devices update.
+- Firestore only, no local copy: after a reload the app shows Orange until Firestore answers (normally from its offline cache, within moments).
+- The login page is always Orange; signing out returns to Orange.
+- The header has a 40px `palette` icon button ("Theme" / "Тема") left of EN | UA, on every screen size. It opens a popover with three 28px circles as a radio group; the current one has a ring and a ✓. Picking one applies and saves it and closes the popover; Esc or a click outside closes it.
+- The browser tab icon (an SVG favicon) is swapped for the Theme's colour; `<meta name="theme-color">` follows the Theme. The manifest and installed app icons stay Orange.
 
 ### UI rules (from the design prototype)
 - Creating and editing happen inline. `<dialog>` is used only for delete confirmations (ADR-0004).

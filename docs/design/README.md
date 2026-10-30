@@ -69,11 +69,35 @@ Minimal and light, in the style of Apple Notes:
 | `Mobile-Login-UA`      | login page in Ukrainian                                                                                                     |
 | `Mobile-List-UA`       | notes list in Ukrainian, with user content left untranslated                                                                |
 
-The other artboards all reuse `Main`, opened at a fixed starting state (its `preset` and `lang` props). In the standalone HTML, the same states are the **Start state** options, with `?state=` values `login`, `offline`, `app`, `new-account`, `desktop-editing`, `delete-folder`, `mobile-drawer`, `new-note` and `empty`. Add `&lang=uk` for Ukrainian.
+The other artboards all reuse `Main`, opened at a fixed starting state (its `preset` and `lang` props). In the standalone HTML, the same states are the **Start state** options, with `?state=` values `login`, `offline`, `app`, `new-account`, `desktop-editing`, `delete-folder`, `mobile-drawer`, `new-note`, `empty`, `due-dates` and `theme`. Add `&lang=uk` for Ukrainian, and `&theme=pink` or `&theme=purple` for a Theme.
 
 ## Sample data
 
 One signed-in Account: the Default folder (3 notes, one completed), Work (3 notes) and Travel (1 note). The `new-account` state starts with no folders and shows the Default folder being created on first sign-in.
+
+## Due dates (ticket 07a)
+
+- The new and edit note rows have an optional date field (calendar icon, native date input) with a ✕ to clear it.
+- A Note with a Due date shows a small chip under its text: "Due 2 Nov" / "Термін: 2 лист.", formatted for the UI language.
+- An **Overdue** Note (Due date before today, not Completed) shows a red chip with "Overdue · 28 Oct". A Completed Note's chip stays grey, even if the date has passed.
+- Due dates never change the order: Notes stay newest first.
+- Start state `due-dates`: the General folder with one Note due soon (open in the edit row), one Overdue and one Completed with a past date. The sample dates are relative to today.
+
+## Theme (ticket 12)
+
+- A `palette` icon button sits left of EN | UA in the header, on every screen size. It opens a popover titled "Theme" with three circles: **Orange** (default), **Pink** and **Purple**. The current one has a ring and a ✓.
+- Picking one recolours the accent family at once and closes the popover; Esc or a click outside closes it without a change.
+
+| Theme  | Accent    | Accent soft | Accent ink | Form tint |
+| ------ | --------- | ----------- | ---------- | --------- |
+| Orange | `#F59E0B` | `#FEF3C7`   | `#92400E`  | `#FFFDF7` |
+| Pink   | `#F472B6` | `#FCE7F3`   | `#9D174D`  | `#FFFAFC` |
+| Purple | `#A78BFA` | `#EDE9FE`   | `#5B21B6`  | `#FCFBFF` |
+
+- Button text stays dark (`#1C1C1E`) on every Theme; all three accents keep it above 4.5:1.
+- The login page is always Orange. The browser tab icon follows the Theme (try it in the standalone HTML); the installed app icon stays Orange.
+- Start state `theme` opens the popover; `?theme=pink` or `?theme=purple` starts in that Theme.
+- **Canvas:** not updated yet. The standalone HTML is the reference for both features until the `Main` artboard gets them.
 
 ## Behaviour the prototype pins down
 

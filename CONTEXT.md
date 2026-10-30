@@ -43,6 +43,10 @@ _Avoid_: Done, checked, archived
 
 ### People and settings
 
+**Theme**:
+The Account's chosen accent colour for the app: Orange (the default), Pink or Purple. It is stored in the Account, so it is the same on every device. The login page is always Orange.
+_Avoid_: Skin, colour scheme, dark mode
+
 **Account**:
 The signed-in Google user. All Folders and Notes belong to exactly one Account, are stored in the cloud, and sync across devices, including edits made offline. The app can only be used signed in; there is no guest use (ADR-0009).
 _Avoid_: Profile, guest, anonymous user
