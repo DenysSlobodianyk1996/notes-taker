@@ -1,6 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
-import { FakeAuthService, provideFakeAuth, provideFakeOnlineStatus } from '../../../testing/fakes';
+import {
+  FakeAuthService,
+  provideFakeAuth,
+  provideFakeFolders,
+  provideFakeOnlineStatus,
+} from '../../../testing/fakes';
 import { provideTestTranslations } from '../../../testing/translations';
 import { routes } from '../../app.routes';
 
@@ -11,6 +16,7 @@ async function urlAfterVisiting(url: string, auth: FakeAuthService): Promise<str
       provideTestTranslations(),
       provideFakeAuth(auth),
       provideFakeOnlineStatus(),
+      provideFakeFolders(),
     ],
   });
   const router = TestBed.inject(Router);
@@ -27,11 +33,11 @@ describe('auth guards', () => {
   );
 
   it.each(['/login', '/', '/anything'])(
-    'send a signed-in user from %s to /folders',
+    'send a signed-in user from %s to their folders',
     async (url) => {
       const auth = new FakeAuthService();
       auth.signInAs();
-      expect(await urlAfterVisiting(url, auth)).toBe('/folders');
+      expect(await urlAfterVisiting(url, auth)).toBe('/folders/default');
     },
   );
 });

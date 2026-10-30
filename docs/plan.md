@@ -68,7 +68,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
   - `/folders`: its resolver loads the folders, creates the Default folder if there are none, and redirects to the first folder.
   - `/folders/:folderId`, a nested child route. An unknown ID redirects to the first folder.
   - `**` goes to `/folders`.
-- IDs are UUIDs (`crypto.randomUUID()`, also used as Firestore document IDs).
+- IDs are UUIDs (`crypto.randomUUID()`, also used as Firestore document IDs), except the Default folder, whose id is always `default`.
 
 **Data model**
 
