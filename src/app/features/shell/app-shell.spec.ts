@@ -31,6 +31,20 @@ describe('AppShell', () => {
     expect(getButton(header, 'Sign out')).toBeTruthy();
   });
 
+  it('shows Sign out as an icon only, named by its label and tooltip', async () => {
+    const auth = new FakeAuthService();
+    auth.signInAs();
+    const root = (await render(auth)).nativeElement as HTMLElement;
+
+    const button = getButton(root, 'Sign out');
+    expect(button.getAttribute('title')).toBe('Sign out');
+    const visibleText = [...button.childNodes]
+      .filter((node) => !(node instanceof Element && node.getAttribute('aria-hidden') === 'true'))
+      .map((node) => node.textContent?.trim())
+      .join('');
+    expect(visibleText).toBe('');
+  });
+
   it('signs out through the auth service', async () => {
     const auth = new FakeAuthService();
     auth.signInAs();

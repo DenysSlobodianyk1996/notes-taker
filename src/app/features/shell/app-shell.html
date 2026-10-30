@@ -20,9 +20,14 @@
       <span class="material-symbols-outlined" aria-hidden="true">person</span>
     }
   </span>
-  <button type="button" class="sign-out" (click)="signOut()">
+  <button
+    type="button"
+    class="sign-out"
+    [attr.aria-label]="'header.signOut' | translate"
+    [title]="'header.signOut' | translate"
+    (click)="signOut()"
+  >
     <span class="material-symbols-outlined" aria-hidden="true">logout</span>
-    {{ 'header.signOut' | translate }}
   </button>
 </header>
 <main class="content">

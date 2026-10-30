@@ -7,6 +7,12 @@
     "en": "EN",
     "uk": "UA"
   },
+  "theme": {
+    "label": "Theme",
+    "orange": "Orange",
+    "pink": "Pink",
+    "purple": "Purple"
+  },
   "common": {
     "cancel": "Cancel"
   },
