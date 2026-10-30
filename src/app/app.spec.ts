@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { getButton } from '../testing/dom';
 import {
   FakeAuthService,
   provideFakeAuth,
@@ -47,7 +48,7 @@ describe('App', () => {
     auth.signInAs();
     const root = await open('/folders', auth);
     expect(TestBed.inject(Router).url).toBe('/folders/default');
-    expect(root.querySelector('header')?.textContent).toContain('Sign out');
+    expect(getButton(root.querySelector('header')!, 'Sign out')).toBeTruthy();
     expect(root.querySelector('nav [aria-current="page"]')?.textContent).toContain('General');
   });
 
