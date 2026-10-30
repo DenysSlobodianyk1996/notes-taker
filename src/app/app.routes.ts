@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard, signedOutGuard } from './core/auth/auth.guards';
+import { knownFolder, toFirstFolder } from './features/folders/folder.guards';
 
 export const routes: Routes = [
   {
@@ -14,8 +15,15 @@ export const routes: Routes = [
     children: [
       {
         path: 'folders',
-        loadComponent: () =>
-          import('./features/folders/folders-placeholder').then((m) => m.FoldersPlaceholder),
+        children: [
+          { path: '', pathMatch: 'full', canActivate: [toFirstFolder], children: [] },
+          {
+            path: ':folderId',
+            canActivate: [knownFolder],
+            loadComponent: () =>
+              import('./features/folders/folder-page/folder-page').then((m) => m.FolderPage),
+          },
+        ],
       },
       { path: '', pathMatch: 'full', redirectTo: 'folders' },
     ],

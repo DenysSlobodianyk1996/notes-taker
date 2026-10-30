@@ -1,0 +1,24 @@
+<nav class="folders" aria-labelledby="folders-heading">
+  <div class="folders-head">
+    <h2 id="folders-heading">{{ 'folders.title' | translate }}</h2>
+  </div>
+  @for (folder of folders(); track folder.id) {
+    @let selected = folder.id === selectedId();
+    <div class="folder" [class.selected]="selected">
+      <a
+        class="folder-pick"
+        [routerLink]="['/folders', folder.id]"
+        [attr.aria-current]="selected ? 'page' : null"
+      >
+        <span class="material-symbols-outlined" aria-hidden="true">folder</span>
+        <span class="folder-name">{{ label(folder) }}</span>
+      </a>
+      @if (folder.isDefault) {
+        <span class="lock" [title]="'folders.defaultLocked' | translate">
+          <span class="material-symbols-outlined" aria-hidden="true">lock</span>
+          <span class="visually-hidden">{{ 'folders.defaultLocked' | translate }}</span>
+        </span>
+      }
+    </div>
+  }
+</nav>
