@@ -3,6 +3,9 @@
 :host {
   display: flex;
   flex: 1;
+  min-height: 0;
+  // Short screens (landscape phones) scroll the login card here, not the page.
+  overflow-y: auto;
 }
 
 .login {
