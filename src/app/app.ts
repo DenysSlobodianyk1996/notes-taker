@@ -7,7 +7,8 @@ import { AuthService } from './core/auth/auth.service';
   imports: [RouterOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<router-outlet />',
-  styles: ':host { display: flex; flex-direction: column; min-height: 100dvh; }',
+  // Exactly the screen height: the page itself never scrolls; each area scrolls on its own.
+  styles: ':host { display: flex; flex-direction: column; height: 100dvh; }',
 })
 export class App {
   constructor() {

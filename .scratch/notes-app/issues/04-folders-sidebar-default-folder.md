@@ -4,10 +4,10 @@
 
 **Blocked by:** 02 (Sign in and out with Google)
 
-**Status:** ready-for-agent
+**Status:** done (implemented on `feature/04-folders-sidebar`)
 
-- [ ] Domain rules (pure, unit tested): folder sort (oldest first); folder label (`folders.defaultName` translation for the Default folder in the current language, otherwise the stored name).
-- [ ] Folders service: a live, sorted folder list signal for the current user; `ensureDefaultFolder()` creates `{ name: '', nameKey: '', isDefault: true, createdAt }` only if no folder is marked default (idempotent, client-side UUID id, works offline).
-- [ ] `/folders` resolver runs `ensureDefaultFolder()`, waits for the list and redirects to the first folder; `/folders/:folderId` with an unknown id redirects to the first folder.
-- [ ] Sidebar: a "Folders" heading, the folder rows (folder icon, label, highlight on the selected one), and a lock icon with an accessible "can't be renamed or deleted" label on the Default folder; clicking a row navigates.
-- [ ] Tests: domain rules; `ensureDefaultFolder` creates exactly one Default folder and is idempotent (Firebase SDK mocked); the resolver and unknown-id redirects; the sidebar shows the lock and switches General ↔ Загальне on the language toggle (folders service replaced through DI).
+- [x] Domain rules (pure, unit tested): folder sort (oldest first); folder label (`folders.defaultName` translation for the Default folder in the current language, otherwise the stored name).
+- [x] Folders service: a live, sorted folder list signal for the current user; `ensureDefaultFolder()` creates `{ name: '', nameKey: '', isDefault: true, createdAt }` only if no folder is marked default (idempotent, fixed id `default` so two devices can't create two, works offline).
+- [x] `/folders` guard (a route guard instead of a resolver, since its job is the redirect) runs `ensureDefaultFolder()`, waits for the list and redirects to the first folder; `/folders/:folderId` with an unknown id redirects to the first folder.
+- [x] Sidebar: a "Folders" heading, the folder rows (folder icon, label, highlight on the selected one), and a lock icon with an accessible "can't be renamed or deleted" label on the Default folder; clicking a row navigates.
+- [x] Tests: domain rules; `ensureDefaultFolder` creates exactly one Default folder and is idempotent (Firebase SDK mocked); the resolver and unknown-id redirects; the sidebar shows the lock and switches General ↔ Загальне on the language toggle (folders service replaced through DI).

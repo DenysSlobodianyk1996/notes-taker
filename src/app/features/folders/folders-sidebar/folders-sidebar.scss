@@ -1,0 +1,94 @@
+@use '../../../../styles/tokens' as *;
+
+:host {
+  display: flex;
+  min-height: 0;
+}
+
+.folders {
+  width: 288px;
+  max-width: 85%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 12px;
+  overflow-y: auto;
+  background: $sidebar;
+  border-right: 1px solid $border;
+}
+
+.folders-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 36px;
+  padding: 0 4px 8px 8px;
+
+  h2 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: $muted;
+  }
+}
+
+.folder {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+
+  &.selected {
+    background: $accent-soft;
+  }
+}
+
+.folder-pick {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px 0 10px;
+  border-radius: 10px;
+  color: inherit;
+  text-decoration: none;
+
+  .material-symbols-outlined {
+    color: $icon-muted;
+  }
+
+  .selected & {
+    font-weight: 600;
+
+    .material-symbols-outlined {
+      color: $accent-ink;
+    }
+  }
+}
+
+.folder-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lock {
+  width: 36px;
+  height: 36px;
+  margin-right: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $icon-muted;
+
+  .material-symbols-outlined {
+    font-size: 17px;
+  }
+}
