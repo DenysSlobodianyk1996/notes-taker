@@ -1,6 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { FakeAuthService, provideFakeAuth, provideFakeOnlineStatus } from '../testing/fakes';
+import {
+  FakeAuthService,
+  provideFakeAuth,
+  provideFakeFolders,
+  provideFakeOnlineStatus,
+} from '../testing/fakes';
 import { provideTestTranslations } from '../testing/translations';
 import { App } from './app';
 import { routes } from './app.routes';
@@ -18,6 +23,7 @@ async function openFixture(url: string, auth: FakeAuthService) {
       provideTestTranslations(),
       provideFakeAuth(auth),
       provideFakeOnlineStatus(),
+      provideFakeFolders(),
     ],
   });
   await TestBed.inject(UiLanguageService).init();
@@ -36,22 +42,23 @@ describe('App', () => {
     expect(root.querySelector('h1')?.textContent?.trim()).toBe('Notes');
   });
 
-  it('shows the app shell at /folders to a signed-in user', async () => {
+  it('shows a signed-in user the app shell with their first Folder open', async () => {
     const auth = new FakeAuthService();
     auth.signInAs();
     const root = await open('/folders', auth);
-    expect(TestBed.inject(Router).url).toBe('/folders');
+    expect(TestBed.inject(Router).url).toBe('/folders/default');
     expect(root.querySelector('header')?.textContent).toContain('Sign out');
+    expect(root.querySelector('nav [aria-current="page"]')?.textContent).toContain('General');
   });
 
-  it('moves to /folders as soon as sign-in completes on the login page (popup)', async () => {
+  it('moves to the folders as soon as sign-in completes on the login page (popup)', async () => {
     const auth = new FakeAuthService();
     const fixture = await openFixture('/login', auth);
 
     auth.signInAs();
     await fixture.whenStable();
 
-    expect(TestBed.inject(Router).url).toBe('/folders');
+    expect(TestBed.inject(Router).url).toBe('/folders/default');
   });
 
   it('returns to /login when the session ends elsewhere (e.g. signed out in another tab)', async () => {

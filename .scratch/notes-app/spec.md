@@ -142,7 +142,7 @@ A small installable web app (PWA) called **Notes**:
 - `users/{uid}/folders/{folderId}`: `{ name: string, nameKey: string, isDefault: boolean, createdAt: Timestamp }`. The Default folder stores `name: ''`, `nameKey: ''`, `isDefault: true`. `nameKey = name.trim().toLowerCase()`.
 - `users/{uid}/notes/{noteId}`: `{ folderId: string, title: string, text: string, completed: boolean, dueDate: string | null, createdAt: Timestamp, updatedAt: Timestamp }`.
 - `dueDate` is a local calendar day as `'YYYY-MM-DD'`, or `null` for none (clearing sets `null`). A string, not a Timestamp, so the day never shifts across time zones. Notes written before this field existed have no `dueDate` and are read as `null`.
-- IDs come from `crypto.randomUUID()`, set on the client, so writes work offline.
+- IDs come from `crypto.randomUUID()`, set on the client, so writes work offline. The one exception is the Default folder, whose id is always `default`: creating it from two devices at once then still gives one Folder.
 - Limits: folder name 1–50 characters after trimming; title 0–200; text 1–1000 after trimming (stored trimmed).
 - Security rules: read and write on `users/{uid}/**` only when `request.auth.uid == uid`.
 - Firestore uses `persistentLocalCache` with multi-tab support.
