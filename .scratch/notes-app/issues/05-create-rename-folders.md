@@ -4,10 +4,10 @@
 
 **Blocked by:** 04 (Folders sidebar with the Default folder)
 
-**Status:** ready-for-agent
+**Status:** done (implemented on `feature/05-create-rename-folders`)
 
-- [ ] Domain rules (pure, unit tested): `normalizeFolderName`; validation of required and max 50 after trimming; "name taken" against the existing folders, excluding the folder being renamed, ignoring the Default folder, and rejecting every language's `folders.defaultName` in any case.
-- [ ] Folders service: `createFolder(name)` stores the trimmed `name`, `nameKey`, `isDefault: false` and `createdAt`; `renameFolder(id, name)` updates `name` and `nameKey` and refuses the Default folder.
-- [ ] Inline form row built with Signal Forms: focus on open; ✓/Enter submits; ✕/Esc cancels; errors shown with `role="alert"` using `folders.errors.*`; only one form row open at a time (opening another discards the current one).
-- [ ] A new folder becomes selected (navigates to its URL); no rename control on the Default folder.
-- [ ] Tests: domain rules (including "General", " general ", "ЗАГАЛЬНЕ" rejected and renaming to its own name allowed); sidebar component tests for each error message, the create and rename service calls, and Esc cancelling.
+- [x] Domain rules (pure, unit tested): `normalizeFolderName`; validation of required and max 50 after trimming; "name taken" against the existing folders, excluding the folder being renamed, ignoring the Default folder, and rejecting every language's `folders.defaultName` in any case.
+- [x] Folders service: `createFolder(name)` stores the trimmed `name`, `nameKey`, `isDefault: false` and `createdAt`; `renameFolder(id, name)` updates `name` and `nameKey` and refuses the Default folder.
+- [x] Inline form row built with Signal Forms: focus on open; ✓/Enter submits; ✕/Esc cancels; errors shown with `role="alert"` using `folders.errors.*`; only one form row open at a time (opening another discards the current one).
+- [x] A new folder becomes selected (navigates to its URL); no rename control on the Default folder.
+- [x] Tests: domain rules (including "General", " general ", "ЗАГАЛЬНЕ" rejected and renaming to its own name allowed); sidebar component tests for each error message, the create and rename service calls, and Esc cancelling.

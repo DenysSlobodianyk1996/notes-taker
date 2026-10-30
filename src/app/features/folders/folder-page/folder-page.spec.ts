@@ -13,7 +13,7 @@ import { FolderPage } from './folder-page';
 
 async function open(
   folderId: string,
-): Promise<{ harness: RouterTestingHarness; root: HTMLElement }> {
+): Promise<{ harness: RouterTestingHarness; root: HTMLElement; folders: FakeFoldersService }> {
   const folders = new FakeFoldersService();
   folders.folders.set([
     aDefaultFolder(),
@@ -29,7 +29,7 @@ async function open(
   });
   await TestBed.inject(UiLanguageService).init();
   const harness = await RouterTestingHarness.create(`/folders/${folderId}`);
-  return { harness, root: harness.routeNativeElement as HTMLElement };
+  return { harness, root: harness.routeNativeElement as HTMLElement, folders };
 }
 
 function rows(root: HTMLElement): string[] {
@@ -84,5 +84,14 @@ describe('FolderPage', () => {
 
     expect(TestBed.inject(Router).url).toBe('/folders/travel');
     expect(root.querySelector('h1')?.textContent?.trim()).toBe('Подорожі');
+  });
+
+  it('moves to the first Folder when the open one disappears (deleted, or its save failed)', async () => {
+    const { harness, folders } = await open('travel');
+
+    folders.folders.update((list) => list.filter((f) => f.id !== 'travel'));
+    await harness.fixture.whenStable();
+
+    expect(TestBed.inject(Router).url).toBe('/folders/default');
   });
 });

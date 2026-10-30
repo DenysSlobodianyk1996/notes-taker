@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
 import { FoldersService } from '../../../core/folders/folders.service';
 import { folderLabel } from '../../../domain/folders';
@@ -25,8 +25,22 @@ export class FolderPage {
   private readonly folders = inject(FoldersService).folders;
   private readonly defaultName = injectDefaultFolderName();
 
+  private readonly folder = computed(() => this.folders().find((f) => f.id === this.folderId()));
+
   protected readonly title = computed(() => {
-    const folder = this.folders().find((f) => f.id === this.folderId());
+    const folder = this.folder();
     return folder ? folderLabel(folder, this.defaultName()) : '';
   });
+
+  constructor() {
+    const router = inject(Router);
+    // The open Folder disappeared: deleted (here or on another device), or its save was refused.
+    // An empty list only means "still loading", so wait for that to fill instead.
+    effect(() => {
+      const first = this.folders()[0];
+      if (first && this.folderId() && !this.folder()) {
+        void router.navigate(['/folders', first.id], { replaceUrl: true });
+      }
+    });
+  }
 }

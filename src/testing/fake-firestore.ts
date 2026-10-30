@@ -106,6 +106,12 @@ export const fakeFirestoreModule = {
     return { exists: () => found };
   },
   setDoc: async (ref: Ref, data: Data): Promise<void> => fakeDb.set(ref.path, data),
+  updateDoc: async (ref: Ref, data: Data): Promise<void> => {
+    const { collection, id } = split(ref.path);
+    const current = fakeDb.docsIn(collection).get(id);
+    if (!current) throw new Error(`No document to update: ${ref.path}`);
+    fakeDb.set(ref.path, { ...current, ...data });
+  },
   onSnapshot: (
     collection: Ref,
     next: (snapshot: Snapshot) => void,
