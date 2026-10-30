@@ -26,7 +26,11 @@
     --border: #E5E4E0;
     --divider: #ECEBE7;
     --danger: #B91C1C;
+    --accent-tint: #FFFDF7;
   }
+  /* Themes (accent family only). The login page always uses the default orange. */
+  .frame[data-theme="pink"] { --accent: #F472B6; --accent-soft: #FCE7F3; --accent-ink: #9D174D; --accent-tint: #FFFAFC; }
+  .frame[data-theme="purple"] { --accent: #A78BFA; --accent-soft: #EDE9FE; --accent-ink: #5B21B6; --accent-tint: #FCFBFF; }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; }
   body {
@@ -128,7 +132,7 @@
   .search input { flex: 1; min-width: 0; height: 100%; border: 0; outline: none; background: transparent; }
   .add-note { width: 44px; height: 44px; flex-shrink: 0; border: 0; border-radius: 10px; background: var(--accent); display: flex; align-items: center; justify-content: center; }
   .list { display: flex; flex-direction: column; border-top: 1px solid var(--divider); }
-  .note-form { margin: 10px 0; display: flex; flex-direction: column; gap: 6px; padding: 12px 12px 8px 14px; border-radius: 12px; border: 1.5px solid var(--accent); background: #FFFDF7; }
+  .note-form { margin: 10px 0; display: flex; flex-direction: column; gap: 6px; padding: 12px 12px 8px 14px; border-radius: 12px; border: 1.5px solid var(--accent); background: var(--accent-tint); }
   .note-form input { width: 100%; border: 0; outline: none; background: transparent; font-size: 16px; font-weight: 600; padding: 4px 0; }
   .note-form textarea { width: 100%; border: 0; outline: none; background: transparent; padding: 2px 0; resize: vertical; }
   .note-form .foot { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
@@ -143,6 +147,29 @@
   .note-body .x { white-space: pre-wrap; overflow-wrap: anywhere; }
   .note.done .note-body { color: #6B6B70; }
   .note.done .note-body span { text-decoration: line-through; }
+  .note.done .note-body .due { text-decoration: none; }
+
+  /* Due date */
+  .due-field { display: flex; align-items: center; gap: 6px; padding: 2px 0 4px; font-size: 13px; color: var(--muted); }
+  .due-field .ms { font-size: 18px; }
+  .due-field input { height: 32px; padding: 0 8px; border: 1px solid #D4D3CE; border-radius: 8px; background: #FFF; font-size: 14px; }
+  .due-field .icon-btn { width: 32px; height: 32px; border-radius: 8px; color: var(--muted); }
+  .due { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 2px 8px 2px 6px; border-radius: 999px; background: var(--chip); font-size: 12px; font-weight: 600; color: var(--muted); }
+  .due .ms { font-size: 15px; }
+  .due.overdue { background: #FEE2E2; color: var(--danger); }
+
+  /* Theme picker */
+  .theme-wrap { position: relative; flex-shrink: 0; }
+  .theme-btn { width: 40px; height: 40px; border-radius: 10px; color: var(--muted); }
+  .theme-btn[aria-expanded="true"] { background: var(--accent-soft); color: var(--accent-ink); }
+  .theme-backdrop { position: fixed; inset: 0; z-index: 30; border: 0; padding: 0; background: transparent; cursor: default; }
+  .theme-pop { position: absolute; top: 46px; right: 0; z-index: 31; display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--border); border-radius: 14px; background: #FFF; box-shadow: 0 12px 32px rgba(0,0,0,.14); }
+  .theme-pop p { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .swatches { display: flex; gap: 10px; }
+  .swatch { position: relative; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: none; display: flex; align-items: center; justify-content: center; }
+  .swatch span.dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1C1C1E; }
+  .swatch[aria-checked="true"] { box-shadow: 0 0 0 2px #FFF, 0 0 0 4px #1C1C1E; }
+  .swatch .ms { font-size: 18px; }
   .note .icon-btn { color: var(--muted); }
   .empty { padding: 56px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; color: var(--muted); }
   .empty .ms { font-size: 40px; color: #B8B6AF; }
@@ -181,7 +208,7 @@
   </div>
 
   <div class="stage" :class="view">
-    <div class="frame" :class="{ narrow: narrow }" :lang="lang">
+    <div class="frame" :class="{ narrow: narrow }" :lang="lang" :data-theme="screen === 'app' ? theme : 'orange'">
 
       <!-- Login -->
       <main v-if="screen === 'login'" class="login">
@@ -207,6 +234,20 @@
           <button v-if="narrow" type="button" class="icon-btn" style="margin-left:-8px" :aria-label="t('header.openFolders')" @click="drawer = true"><span class="ms" aria-hidden="true">menu</span></button>
           <div class="brand"><span class="brand-mark"><span class="ms" aria-hidden="true">sticky_note_2</span></span>{{ t('app.name') }}</div>
           <span style="flex:1"></span>
+          <div class="theme-wrap" @keydown.esc="themeOpen = false">
+            <button type="button" class="icon-btn theme-btn" :aria-label="t('theme.label')" :title="t('theme.label')" aria-haspopup="true" :aria-expanded="String(themeOpen)" @click="themeOpen = !themeOpen"><span class="ms" aria-hidden="true">palette</span></button>
+            <template v-if="themeOpen">
+              <button type="button" class="theme-backdrop" tabindex="-1" aria-hidden="true" @click="themeOpen = false"></button>
+              <div class="theme-pop">
+                <p id="theme-title">{{ t('theme.label') }}</p>
+                <div class="swatches" role="radiogroup" aria-labelledby="theme-title">
+                  <button v-for="th in themes" :key="th.id" type="button" class="swatch" role="radio" :aria-checked="String(theme === th.id)" :aria-label="t('theme.' + th.id)" :title="t('theme.' + th.id)" @click="setTheme(th.id)">
+                    <span class="dot" :style="{ background: th.accent }"><span v-if="theme === th.id" class="ms" aria-hidden="true">check</span></span>
+                  </button>
+                </div>
+              </div>
+            </template>
+          </div>
           <div class="lang" role="group" :aria-label="t('lang.label')">
             <button type="button" :aria-pressed="String(lang === 'en')" @click="setLang('en')">{{ t('lang.en') }}</button>
             <button type="button" :aria-pressed="String(lang === 'uk')" @click="setLang('uk')">{{ t('lang.uk') }}</button>
@@ -281,6 +322,12 @@
                 <div v-if="noteEdit && noteEdit.id === 'new'" class="note-form">
                   <label><span class="sr">{{ t('notes.titlePlaceholder') }}</span><input v-model="noteEdit.title" maxlength="200" :placeholder="t('notes.titlePlaceholder')" @keydown.enter.prevent="submitNote" @keydown.esc="noteEdit = null"></label>
                   <label><span class="sr">{{ t('notes.textLabel') }}</span><textarea v-model="noteEdit.text" maxlength="1000" rows="3" :placeholder="t('notes.textPlaceholder')" v-focus @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></textarea></label>
+                  <div class="due-field">
+                    <span class="ms" aria-hidden="true">event</span>
+                    <label><span class="sr">{{ t('notes.dueDateLabel') }}</span><input type="date" v-model="noteEdit.dueDate" @keydown.esc="noteEdit = null"></label>
+                    <span v-if="!noteEdit.dueDate">{{ t('notes.dueDateLabel') }}</span>
+                    <button v-else type="button" class="icon-btn" :aria-label="t('notes.clearDueDate')" :title="t('notes.clearDueDate')" @click="noteEdit.dueDate = ''"><span class="ms" aria-hidden="true">close</span></button>
+                  </div>
                   <div class="foot">
                     <span>{{ noteEdit.text.length }} / 1000</span>
                     <span v-if="!narrow">· {{ t('notes.shortcuts') }}</span>
@@ -294,6 +341,12 @@
                   <div v-if="noteEdit && noteEdit.id === n.id" class="note-form">
                     <label><span class="sr">{{ t('notes.titlePlaceholder') }}</span><input v-model="noteEdit.title" maxlength="200" :placeholder="t('notes.titlePlaceholder')" @keydown.enter.prevent="submitNote" @keydown.esc="noteEdit = null"></label>
                     <label><span class="sr">{{ t('notes.textLabel') }}</span><textarea v-model="noteEdit.text" maxlength="1000" rows="3" :placeholder="t('notes.textPlaceholder')" v-focus @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></textarea></label>
+                    <div class="due-field">
+                      <span class="ms" aria-hidden="true">event</span>
+                      <label><span class="sr">{{ t('notes.dueDateLabel') }}</span><input type="date" v-model="noteEdit.dueDate" @keydown.esc="noteEdit = null"></label>
+                      <span v-if="!noteEdit.dueDate">{{ t('notes.dueDateLabel') }}</span>
+                      <button v-else type="button" class="icon-btn" :aria-label="t('notes.clearDueDate')" :title="t('notes.clearDueDate')" @click="noteEdit.dueDate = ''"><span class="ms" aria-hidden="true">close</span></button>
+                    </div>
                     <div class="foot">
                       <span>{{ noteEdit.text.length }} / 1000</span>
                       <span v-if="!narrow">· {{ t('notes.shortcuts') }}</span>
@@ -307,6 +360,7 @@
                     <button type="button" class="note-body" :aria-label="t('notes.edit', { note: n.title || n.text.slice(0, 40) })" @click="startEdit(n)">
                       <span v-if="n.title" class="t">{{ n.title }}</span>
                       <span class="x">{{ n.text }}</span>
+                      <span v-if="n.dueDate" class="due" :class="{ overdue: isOverdue(n) }"><span class="ms" aria-hidden="true">{{ isOverdue(n) ? 'event_busy' : 'event' }}</span>{{ t(isOverdue(n) ? 'notes.overdue' : 'notes.due', { date: formatDay(n.dueDate) }) }}</span>
                     </button>
                     <button type="button" class="icon-btn sm" :aria-label="t('notes.delete')" @click="dialog = { kind: 'deleteNote', id: n.id }"><span class="ms" aria-hidden="true">delete</span></button>
                   </div>
@@ -365,6 +419,12 @@ var I18N = {
       "label": "Language",
       "en": "EN",
       "uk": "UA"
+    },
+    "theme": {
+      "label": "Theme",
+      "orange": "Orange",
+      "pink": "Pink",
+      "purple": "Purple"
     },
     "common": {
       "cancel": "Cancel"
@@ -442,6 +502,12 @@ var I18N = {
       "label": "Мова",
       "en": "EN",
       "uk": "UA"
+    },
+    "theme": {
+      "label": "Тема",
+      "orange": "Помаранчевий",
+      "pink": "Рожевий",
+      "purple": "Фіолетовий"
     },
     "common": {
       "cancel": "Скасувати"
@@ -527,6 +593,34 @@ function translate(lang, key, params) {
   return v.replace(/\{\{\s*(\w+)\s*\}\}/g, function (_, p) { return params && params[p] != null ? params[p] : ''; });
 }
 
+// Due dates are local calendar days ('YYYY-MM-DD'); sample ones are relative to today.
+function dayKey(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function daysFromToday(n) { var d = new Date(); d.setDate(d.getDate() + n); return dayKey(d); }
+function formatDay(key, lang) {
+  var p = key.split('-').map(Number), d = new Date(p[0], p[1] - 1, p[2]);
+  var opts = { day: 'numeric', month: 'short' };
+  if (p[0] !== new Date().getFullYear()) opts.year = 'numeric';
+  return new Intl.DateTimeFormat(lang === 'uk' ? 'uk-UA' : 'en-GB', opts).format(d);
+}
+
+var THEMES = [
+  { id: 'orange', accent: '#F59E0B' },
+  { id: 'pink', accent: '#F472B6' },
+  { id: 'purple', accent: '#A78BFA' }
+];
+function initialTheme() {
+  var q = new URLSearchParams(location.search).get('theme');
+  return THEMES.some(function (t) { return t.id === q; }) ? q : 'orange';
+}
+// The browser tab icon follows the theme (the installed app icon can't).
+function setFavicon(theme) {
+  var th = THEMES.find(function (t) { return t.id === theme; }) || THEMES[0];
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><rect width="56" height="56" rx="14" fill="' + th.accent + '"/><rect x="16" y="14" width="24" height="28" rx="3" fill="none" stroke="#1C1C1E" stroke-width="3"/><path d="M21 22h14M21 28h14M21 34h8" stroke="#1C1C1E" stroke-width="3" stroke-linecap="round"/></svg>';
+  var link = document.querySelector('link[rel="icon"]');
+  if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+  link.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
+}
+
 function initialLang() {
   var q = new URLSearchParams(location.search).get('lang');
   if (q === 'en' || q === 'uk') return q;
@@ -542,13 +636,13 @@ function seedAccount() {
       { id: 'acc-travel', name: 'Travel', isDefault: false, createdAt: T0 - 10 * DAY }
     ],
     notes: [
-      { id: 'an1', folderId: 'acc-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, createdAt: T0 - 2 * DAY },
-      { id: 'an2', folderId: 'acc-gen', title: '', text: 'Renew bike insurance\nPolicy ends 30 Oct', completed: false, createdAt: T0 - 3 * DAY },
-      { id: 'an7', folderId: 'acc-gen', title: '', text: 'Return library books before Friday', completed: true, createdAt: T0 - 6 * DAY },
+      { id: 'an1', folderId: 'acc-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, dueDate: daysFromToday(3), createdAt: T0 - 2 * DAY },
+      { id: 'an2', folderId: 'acc-gen', title: '', text: 'Renew bike insurance\nPolicy ends 30 Oct', completed: false, dueDate: daysFromToday(-2), createdAt: T0 - 3 * DAY },
+      { id: 'an7', folderId: 'acc-gen', title: '', text: 'Return library books before Friday', completed: true, dueDate: daysFromToday(-4), createdAt: T0 - 6 * DAY },
       { id: 'an3', folderId: 'acc-work', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.', completed: false, createdAt: T0 - 1 * DAY },
-      { id: 'an4', folderId: 'acc-work', title: 'Standup', text: 'Share the sync bug findings', completed: false, createdAt: T0 - 4 * DAY },
+      { id: 'an4', folderId: 'acc-work', title: 'Standup', text: 'Share the sync bug findings', completed: false, dueDate: daysFromToday(0), createdAt: T0 - 4 * DAY },
       { id: 'an5', folderId: 'acc-work', title: 'Expenses', text: 'Submit September receipts', completed: true, createdAt: T0 - 9 * DAY },
-      { id: 'an6', folderId: 'acc-travel', title: 'Packing list', text: 'Passport, charger, rain jacket, adapters', completed: false, createdAt: T0 - 5 * DAY }
+      { id: 'an6', folderId: 'acc-travel', title: 'Packing list', text: 'Passport, charger, rain jacket, adapters', completed: false, dueDate: daysFromToday(21), createdAt: T0 - 5 * DAY }
     ]
   };
 }
@@ -572,7 +666,7 @@ function ensureDefault(d) {
 function initState(preset) {
   var s = {
     screen: 'login', account: seedAccount(), sel: null, offline: preset === 'offline',
-    folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false
+    folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false, themeOpen: false
   };
   function open() {
     s.account = ensureDefault(s.account);
@@ -584,12 +678,14 @@ function initState(preset) {
   if (preset === 'desktop-editing') {
     open();
     s.sel = 'acc-work';
-    s.noteEdit = { id: 'an3', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.' };
+    s.noteEdit = { id: 'an3', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.', dueDate: '' };
     s.folderForm = { mode: 'new', id: null, value: 'work ', error: 'folders.errors.taken' };
   }
   if (preset === 'delete-folder') { open(); s.sel = 'acc-work'; s.dialog = { kind: 'deleteFolder', id: 'acc-work' }; }
   if (preset === 'mobile-drawer') { open(); s.drawer = true; }
-  if (preset === 'new-note') { open(); s.noteEdit = { id: 'new', title: '', text: 'Pick up the parcel at the post office' }; }
+  if (preset === 'new-note') { open(); s.noteEdit = { id: 'new', title: '', text: 'Pick up the parcel at the post office', dueDate: '' }; }
+  if (preset === 'due-dates') { open(); s.noteEdit = { id: 'an1', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', dueDate: daysFromToday(3) }; }
+  if (preset === 'theme') { open(); s.themeOpen = true; }
   if (preset === 'empty') {
     open();
     s.account.folders.push({ id: 'acc-ideas', name: 'Ideas', isDefault: false, createdAt: T0 });
@@ -607,7 +703,9 @@ var PRESETS = [
   { id: 'delete-folder', label: 'Delete folder dialog' },
   { id: 'mobile-drawer', label: 'Folders drawer open (phone)' },
   { id: 'new-note', label: 'New note row' },
-  { id: 'empty', label: 'Empty folder' }
+  { id: 'empty', label: 'Empty folder' },
+  { id: 'due-dates', label: 'Due dates: today, overdue, editing one' },
+  { id: 'theme', label: 'Theme picker open' }
 ];
 
 Vue.createApp({
@@ -615,12 +713,13 @@ Vue.createApp({
     var params = new URLSearchParams(location.search);
     var preset = params.get('state') || 'login';
     var view = params.get('view') || (preset === 'mobile-drawer' ? 'phone' : 'desktop');
-    return Object.assign(initState(preset), { preset: preset, view: view, presets: PRESETS, w: window.innerWidth, lang: initialLang() });
+    return Object.assign(initState(preset), { preset: preset, view: view, presets: PRESETS, w: window.innerWidth, lang: initialLang(), theme: initialTheme(), themes: THEMES });
   },
   directives: {
     focus: { mounted: function (el) { el.focus(); } }
   },
   mounted: function () {
+    setFavicon(this.screen === 'app' ? this.theme : 'orange');
     var self = this;
     window.addEventListener('resize', function () { self.w = window.innerWidth; });
     window.addEventListener('offline', function () { self.offline = true; });
@@ -653,6 +752,16 @@ Vue.createApp({
   },
   methods: {
     t: function (key, params) { return translate(this.lang, key, params); },
+    formatDay: function (key) { return formatDay(key, this.lang); },
+    isOverdue: function (n) { return !!n.dueDate && !n.completed && n.dueDate < daysFromToday(0); },
+    setTheme: function (id) {
+      this.theme = id;
+      this.themeOpen = false;
+      setFavicon(id);
+      var url = new URL(location.href);
+      url.searchParams.set('theme', id);
+      history.replaceState(null, '', url);
+    },
     label: function (f) { return f ? folderLabel(f, this.lang) : ''; },
     setLang: function (l) {
       this.lang = l;
@@ -661,6 +770,7 @@ Vue.createApp({
     },
     applyPreset: function (p) {
       Object.assign(this.$data, initState(p), { preset: p });
+      setFavicon(this.screen === 'app' ? this.theme : 'orange');
       if (p === 'mobile-drawer') this.view = 'phone';
       var url = new URL(location.href);
       url.searchParams.set('state', p);
@@ -682,9 +792,11 @@ Vue.createApp({
         screen: 'app', sel: this.account.folders.slice().sort(byCreatedAsc)[0].id,
         folderForm: null, noteEdit: null, search: '', drawer: false, dialog: null
       });
+      setFavicon(this.theme);
     },
     signOut: function () {
-      Object.assign(this, { screen: 'login', sel: null, folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false });
+      Object.assign(this, { screen: 'login', sel: null, folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false, themeOpen: false });
+      setFavicon('orange');
     },
 
     // Folders
@@ -715,19 +827,20 @@ Vue.createApp({
     },
 
     // Notes
-    startNewNote: function () { Object.assign(this, { noteEdit: { id: 'new', title: '', text: '' }, search: '' }); },
-    startEdit: function (n) { this.noteEdit = { id: n.id, title: n.title, text: n.text }; },
+    startNewNote: function () { Object.assign(this, { noteEdit: { id: 'new', title: '', text: '', dueDate: '' }, search: '' }); },
+    startEdit: function (n) { this.noteEdit = { id: n.id, title: n.title, text: n.text, dueDate: n.dueDate || '' }; },
     submitNote: function () {
       var ne = this.noteEdit;
       if (!ne) return;
       var text = ne.text.trim();
       if (!text) return;
       var title = ne.title.trim();
+      var dueDate = ne.dueDate || null;
       if (ne.id === 'new') {
-        var n = { id: uid(), folderId: this.current.id, title: title, text: text, completed: false, createdAt: Date.now() };
+        var n = { id: uid(), folderId: this.current.id, title: title, text: text, completed: false, dueDate: dueDate, createdAt: Date.now() };
         this.setData({ folders: this.data.folders, notes: this.data.notes.concat([n]) });
       } else {
-        this.setData({ folders: this.data.folders, notes: this.data.notes.map(function (x) { return x.id === ne.id ? Object.assign({}, x, { title: title, text: text }) : x; }) });
+        this.setData({ folders: this.data.folders, notes: this.data.notes.map(function (x) { return x.id === ne.id ? Object.assign({}, x, { title: title, text: text, dueDate: dueDate }) : x; }) });
       }
       this.noteEdit = null;
     },

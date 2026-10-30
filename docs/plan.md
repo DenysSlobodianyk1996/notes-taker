@@ -51,7 +51,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 **Notes**
 
 - Fields: optional title (≤200), required text (≤1000, not just spaces, with a live character count), `completed`, optional `dueDate` (a day, `'YYYY-MM-DD'` or `null`; can be cleared), `createdAt`, `updatedAt`.
-- A Note with a due date shows it in the UI language's date format. An overdue Note (due date before today, not completed) shows it in red. Due dates don't change the newest-first order (ticket 07a).
+- A Note with a due date shows it in the UI language's date format. An overdue Note (due date before today, not completed) shows it in red. Due dates don't change the newest-first order (designed in 07a, built in ticket 07).
 - Shown in full with no preview truncation, newest first. Completed notes stay in place, crossed out and dimmed.
 - Each row has a checkbox on the left that toggles completion either way, and a delete icon that asks in a `<dialog>`.
 - Clicking a row edits it inline with ✓ and ✕ buttons; no autosave. Only one row is edited at a time.
@@ -59,6 +59,12 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - Keyboard: Enter adds a new line, Ctrl/Cmd+Enter submits, Esc cancels.
 - A search box above the list filters as you type on title and text, ignoring case. It applies only to the current folder.
 - No popups for create or edit. `<dialog>` is used only for delete confirmations.
+
+**Theme (ticket 12, ADR-0010)**
+
+- A palette button in the header opens three colour circles: Orange (default), Pink and Purple. Only the accent colours change; the login page is always Orange.
+- Saved per Account as `theme` on `users/{uid}` and followed live, so it is the same on every device. No local copy: after a reload the app shows Orange until Firestore answers.
+- The browser tab icon follows the Theme; the installed app icon stays Orange.
 
 **Layout and routing**
 
