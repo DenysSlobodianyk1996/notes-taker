@@ -37,11 +37,14 @@ class FakeDb {
   private readonly collections = new Map<string, Map<string, Data>>();
   private listeners: Listener[] = [];
   readonly writes: { path: string; data: Data }[] = [];
+  /** Paths deleted by each committed write batch. */
+  readonly batches: string[][] = [];
 
   reset(): void {
     this.collections.clear();
     this.listeners = [];
     this.writes.length = 0;
+    this.batches.length = 0;
   }
 
   seed(collection: string, id: string, data: Data): void {
@@ -121,7 +124,31 @@ export const fakeFirestoreModule = {
     if (!current) throw new Error(`No document to update: ${ref.path}`);
     fakeDb.set(ref.path, { ...current, ...data });
   },
+  where: (field: string, _op: '==', value: unknown) => ({ field, value }),
+  query: (collection: Ref, ...filters: { field: string; value: unknown }[]) => ({
+    collection: collection.path,
+    filters,
+  }),
+  getDocs: async (q: { collection: string; filters: { field: string; value: unknown }[] }) => {
+    const docs = [...fakeDb.docsIn(q.collection)]
+      .filter(([, data]) => q.filters.every((f) => data[f.field] === f.value))
+      .map(([id, data]) => ({ id, data: () => data, ref: { path: `${q.collection}/${id}`, id } }));
+    return { docs, empty: docs.length === 0 };
+  },
   deleteDoc: async (ref: Ref): Promise<void> => fakeDb.remove(ref.path),
+  writeBatch: () => {
+    const deletes: string[] = [];
+    return {
+      delete(ref: Ref) {
+        deletes.push(ref.path);
+        return this;
+      },
+      async commit(): Promise<void> {
+        fakeDb.batches.push([...deletes]);
+        deletes.forEach((path) => fakeDb.remove(path));
+      },
+    };
+  },
   onSnapshot: (
     collection: Ref,
     next: (snapshot: Snapshot) => void,
