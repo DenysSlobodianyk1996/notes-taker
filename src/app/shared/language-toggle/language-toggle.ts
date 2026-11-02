@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { UI_LANGUAGES, UiLanguage } from '../../core/i18n/ui-language';
-import { UiLanguageService } from '../../core/i18n/ui-language.service';
+import { UI_LANGUAGES, UiLanguage } from '@core/i18n/ui-language';
+import { UiLanguageService } from '@core/i18n/ui-language.service';
 
 /** The "EN | UA" switch shown on the login card and in the header. */
 @Component({

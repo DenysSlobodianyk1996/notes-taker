@@ -1,8 +1,8 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
-import { AuthService } from '../../core/auth/auth.service';
-import { FoldersService } from '../../core/folders/folders.service';
-import { Folder } from '../../domain/folders';
+import { AuthService } from '@core/auth/auth.service';
+import { FoldersService } from '@core/folders/folders.service';
+import { Folder } from '@domain/folders';
 
 /** The Account's Folders, creating the Default folder first if this is its first sign-in. */
 async function loadFolders(): Promise<Folder[]> {

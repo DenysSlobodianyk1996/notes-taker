@@ -10,7 +10,7 @@ import { provideRouter } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
-import { environment } from '../environments/environment';
+import { environment } from '@env/environment';
 import { routes } from './app.routes';
 import { AuthService } from './core/auth/auth.service';
 import { provideFirebase } from './core/firebase/firebase';

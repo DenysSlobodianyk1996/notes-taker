@@ -5,9 +5,9 @@ import {
   provideFakeAuth,
   provideFakeFolders,
   provideFakeOnlineStatus,
-} from '../../../testing/fakes';
-import { provideTestTranslations } from '../../../testing/translations';
-import { routes } from '../../app.routes';
+} from '@testing/fakes';
+import { provideTestTranslations } from '@testing/translations';
+import { routes } from '@app/app.routes';
 
 async function urlAfterVisiting(url: string, auth: FakeAuthService): Promise<string> {
   TestBed.configureTestingModule({

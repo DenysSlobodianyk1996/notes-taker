@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { getButton } from '../../../testing/dom';
-import { FakeAuthService, provideFakeAuth } from '../../../testing/fakes';
-import { provideTestTranslations } from '../../../testing/translations';
-import { UiLanguageService } from '../../core/i18n/ui-language.service';
+import { getButton } from '@testing/dom';
+import { FakeAuthService, provideFakeAuth } from '@testing/fakes';
+import { provideTestTranslations } from '@testing/translations';
+import { UiLanguageService } from '@core/i18n/ui-language.service';
 import { AppShell } from './app-shell';
 
 async function render(auth: FakeAuthService): Promise<ComponentFixture<AppShell>> {

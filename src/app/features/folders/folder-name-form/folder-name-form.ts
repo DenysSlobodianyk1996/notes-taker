@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { FormField, form, submit, validate } from '@angular/forms/signals';
 import { TranslatePipe } from '@ngx-translate/core';
-import { FolderNameError } from '../../../domain/folders';
+import { FolderNameError } from '@domain/folders';
 
 /**
  * The inline form row for a new or renamed Folder (ADR-0004): ✓ or Enter saves, ✕ or Esc cancels.

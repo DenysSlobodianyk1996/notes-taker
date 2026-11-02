@@ -1,14 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { getButton } from '../testing/dom';
+import { getButton } from '@testing/dom';
 import {
   FakeAuthService,
   provideFakeAuth,
   provideFakeFolders,
   provideFakeNotes,
   provideFakeOnlineStatus,
-} from '../testing/fakes';
-import { provideTestTranslations } from '../testing/translations';
+} from '@testing/fakes';
+import { provideTestTranslations } from '@testing/translations';
 import { App } from './app';
 import { routes } from './app.routes';
 import { UiLanguageService } from './core/i18n/ui-language.service';

@@ -10,9 +10,9 @@ import {
   setDoc,
   updateDoc,
 } from 'firebase/firestore';
-import { DEFAULT_FOLDER_ID, Folder, normalizeFolderName, sortFolders } from '../../domain/folders';
-import { AuthService } from '../auth/auth.service';
-import { FIRESTORE } from '../firebase/firebase';
+import { DEFAULT_FOLDER_ID, Folder, normalizeFolderName, sortFolders } from '@domain/folders';
+import { AuthService } from '@core/auth/auth.service';
+import { FIRESTORE } from '@core/firebase/firebase';
 
 interface Waiter {
   resolve: (folders: Folder[]) => void;

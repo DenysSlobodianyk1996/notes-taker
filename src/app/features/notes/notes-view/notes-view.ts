@@ -9,9 +9,9 @@ import {
   untracked,
 } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { NotesService } from '../../../core/notes/notes.service';
-import { noteSummary } from '../../../domain/notes';
-import { NoteFields, NoteForm } from '../note-form/note-form';
+import { NotesService } from '@core/notes/notes.service';
+import { noteSummary } from '@domain/notes';
+import { NoteFields, NoteForm } from '@features/notes/note-form/note-form';
 
 /** The selected Folder's Notes: header with counts, the "+" new-note row, the list, empty state. */
 @Component({

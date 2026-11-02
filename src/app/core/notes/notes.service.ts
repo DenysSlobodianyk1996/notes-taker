@@ -8,9 +8,9 @@ import {
   onSnapshot,
   setDoc,
 } from 'firebase/firestore';
-import { Note, sortNotes } from '../../domain/notes';
-import { AuthService } from '../auth/auth.service';
-import { FIRESTORE } from '../firebase/firebase';
+import { Note, sortNotes } from '@domain/notes';
+import { AuthService } from '@core/auth/auth.service';
+import { FIRESTORE } from '@core/firebase/firebase';
 
 /**
  * The signed-in Account's Notes, live from Firestore (`users/{uid}/notes`). All of them are

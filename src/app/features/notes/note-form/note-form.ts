@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { FormField, form, maxLength, submit, validate } from '@angular/forms/signals';
 import { TranslatePipe } from '@ngx-translate/core';
-import { NOTE_TEXT_MAX_LENGTH, NOTE_TITLE_MAX_LENGTH, noteFormErrors } from '../../../domain/notes';
+import { NOTE_TEXT_MAX_LENGTH, NOTE_TITLE_MAX_LENGTH, noteFormErrors } from '@domain/notes';
 
 export interface NoteFields {
   title: string;
