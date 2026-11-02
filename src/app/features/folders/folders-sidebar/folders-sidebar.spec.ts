@@ -192,4 +192,17 @@ describe('FoldersSidebar: create and rename', () => {
     expect(nav(page).textContent).toContain('Work');
     expect(page.folders.renameFolder).not.toHaveBeenCalled();
   });
+
+  it('shows no error when the empty name field loses focus, e.g. on the way to ✕', async () => {
+    const page = await open();
+    await click(page, 'New folder');
+
+    nameInput(page).dispatchEvent(new FocusEvent('blur'));
+    nameInput(page).dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+    await page.harness.fixture.whenStable();
+
+    expect(errorText(page)).toBeUndefined();
+    await click(page, 'Cancel');
+    expect(nav(page).querySelector('form')).toBeNull();
+  });
 });
