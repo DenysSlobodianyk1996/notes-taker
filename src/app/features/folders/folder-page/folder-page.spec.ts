@@ -221,7 +221,7 @@ describe('FolderPage', () => {
 
       expect(root.querySelector('app-folders-sidebar')?.classList).toContain('drawer');
       expect(root.querySelector<HTMLElement>('section.notes')?.inert).toBe(true);
-      expect(document.activeElement?.textContent).toContain('Work');
+      expect(document.activeElement).toBe(root.querySelector('nav'));
     });
 
     it('closes the drawer from the backdrop and with Esc, sending focus back to ☰', async () => {
