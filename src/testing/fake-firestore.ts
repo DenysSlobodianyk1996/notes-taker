@@ -67,6 +67,15 @@ class FakeDb {
     }
   }
 
+  remove(path: string): void {
+    const { collection, id } = split(path);
+    this.docsIn(collection).delete(id);
+    this.writes.push({ path, data: { deleted: true } });
+    for (const l of this.listeners.filter((x) => x.collection === collection)) {
+      queueMicrotask(() => l.next(this.snapshot(collection)));
+    }
+  }
+
   listen(listener: Listener): () => void {
     this.listeners.push(listener);
     queueMicrotask(() => listener.next(this.snapshot(listener.collection)));
@@ -112,6 +121,7 @@ export const fakeFirestoreModule = {
     if (!current) throw new Error(`No document to update: ${ref.path}`);
     fakeDb.set(ref.path, { ...current, ...data });
   },
+  deleteDoc: async (ref: Ref): Promise<void> => fakeDb.remove(ref.path),
   onSnapshot: (
     collection: Ref,
     next: (snapshot: Snapshot) => void,

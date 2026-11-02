@@ -1,15 +1,13 @@
-import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { FoldersService } from '@core/folders/folders.service';
 import { NotesService } from '@core/notes/notes.service';
+import { FormRowService } from '@core/ui/form-row.service';
 import { DEFAULT_FOLDER_NAMES } from '@core/i18n/default-folder-names';
 import { Folder, FolderNameError, folderLabel, folderNameError } from '@domain/folders';
 import { injectDefaultFolderName } from '@features/folders/default-folder-name';
 import { FolderNameForm } from '@features/folders/folder-name-form/folder-name-form';
-
-/** Which form row is open: a new Folder, renaming one, or none. Only one at a time. */
-type Editing = { mode: 'new' } | { mode: 'rename'; id: string } | null;
 
 /**
  * The Account's Folders, Default folder first. New and renamed Folders use an inline form row;
@@ -32,7 +30,8 @@ export class FoldersSidebar {
   private readonly defaultName = injectDefaultFolderName();
 
   protected readonly folders = this.service.folders;
-  protected readonly editing = signal<Editing>(null);
+  /** The shared open form row; only one (Folder or Note) is open at a time. */
+  protected readonly row = inject(FormRowService).open;
 
   protected readonly checkNew = (name: string): FolderNameError | null =>
     folderNameError(name, this.folders(), { reserved: DEFAULT_FOLDER_NAMES });
@@ -41,27 +40,31 @@ export class FoldersSidebar {
     return folderLabel(folder, this.defaultName());
   }
 
+  protected creating(): boolean {
+    return this.row()?.kind === 'new-folder';
+  }
+
   protected renaming(folder: Folder): boolean {
-    const editing = this.editing();
-    return editing?.mode === 'rename' && editing.id === folder.id;
+    const row = this.row();
+    return row?.kind === 'rename-folder' && row.id === folder.id;
   }
 
   protected readonly checkRename = (name: string): FolderNameError | null => {
-    const editing = this.editing();
+    const row = this.row();
     return folderNameError(name, this.folders(), {
       reserved: DEFAULT_FOLDER_NAMES,
-      renamingId: editing?.mode === 'rename' ? editing.id : undefined,
+      renamingId: row?.kind === 'rename-folder' ? row.id : undefined,
     });
   };
 
   protected create(name: string): void {
     const id = this.service.createFolder(name);
-    this.editing.set(null);
+    this.row.set(null);
     void this.router.navigate(['/folders', id]);
   }
 
   protected rename(folder: Folder, name: string): void {
     if (name !== folder.name) this.service.renameFolder(folder.id, name);
-    this.editing.set(null);
+    this.row.set(null);
   }
 }

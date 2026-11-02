@@ -1,0 +1,8 @@
+<dialog #dialog class="dialog" [attr.aria-labelledby]="headingId" (close)="onClose()">
+  <h2 [id]="headingId">{{ heading() }}</h2>
+  <p>{{ body() }}</p>
+  <div class="actions">
+    <button type="button" class="cancel" (click)="cancel()">{{ cancelLabel() }}</button>
+    <button type="button" class="danger" (click)="confirm()">{{ confirmLabel() }}</button>
+  </div>
+</dialog>

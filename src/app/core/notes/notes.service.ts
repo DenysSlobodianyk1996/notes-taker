@@ -4,11 +4,13 @@ import {
   QueryDocumentSnapshot,
   Timestamp,
   collection,
+  deleteDoc,
   doc,
   onSnapshot,
   setDoc,
+  updateDoc,
 } from 'firebase/firestore';
-import { Note, sortNotes } from '@domain/notes';
+import { Note, NoteInput, sortNotes } from '@domain/notes';
 import { AuthService } from '@core/auth/auth.service';
 import { FIRESTORE } from '@core/firebase/firebase';
 
@@ -71,23 +73,50 @@ export class NotesService {
    * Creates a Note and returns its id. Title and text are stored trimmed; the text must already be
    * valid (`noteFormErrors`).
    */
-  createNote(folderId: string, title: string, text: string): string {
-    const uid = this.uid();
-    if (!uid) throw new Error('Notes need a signed-in Account');
+  createNote(folderId: string, input: NoteInput): string {
     if (!folderId) throw new Error('A Note needs a Folder');
     const id = crypto.randomUUID();
     const now = Timestamp.now();
-    // Not awaited: offline, the promise only settles once the server has the write. The local
-    // cache, and so the live list, has it straight away.
-    setDoc(doc(this.collection(uid), id), {
-      folderId,
-      title: title.trim(),
-      text: text.trim(),
-      completed: false,
-      createdAt: now,
-      updatedAt: now,
-    }).catch((error) => console.error('Could not save the note', error));
+    this.save(
+      setDoc(this.ref(id), {
+        folderId,
+        ...fields(input),
+        completed: false,
+        createdAt: now,
+        updatedAt: now,
+      }),
+    );
     return id;
+  }
+
+  /** Saves an edited Note: trimmed title and text, the Due date (null clears it). */
+  updateNote(id: string, input: NoteInput): void {
+    this.save(updateDoc(this.ref(id), { ...fields(input), updatedAt: Timestamp.now() }));
+  }
+
+  /** Marks a Note Completed, or not Completed again. */
+  toggleNote(id: string): void {
+    const note = this.all().find((n) => n.id === id);
+    if (!note) return;
+    this.save(updateDoc(this.ref(id), { completed: !note.completed, updatedAt: Timestamp.now() }));
+  }
+
+  deleteNote(id: string): void {
+    this.save(deleteDoc(this.ref(id)));
+  }
+
+  /**
+   * Writes aren't awaited: offline, the promise only settles once the server has the write. The
+   * local cache, and so the live list, has it straight away.
+   */
+  private save(write: Promise<void>): void {
+    write.catch((error) => console.error('Could not save a note change', error));
+  }
+
+  private ref(id: string) {
+    const uid = this.uid();
+    if (!uid) throw new Error('Notes need a signed-in Account');
+    return doc(this.collection(uid), id);
   }
 
   private collection(uid: string): CollectionReference {
@@ -104,7 +133,23 @@ function toNote(snapshot: QueryDocumentSnapshot): Note {
     title: String(data['title'] ?? ''),
     text: String(data['text'] ?? ''),
     completed: data['completed'] === true,
+    dueDate: isDay(data['dueDate']) ? data['dueDate'] : null,
     createdAt: date(data['createdAt']),
     updatedAt: date(data['updatedAt']),
   };
+}
+
+function fields(input: NoteInput): { title: string; text: string; dueDate: string | null } {
+  return { title: input.title.trim(), text: input.text.trim(), dueDate: input.dueDate || null };
+}
+
+/**
+ * A stored Due date: a real `'YYYY-MM-DD'` day. Anything else (missing on older Notes, malformed,
+ * or impossible like 2026-02-31) means none.
+ */
+function isDay(value: unknown): value is string {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  return date.getMonth() === month - 1 && date.getDate() === day;
 }

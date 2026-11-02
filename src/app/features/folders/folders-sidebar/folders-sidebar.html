@@ -5,18 +5,18 @@
       type="button"
       class="add-folder"
       [attr.aria-label]="'folders.new' | translate"
-      (click)="editing.set({ mode: 'new' })"
+      (click)="row.set({ kind: 'new-folder' })"
     >
       <span class="material-symbols-outlined" aria-hidden="true">create_new_folder</span>
     </button>
   </div>
 
-  @if (editing()?.mode === 'new') {
+  @if (creating()) {
     <app-folder-name-form
       saveLabel="folders.create"
       [check]="checkNew"
       (saved)="create($event)"
-      (cancelled)="editing.set(null)"
+      (cancelled)="row.set(null)"
     />
   }
 
@@ -27,7 +27,7 @@
         [initialName]="folder.name"
         [check]="checkRename"
         (saved)="rename(folder, $event)"
-        (cancelled)="editing.set(null)"
+        (cancelled)="row.set(null)"
       />
     } @else {
       @let selected = folder.id === selectedId();
@@ -53,7 +53,7 @@
             type="button"
             class="icon-btn"
             [attr.aria-label]="'folders.rename' | translate"
-            (click)="editing.set({ mode: 'rename', id: folder.id })"
+            (click)="row.set({ kind: 'rename-folder', id: folder.id })"
           >
             <span class="material-symbols-outlined" aria-hidden="true">edit</span>
           </button>

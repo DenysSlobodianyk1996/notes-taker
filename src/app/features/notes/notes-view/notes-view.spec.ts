@@ -1,7 +1,9 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { getButton } from '@testing/dom';
-import { FakeNotesService, aNote, provideFakeNotes } from '@testing/fakes';
+import { FakeNotesService, aNote, provideFakeNotes, provideFakeAuth } from '@testing/fakes';
+import { FormRowService } from '@core/ui/form-row.service';
+import { todayKey } from '@domain/notes';
 import { provideTestTranslations } from '@testing/translations';
 import { UiLanguageService } from '@core/i18n/ui-language.service';
 import { NotesView } from './notes-view';
@@ -22,7 +24,7 @@ interface View {
 
 async function render(notes = new FakeNotesService()): Promise<View> {
   TestBed.configureTestingModule({
-    providers: [provideTestTranslations(), provideFakeNotes(notes)],
+    providers: [provideTestTranslations(), provideFakeAuth(), provideFakeNotes(notes)],
   });
   await TestBed.inject(UiLanguageService).init();
   const fixture = TestBed.createComponent(Host);
@@ -84,7 +86,7 @@ describe('NotesView', () => {
     ]);
     const { root } = await render(notes);
 
-    const rows = [...root.querySelectorAll('.note')];
+    const rows = [...root.querySelectorAll('article.note')];
     expect(rows.map((r) => r.querySelector('.note-text')?.textContent)).toEqual([
       'Line one\nLine two',
       'Old',
@@ -133,7 +135,11 @@ describe('NotesView', () => {
     saveButton(view).click();
     await view.fixture.whenStable();
 
-    expect(view.notes.createNote).toHaveBeenCalledWith('work', 'Groceries', 'Milk\nBread');
+    expect(view.notes.createNote).toHaveBeenCalledWith('work', {
+      title: 'Groceries',
+      text: 'Milk\nBread',
+      dueDate: null,
+    });
     expect(view.root.querySelector('form')).toBeNull();
     expect(view.root.querySelector('.note-title')?.textContent).toBe('Groceries');
   });
@@ -153,7 +159,7 @@ describe('NotesView', () => {
     await type(view, 'textarea', 'Third');
     await press(view, 'input', { key: 'Enter' });
 
-    expect(view.notes.createNote.mock.calls.map((call) => call[2])).toEqual([
+    expect(view.notes.createNote.mock.calls.map((call) => call[1].text)).toEqual([
       'First',
       'Second',
       'Third',
@@ -206,5 +212,181 @@ describe('NotesView', () => {
     notes.loaded.set(true);
     await view.fixture.whenStable();
     expect(view.root.textContent).toContain('No notes in Work yet');
+  });
+
+  describe('editing, completing and deleting', () => {
+    function withNotes(...notes: Parameters<typeof aNote>[0][]): FakeNotesService {
+      const service = new FakeNotesService();
+      service.notes.set(notes.map((fields) => aNote({ folderId: 'work', ...fields })));
+      return service;
+    }
+
+    async function click(view: View, name: string): Promise<void> {
+      getButton(view.root, name).click();
+      await view.fixture.whenStable();
+    }
+
+    function day(offset: number): string {
+      const date = new Date();
+      date.setDate(date.getDate() + offset);
+      return todayKey(date);
+    }
+
+    it('edits a Note inline, filled in, and saves it trimmed with ✓', async () => {
+      const view = await render(withNotes({ id: 'n1', title: 'Call', text: 'Dentist' }));
+
+      await click(view, 'Edit note: Call');
+      expect(field<HTMLInputElement>(view, 'input').value).toBe('Call');
+      expect(field<HTMLTextAreaElement>(view, 'textarea').value).toBe('Dentist');
+
+      await type(view, 'textarea', ' Dentist at 9 ');
+      saveButton(view).click();
+      await view.fixture.whenStable();
+
+      expect(view.notes.updateNote).toHaveBeenCalledWith('n1', {
+        title: 'Call',
+        text: 'Dentist at 9',
+        dueDate: null,
+      });
+      expect(view.root.querySelector('form')).toBeNull();
+    });
+
+    it('cancels an edit with Esc and shows the Note unchanged', async () => {
+      const view = await render(withNotes({ id: 'n1', title: 'Call', text: 'Dentist' }));
+      await click(view, 'Edit note: Call');
+      await type(view, 'textarea', 'Changed');
+
+      await press(view, 'textarea', { key: 'Escape' });
+
+      expect(view.notes.updateNote).not.toHaveBeenCalled();
+      expect(view.root.querySelector('.note-text')?.textContent).toBe('Dentist');
+    });
+
+    it('marks a Note Completed with its checkbox, crossed out, and counts it', async () => {
+      const view = await render(withNotes({ id: 'n1', title: 'Call' }));
+      const checkbox = view.root.querySelector<HTMLInputElement>('input[type="checkbox"]')!;
+      expect(checkbox.getAttribute('aria-label')).toBe('Mark as completed: Call');
+
+      checkbox.click();
+      await view.fixture.whenStable();
+
+      expect(view.notes.toggleNote).toHaveBeenCalledWith('n1');
+      expect(view.root.querySelector('article.note')?.classList).toContain('completed');
+      expect(view.root.textContent).toContain('Completed: 1');
+    });
+
+    it('deletes a Note only after confirming in the dialog', async () => {
+      const view = await render(withNotes({ id: 'n1', title: 'Call' }));
+      const dialog = view.root.querySelector('dialog')!;
+
+      await click(view, 'Delete note');
+      expect(dialog.open).toBe(true);
+      expect(dialog.textContent).toContain('Delete this note?');
+      expect(dialog.textContent).toContain('“Call” will be deleted.');
+
+      getButton(dialog, 'Cancel').click();
+      await view.fixture.whenStable();
+      expect(dialog.open).toBe(false);
+      expect(view.notes.deleteNote).not.toHaveBeenCalled();
+
+      await click(view, 'Delete note');
+      getButton(dialog, 'Delete note').click();
+      await view.fixture.whenStable();
+      expect(view.notes.deleteNote).toHaveBeenCalledWith('n1');
+      expect(dialog.open).toBe(false);
+    });
+
+    it('keeps only one form row open: a new Note replaces an edit, a Folder form replaces both', async () => {
+      const view = await render(withNotes({ id: 'n1', title: 'Call' }));
+      await click(view, 'Edit note: Call');
+      await type(view, 'textarea', 'Unsaved');
+
+      await click(view, 'New note');
+      expect(view.root.querySelectorAll('form')).toHaveLength(1);
+      expect(field<HTMLTextAreaElement>(view, 'textarea').value).toBe('');
+
+      TestBed.inject(FormRowService).open.set({ kind: 'new-folder' });
+      await view.fixture.whenStable();
+      expect(view.root.querySelector('form')).toBeNull();
+      expect(view.notes.updateNote).not.toHaveBeenCalled();
+    });
+
+    it('saves a Due date with a new Note', async () => {
+      const view = await render();
+      await openNewNote(view);
+      await type(view, 'textarea', 'Pay rent');
+      await type(view, 'input[type="date"]', '2026-12-01');
+
+      saveButton(view).click();
+      await view.fixture.whenStable();
+
+      expect(view.notes.createNote).toHaveBeenCalledWith('work', {
+        title: '',
+        text: 'Pay rent',
+        dueDate: '2026-12-01',
+      });
+    });
+
+    it('clears a Due date while editing', async () => {
+      const view = await render(withNotes({ id: 'n1', title: 'Rent', dueDate: day(3) }));
+      await click(view, 'Edit note: Rent');
+      expect(field<HTMLInputElement>(view, 'input[type="date"]').value).toBe(day(3));
+
+      await click(view, 'Clear due date');
+      saveButton(view).click();
+      await view.fixture.whenStable();
+
+      expect(view.notes.updateNote).toHaveBeenCalledWith('n1', {
+        title: 'Rent',
+        text: 'Buy milk',
+        dueDate: null,
+      });
+    });
+
+    it('shows Due dates, red when Overdue, plain once Completed', async () => {
+      const view = await render(
+        withNotes(
+          { id: 'soon', title: 'Soon', dueDate: day(2), createdAt: new Date(3) },
+          { id: 'late', title: 'Late', dueDate: day(-1), createdAt: new Date(2) },
+          { id: 'done', title: 'Done', dueDate: day(-1), completed: true, createdAt: new Date(1) },
+          { id: 'none', title: 'None', createdAt: new Date(0) },
+        ),
+      );
+
+      const chips = [...view.root.querySelectorAll('article.note')].map((row) => {
+        const chip = row.querySelector('.due');
+        return chip
+          ? `${chip.classList.contains('overdue') ? 'red' : 'plain'}: ${chip.textContent?.replace(/event_busy|event/, '').trim()}`
+          : null;
+      });
+      expect(chips[0]).toMatch(/^plain: Due \d+ \w+/);
+      expect(chips[1]).toMatch(/^red: Overdue · \d+ \w+/);
+      expect(chips[2]).toMatch(/^plain: Due /);
+      expect(chips[3]).toBeNull();
+    });
+
+    it('does not save a Note whose fields did not change', async () => {
+      const view = await render(withNotes({ id: 'n1', title: 'Call', text: 'Dentist' }));
+      await click(view, 'Edit note: Call');
+
+      saveButton(view).click();
+      await view.fixture.whenStable();
+
+      expect(view.notes.updateNote).not.toHaveBeenCalled();
+      expect(view.root.querySelector('form')).toBeNull();
+    });
+
+    it('closes a pending delete when another Folder opens', async () => {
+      const view = await render(withNotes({ id: 'n1', title: 'Call' }));
+      await click(view, 'Delete note');
+      const dialog = view.root.querySelector('dialog')!;
+      expect(dialog.open).toBe(true);
+
+      view.fixture.componentInstance.folderId.set('travel');
+      await view.fixture.whenStable();
+
+      expect(dialog.open).toBe(false);
+      expect(view.notes.deleteNote).not.toHaveBeenCalled();
+    });
   });
 });
