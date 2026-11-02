@@ -4,11 +4,11 @@
 
 **Blocked by:** 04 (Folders sidebar with the Default folder)
 
-**Status:** ready-for-agent
+**Status:** done (implemented on `feature/06-notes-list`)
 
-- [ ] Domain rules (pure, unit tested): note sort (newest first); validation (text required, max 1000 after trimming; title max 200); summary counts.
-- [ ] Notes service: a live note list per folder; note counts per folder; `createNote(folderId, title, text)` stores the trimmed values, `completed: false`, `createdAt` and `updatedAt`, with a client-side UUID id.
-- [ ] Notes view: the header (folder label, translated counts), the note rows (title optional, text with `white-space: pre-wrap`), the empty state, and the "+" button with an accessible label.
-- [ ] Inline new-note row built with Signal Forms: focus on the text; the counter; Save disabled for blank text; the keyboard shortcuts as described; shortcut hint hidden on narrow screens.
-- [ ] Sidebar rows show note counts.
-- [ ] Tests: domain rules; notes view component tests (empty state, newest-first order, Save disabled, Ctrl/⌘+Enter calls `createNote`, Esc closes the row) with the services replaced through DI; notes service payload test with Firebase SDK mocked.
+- [x] Domain rules (pure, unit tested): note sort (newest first); validation (text required, max 1000 after trimming; title max 200); summary counts.
+- [x] Notes service: a live note list per folder; note counts per folder; `createNote(folderId, title, text)` stores the trimmed values, `completed: false`, `createdAt` and `updatedAt`, with a client-side UUID id.
+- [x] Notes view: the header (folder label, translated counts), the note rows (title optional, text with `white-space: pre-wrap`), the empty state, and the "+" button with an accessible label.
+- [x] Inline new-note row built with Signal Forms: focus on the text; the counter; Save disabled for blank text; the keyboard shortcuts as described; shortcut hint hidden on narrow screens.
+- [x] Sidebar rows show note counts.
+- [x] Tests: domain rules; notes view component tests (empty state, newest-first order, Save disabled, Ctrl/⌘+Enter calls `createNote`, Esc closes the row) with the services replaced through DI; notes service payload test with Firebase SDK mocked.

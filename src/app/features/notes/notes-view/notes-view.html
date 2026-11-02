@@ -1,0 +1,47 @@
+<div class="col">
+  <div class="title">
+    <h1>{{ folderName() }}</h1>
+    <p>
+      {{ 'notes.count' | translate: { count: summary().count } }}
+      @if (summary().completed) {
+        · {{ 'notes.completed' | translate: { count: summary().completed } }}
+      }
+    </p>
+  </div>
+
+  <div class="tools">
+    <span class="grow"></span>
+    <button
+      type="button"
+      class="add-note"
+      [attr.aria-label]="'notes.new' | translate"
+      [title]="'notes.new' | translate"
+      (click)="creating.set(true)"
+    >
+      <span class="material-symbols-outlined" aria-hidden="true">add</span>
+    </button>
+  </div>
+
+  <div class="list">
+    @if (creating()) {
+      <app-note-form (saved)="create($event)" (cancelled)="creating.set(false)" />
+    }
+
+    @for (note of notes(); track note.id) {
+      <article class="note" [class.completed]="note.completed">
+        @if (note.title) {
+          <h2 class="note-title">{{ note.title }}</h2>
+        }
+        <p class="note-text">{{ note.text }}</p>
+      </article>
+    } @empty {
+      @if (!creating() && loaded()) {
+        <div class="empty">
+          <span class="material-symbols-outlined" aria-hidden="true">note_stack</span>
+          <p class="empty-title">{{ 'notes.emptyTitle' | translate: { folder: folderName() } }}</p>
+          <p>{{ 'notes.emptyHint' | translate }}</p>
+        </div>
+      }
+    }
+  </div>
+</div>
