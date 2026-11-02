@@ -113,8 +113,8 @@
   .folder-pick .ms { color: #8A8880; }
   .folder.sel .folder-pick { font-weight: 600; }
   .folder.sel .folder-pick .ms { color: var(--accent-ink); }
-  .folder-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .count { font-size: 13px; color: var(--muted); font-weight: 400; }
+  .folder-name { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .count { flex-shrink: 0; margin-left: -6px; font-size: 13px; color: var(--muted); font-weight: 400; }
   .folder .icon-btn { color: var(--muted); }
   .lock { width: 36px; height: 36px; margin-right: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #8A8880; }
   .lock .ms { font-size: 17px; }
@@ -300,7 +300,7 @@
                 <button type="button" class="folder-pick" :aria-current="current && f.id === current.id ? 'page' : null" @click="pickFolder(f.id)">
                   <span class="ms" aria-hidden="true">folder</span>
                   <span class="folder-name">{{ label(f) }}</span>
-                  <span class="count">{{ countIn(f.id) }}</span>
+                  <span class="count">({{ countIn(f.id) }})</span>
                 </button>
                 <span v-if="f.isDefault" class="lock" :title="t('folders.defaultLocked')"><span class="ms" aria-hidden="true">lock</span><span class="sr">{{ t('folders.defaultLocked') }}</span></span>
                 <template v-else-if="current && f.id === current.id">

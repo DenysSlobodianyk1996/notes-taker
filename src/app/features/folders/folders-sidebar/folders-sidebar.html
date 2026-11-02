@@ -40,7 +40,7 @@
           <span class="material-symbols-outlined" aria-hidden="true">folder</span>
           <span class="folder-name">{{ label(folder) }}</span>
           @if (notes.loaded()) {
-            <span class="count">{{ notes.countIn(folder.id) }}</span>
+            <span class="count">({{ notes.countIn(folder.id) }})</span>
           }
         </a>
         @if (folder.isDefault) {
