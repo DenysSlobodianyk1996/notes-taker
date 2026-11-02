@@ -1,5 +1,5 @@
-import en from '../../../../public/i18n/en.json';
-import uk from '../../../../public/i18n/uk.json';
+import en from '@i18n/en.json';
+import uk from '@i18n/uk.json';
 import { DEFAULT_FOLDER_NAMES } from './default-folder-names';
 
 describe('DEFAULT_FOLDER_NAMES', () => {

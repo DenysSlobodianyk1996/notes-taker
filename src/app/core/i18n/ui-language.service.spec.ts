@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateService } from '@ngx-translate/core';
-import { provideTestTranslations } from '../../../testing/translations';
+import { provideTestTranslations } from '@testing/translations';
 import { UI_LANGUAGE_STORAGE_KEY, UiLanguageService } from './ui-language.service';
 
 function setup(): { service: UiLanguageService; translate: TranslateService } {

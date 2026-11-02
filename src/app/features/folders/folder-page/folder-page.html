@@ -1,6 +1,4 @@
 <app-folders-sidebar [selectedId]="folderId()" />
 <section class="notes">
-  <div class="col">
-    <h1>{{ title() }}</h1>
-  </div>
+  <app-notes-view [folderId]="folderId()" [folderName]="title()" />
 </section>

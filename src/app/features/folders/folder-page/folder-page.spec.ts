@@ -6,15 +6,24 @@ import {
   aDefaultFolder,
   aFolder,
   provideFakeFolders,
-} from '../../../../testing/fakes';
-import { provideTestTranslations } from '../../../../testing/translations';
-import { UiLanguageService } from '../../../core/i18n/ui-language.service';
+  FakeNotesService,
+  aNote,
+  provideFakeNotes,
+} from '@testing/fakes';
+import { provideTestTranslations } from '@testing/translations';
+import { UiLanguageService } from '@core/i18n/ui-language.service';
 import { FolderPage } from './folder-page';
 
 async function open(
   folderId: string,
 ): Promise<{ harness: RouterTestingHarness; root: HTMLElement; folders: FakeFoldersService }> {
   const folders = new FakeFoldersService();
+  const notes = new FakeNotesService();
+  notes.notes.set([
+    aNote({ id: 'a', folderId: 'work' }),
+    aNote({ id: 'b', folderId: 'work' }),
+    aNote({ id: 'c', folderId: 'default' }),
+  ]);
   folders.folders.set([
     aDefaultFolder(),
     aFolder({ id: 'work', name: 'Work', createdAt: new Date('2026-02-01') }),
@@ -25,6 +34,7 @@ async function open(
       provideRouter([{ path: 'folders/:folderId', component: FolderPage }]),
       provideTestTranslations(),
       provideFakeFolders(folders),
+      provideFakeNotes(notes),
     ],
   });
   await TestBed.inject(UiLanguageService).init();
@@ -93,5 +103,20 @@ describe('FolderPage', () => {
     await harness.fixture.whenStable();
 
     expect(TestBed.inject(Router).url).toBe('/folders/default');
+  });
+
+  it('shows how many Notes each Folder holds', async () => {
+    const { root } = await open('work');
+
+    const counts = [...root.querySelectorAll('nav .folder')].map((row) =>
+      row.querySelector('.count')?.textContent?.trim(),
+    );
+    expect(counts).toEqual(['1', '2', '0']);
+  });
+
+  it("shows the selected Folder's Notes", async () => {
+    const { root } = await open('work');
+
+    expect(root.querySelectorAll('.note')).toHaveLength(2);
   });
 });

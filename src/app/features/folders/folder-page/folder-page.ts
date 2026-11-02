@@ -2,15 +2,16 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@a
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
-import { FoldersService } from '../../../core/folders/folders.service';
-import { folderLabel } from '../../../domain/folders';
-import { injectDefaultFolderName } from '../default-folder-name';
-import { FoldersSidebar } from '../folders-sidebar/folders-sidebar';
+import { FoldersService } from '@core/folders/folders.service';
+import { folderLabel } from '@domain/folders';
+import { injectDefaultFolderName } from '@features/folders/default-folder-name';
+import { NotesView } from '@features/notes/notes-view/notes-view';
+import { FoldersSidebar } from '@features/folders/folders-sidebar/folders-sidebar';
 
-/** `/folders/:folderId`: the Folders sidebar next to the selected Folder (its Notes come in 06). */
+/** `/folders/:folderId`: the Folders sidebar next to the selected Folder's Notes. */
 @Component({
   selector: 'app-folder-page',
-  imports: [FoldersSidebar],
+  imports: [FoldersSidebar, NotesView],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './folder-page.html',
   styleUrl: './folder-page.scss',

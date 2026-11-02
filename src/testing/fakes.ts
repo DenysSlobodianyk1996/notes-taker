@@ -1,10 +1,12 @@
 import { Provider, signal } from '@angular/core';
 import { User } from 'firebase/auth';
 import { vi } from 'vitest';
-import { AuthService } from '../app/core/auth/auth.service';
-import { FoldersService } from '../app/core/folders/folders.service';
-import { OnlineStatus } from '../app/core/network/online-status.service';
-import { Folder } from '../app/domain/folders';
+import { AuthService } from '@core/auth/auth.service';
+import { FoldersService } from '@core/folders/folders.service';
+import { NotesService } from '@core/notes/notes.service';
+import { OnlineStatus } from '@core/network/online-status.service';
+import { Folder } from '@domain/folders';
+import { Note, sortNotes } from '@domain/notes';
 
 /** Stands in for AuthService: set `user` to sign in or out, and check the spies. */
 export class FakeAuthService {
@@ -68,4 +70,45 @@ export class FakeFoldersService {
 
 export function provideFakeFolders(fake = new FakeFoldersService()): Provider {
   return { provide: FoldersService, useValue: fake };
+}
+
+/** A Note with sensible defaults for tests. */
+export function aNote(fields: Partial<Note> = {}): Note {
+  return {
+    id: 'n1',
+    folderId: 'default',
+    title: '',
+    text: 'Buy milk',
+    completed: false,
+    createdAt: new Date('2026-01-01'),
+    updatedAt: new Date('2026-01-01'),
+    ...fields,
+  };
+}
+
+/** Stands in for NotesService: set `notes` (any order) and check the spies. */
+export class FakeNotesService {
+  readonly notes = signal<Note[]>([]);
+  readonly loaded = signal(true);
+  notesIn(folderId: string): Note[] {
+    return sortNotes(this.notes().filter((n) => n.folderId === folderId));
+  }
+  countIn(folderId: string): number {
+    return this.notesIn(folderId).length;
+  }
+  readonly createNote = vi.fn((folderId: string, title: string, text: string) => {
+    const note = aNote({
+      id: `new-${this.notes().length}`,
+      folderId,
+      title,
+      text,
+      createdAt: new Date(),
+    });
+    this.notes.update((list) => [...list, note]);
+    return note.id;
+  });
+}
+
+export function provideFakeNotes(fake = new FakeNotesService()): Provider {
+  return { provide: NotesService, useValue: fake };
 }

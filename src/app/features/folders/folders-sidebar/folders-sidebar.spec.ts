@@ -1,16 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { accessibleName, getButton } from '../../../../testing/dom';
+import { accessibleName, getButton } from '@testing/dom';
 import {
   FakeFoldersService,
   aDefaultFolder,
   aFolder,
   provideFakeFolders,
-} from '../../../../testing/fakes';
-import { provideTestTranslations } from '../../../../testing/translations';
-import { UiLanguageService } from '../../../core/i18n/ui-language.service';
-import { FolderPage } from '../folder-page/folder-page';
+  provideFakeNotes,
+} from '@testing/fakes';
+import { provideTestTranslations } from '@testing/translations';
+import { UiLanguageService } from '@core/i18n/ui-language.service';
+import { FolderPage } from '@features/folders/folder-page/folder-page';
 
 interface Page {
   harness: RouterTestingHarness;
@@ -30,6 +31,7 @@ async function open(folderId = 'default'): Promise<Page> {
       provideRouter([{ path: 'folders/:folderId', component: FolderPage }]),
       provideTestTranslations(),
       provideFakeFolders(folders),
+      provideFakeNotes(),
     ],
   });
   await TestBed.inject(UiLanguageService).init();

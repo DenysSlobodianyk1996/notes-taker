@@ -1,0 +1,104 @@
+@use 'tokens' as *;
+@use 'mixins' as *;
+
+:host {
+  display: block;
+}
+
+.col {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+
+  h1 {
+    margin: 0;
+    font-size: 26px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  p {
+    margin: 2px 0 0;
+    font-size: 14px;
+    color: $muted;
+  }
+}
+
+.add-note {
+  @include icon-button;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: $accent;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid $divider;
+}
+
+.note {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 4px 12px 6px;
+  border-bottom: 1px solid $divider;
+
+  &.completed {
+    color: $completed;
+    text-decoration: line-through;
+  }
+}
+
+.note-title {
+  margin: 0;
+  font-size: inherit;
+  font-weight: 600;
+}
+
+.note-text {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.empty {
+  padding: 56px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  color: $muted;
+
+  .material-symbols-outlined {
+    font-size: 40px;
+    color: #b8b6af;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .empty-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: $text;
+  }
+}

@@ -1,5 +1,5 @@
-@use '../../../../styles/tokens' as *;
-@use '../../../../styles/mixins' as *;
+@use 'tokens' as *;
+@use 'mixins' as *;
 
 :host {
   display: flex;
@@ -82,6 +82,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.count {
+  font-size: 13px;
+  font-weight: 400;
+  color: $muted;
 }
 
 .lock {
