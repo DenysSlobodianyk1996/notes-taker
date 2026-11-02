@@ -8,15 +8,24 @@
     <meta name="description" content="Short notes in folders, synced across your devices." />
     <meta name="theme-color" content="#F59E0B" />
     <meta name="apple-mobile-web-app-title" content="Notes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <link rel="icon" href="favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="icons/icon.svg" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!--
+      Only the icons the app uses (icon_names, alphabetical), so the font is small enough for the
+      service worker to keep offline (ngsw-config.json dataGroups "icon-font"; crossorigin makes the
+      response readable, so it can be cached). src/app/icon-font.spec.ts fails if a template uses
+      an icon that isn't listed.
+    -->
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block"
+      crossorigin="anonymous"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=account_circle,add,check,close,create_new_folder,delete,edit,event,event_busy,folder,lock,logout,menu,note_stack,person,search,search_off,sticky_note_2,wifi_off&display=block"
     />
   </head>
   <body>
