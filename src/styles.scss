@@ -6,6 +6,28 @@
   box-sizing: border-box;
 }
 
+:root {
+  // Orange, the default Theme (and always on the login page).
+  --accent: #f59e0b;
+  --accent-soft: #fef3c7;
+  --accent-ink: #92400e;
+  --accent-tint: #fffdf7;
+}
+
+:root[data-theme='pink'] {
+  --accent: #f472b6;
+  --accent-soft: #fce7f3;
+  --accent-ink: #9d174d;
+  --accent-tint: #fffafc;
+}
+
+:root[data-theme='purple'] {
+  --accent: #a78bfa;
+  --accent-soft: #ede9fe;
+  --accent-ink: #5b21b6;
+  --accent-tint: #fcfbff;
+}
+
 html,
 body {
   margin: 0;

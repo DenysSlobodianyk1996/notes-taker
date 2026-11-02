@@ -3,10 +3,12 @@ import { User } from 'firebase/auth';
 import { vi } from 'vitest';
 import { AuthService } from '@core/auth/auth.service';
 import { LayoutService } from '@core/layout/layout.service';
+import { ThemeService } from '@core/theme/theme.service';
 import { FoldersService } from '@core/folders/folders.service';
 import { NotesService } from '@core/notes/notes.service';
 import { OnlineStatus } from '@core/network/online-status.service';
 import { Folder } from '@domain/folders';
+import { Theme } from '@domain/theme';
 import { Note, NoteInput, sortNotes } from '@domain/notes';
 
 /** Stands in for AuthService: set `user` to sign in or out, and check the spies. */
@@ -143,4 +145,14 @@ export class FakeLayoutService {
 
 export function provideFakeLayout(fake = new FakeLayoutService()): Provider {
   return { provide: LayoutService, useValue: fake };
+}
+
+/** Stands in for ThemeService: `theme` is the current Theme; `setTheme` is a spy that applies it. */
+export class FakeThemeService {
+  readonly theme = signal<Theme>('orange');
+  readonly setTheme = vi.fn((theme: Theme) => this.theme.set(theme));
+}
+
+export function provideFakeTheme(fake = new FakeThemeService()): Provider {
+  return { provide: ThemeService, useValue: fake };
 }
