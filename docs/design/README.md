@@ -98,11 +98,13 @@ One signed-in Account: the Default folder (3 notes, one completed), Work (3 note
 - Button text stays dark (`#1C1C1E`) on every Theme; all three accents keep it above 4.5:1.
 - The login page is always Orange. The browser tab icon follows the Theme (try it in the standalone HTML); the installed app icon stays Orange.
 - Start state `theme` opens the popover; `?theme=pink` or `?theme=purple` starts in that Theme.
-- **Canvas:** not updated yet. The standalone HTML is the reference for both features until the `Main` artboard gets them.
+- **Canvas:** the `Main` artboard source has the new header layout and icon-only Sign out, but not the Due date or Theme yet. The standalone HTML is the reference for those.
 
 ## Behaviour the prototype pins down
 
 - The **New folder** and **New note** buttons add a form row at the top of the list. ✓ submits and ✕ cancels. In the note form, Enter in the title submits, Ctrl/⌘+Enter in the text submits, and Esc cancels.
 - Clicking a note row edits it in place. Only one row is edited at a time.
 - The selected folder row shows rename and delete. The Default folder instead shows a lock icon, because it can't be renamed or deleted.
-- Search filters the current folder by title and text, and has its own "no match" state.
+- The folder header holds the name, the counts and the **+** (New note) button; the search field has its own row below it.
+- Search filters the current folder by title and text as you type, ignoring case, and has its own "no match" state ("No notes match “…”" plus a hint that search covers this folder only). The counts in the header always describe the whole folder.
+- Switching folders or starting a new note clears the search.

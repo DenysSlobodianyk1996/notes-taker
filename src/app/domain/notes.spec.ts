@@ -1,4 +1,12 @@
-import { Note, isOverdue, noteFormErrors, noteSummary, sortNotes, todayKey } from './notes';
+import {
+  Note,
+  filterNotes,
+  isOverdue,
+  noteFormErrors,
+  noteSummary,
+  sortNotes,
+  todayKey,
+} from './notes';
 
 function note(fields: Partial<Note>): Note {
   return {
@@ -88,5 +96,39 @@ describe('isOverdue', () => {
   it('never marks a Completed Note, or one with no Due date', () => {
     expect(isOverdue(note({ dueDate: '2026-11-01', completed: true }), today)).toBe(false);
     expect(isOverdue(note({ dueDate: null }), today)).toBe(false);
+  });
+});
+
+describe('filterNotes', () => {
+  const notes = [
+    note({ id: 'a', title: 'Groceries', text: 'Milk and bread' }),
+    note({ id: 'b', title: '', text: 'Call the DENTIST' }),
+    note({ id: 'c', title: 'Подорож', text: 'Паспорт, зарядка' }),
+  ];
+  const ids = (query: string) => filterNotes(notes, query).map((n) => n.id);
+
+  it('returns every Note for an empty or blank query', () => {
+    expect(ids('')).toEqual(['a', 'b', 'c']);
+    expect(ids('   ')).toEqual(['a', 'b', 'c']);
+  });
+
+  it('matches the title or the text, ignoring case and surrounding spaces', () => {
+    expect(ids('grocer')).toEqual(['a']);
+    expect(ids(' BREAD ')).toEqual(['a']);
+    expect(ids('dentist')).toEqual(['b']);
+  });
+
+  it('matches Cyrillic in any case', () => {
+    expect(ids('подорож')).toEqual(['c']);
+    expect(ids('ПАСПОРТ')).toEqual(['c']);
+  });
+
+  it('matches letters typed and pasted in different Unicode forms', () => {
+    const pasted = note({ id: 'p', text: 'мі\u0438\u0306 план' }); // и + combining breve
+    expect(filterNotes([pasted], 'мій').map((n) => n.id)).toEqual(['p']);
+  });
+
+  it('finds nothing when no Note matches', () => {
+    expect(ids('holiday')).toEqual([]);
   });
 });
