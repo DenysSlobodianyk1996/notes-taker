@@ -6,6 +6,7 @@ import {
   provideFakeAuth,
   FakeLayoutService,
   provideFakeLayout,
+  provideFakeTheme,
 } from '@testing/fakes';
 import { provideTestTranslations } from '@testing/translations';
 import { UiLanguageService } from '@core/i18n/ui-language.service';
@@ -20,6 +21,7 @@ async function render(
     providers: [
       provideRouter([]),
       provideTestTranslations(),
+      provideFakeTheme(),
       provideFakeAuth(auth),
       provideFakeLayout(layout),
     ],

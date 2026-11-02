@@ -1,8 +1,12 @@
 // Design tokens from docs/design/README.md ("Look").
-$accent: #f59e0b;
-$accent-soft: #fef3c7;
-$accent-ink: #92400e;
-$accent-tint: #fffdf7;
+// The accent family follows the Theme (ticket 12): CSS variables set in styles.scss, switched by
+// `data-theme` on <html>. Don't do colour maths on these in SCSS; they're resolved in the browser.
+// Angular compiles component `var(--x)` to `var(--%NS%x)`; %NS% is empty unless the app adds
+// provideCssVarNamespacing(). If it ever does, rename these to `--global--accent` etc.
+$accent: var(--accent);
+$accent-soft: var(--accent-soft);
+$accent-ink: var(--accent-ink);
+$accent-tint: var(--accent-tint);
 $text: #1c1c1e;
 $muted: #5f5f64;
 $icon-muted: #8a8880;

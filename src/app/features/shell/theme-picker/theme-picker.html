@@ -1,0 +1,40 @@
+<button
+  #button
+  type="button"
+  class="theme-button"
+  [attr.aria-label]="'theme.label' | translate"
+  [title]="'theme.label' | translate"
+  aria-haspopup="true"
+  [attr.aria-expanded]="open()"
+  (click)="toggle()"
+>
+  <span class="material-symbols-outlined" aria-hidden="true">palette</span>
+</button>
+@if (open()) {
+  <div class="backdrop" aria-hidden="true" (click)="close()"></div>
+  <div class="popover">
+    <p id="theme-title">{{ 'theme.label' | translate }}</p>
+    <div class="swatches" role="radiogroup" aria-labelledby="theme-title">
+      @for (theme of themes; track theme.id) {
+        @let selected = current() === theme.id;
+        <button
+          #swatch
+          type="button"
+          class="swatch"
+          role="radio"
+          [attr.aria-checked]="selected"
+          [tabIndex]="selected ? 0 : -1"
+          [attr.aria-label]="'theme.' + theme.id | translate"
+          [title]="'theme.' + theme.id | translate"
+          (click)="pick(theme.id)"
+        >
+          <span class="dot" [style.background]="theme.accent">
+            @if (selected) {
+              <span class="material-symbols-outlined" aria-hidden="true">check</span>
+            }
+          </span>
+        </button>
+      }
+    </div>
+  </div>
+}

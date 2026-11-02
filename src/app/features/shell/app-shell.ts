@@ -11,6 +11,7 @@ import { RouterOutlet } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '@core/auth/auth.service';
 import { LayoutService } from '@core/layout/layout.service';
+import { ThemePicker } from '@features/shell/theme-picker/theme-picker';
 import { LanguageToggle } from '@shared/language-toggle/language-toggle';
 
 /**
@@ -19,7 +20,7 @@ import { LanguageToggle } from '@shared/language-toggle/language-toggle';
  */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, TranslatePipe, LanguageToggle],
+  imports: [RouterOutlet, TranslatePipe, LanguageToggle, ThemePicker],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app-shell.html',
   styleUrl: './app-shell.scss',
