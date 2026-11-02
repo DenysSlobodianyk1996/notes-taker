@@ -136,7 +136,9 @@
   .list { display: flex; flex-direction: column; border-top: 1px solid var(--divider); }
   .note-form { margin: 10px 0; display: flex; flex-direction: column; gap: 6px; padding: 12px 12px 8px 14px; border-radius: 12px; border: 1.5px solid var(--accent); background: var(--accent-tint); }
   .note-form input { width: 100%; border: 0; outline: none; background: transparent; font-size: 16px; font-weight: 600; padding: 4px 0; }
-  .note-form textarea { width: 100%; border: 0; outline: none; background: transparent; padding: 2px 0; resize: vertical; }
+  .note-form textarea { width: 100%; border: 1px solid #D4D3CE; border-radius: 8px; outline: none; background: #FFF; padding: 8px 10px; resize: vertical; }
+  .note-form textarea:focus { border-color: var(--accent); }
+  .note-form .text-hint { margin: -2px 0 0; display: flex; flex-wrap: wrap; gap: 0 6px; font-size: 12px; color: var(--muted); }
   .note-form .fields-row { display: flex; align-items: flex-start; gap: 10px; }
   .note-form .note-icon { flex-shrink: 0; margin-top: 4px; font-size: 22px; color: var(--accent-ink); }
   .note-form .fields { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
@@ -329,7 +331,7 @@
                 <div v-if="noteEdit && noteEdit.id === 'new'" class="note-form">
                   <div class="fields-row"><span class="ms note-icon" aria-hidden="true">sticky_note_2</span><div class="fields">
                   <label><span class="sr">{{ t('notes.titlePlaceholder') }}</span><input v-model="noteEdit.title" maxlength="200" :placeholder="t('notes.titlePlaceholder')" @keydown.enter.prevent="submitNote" @keydown.esc="noteEdit = null"></label>
-                  <label><span class="sr">{{ t('notes.textLabel') }}</span><textarea v-model="noteEdit.text" maxlength="1000" rows="9" :placeholder="t('notes.textPlaceholder')" v-focus @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></textarea></label></div></div>
+                  <label><span class="sr">{{ t('notes.textLabel') }}</span><textarea v-model="noteEdit.text" maxlength="1000" rows="9" :placeholder="t('notes.textPlaceholder')" v-focus @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></textarea></label><p class="text-hint"><span>{{ noteEdit.text.length }} / 1000</span><span v-if="!narrow">· {{ t('notes.shortcuts') }}</span></p></div></div>
                   <div class="due-field">
                     <span class="ms" aria-hidden="true">event</span>
                     <label><span class="sr">{{ t('notes.dueDateLabel') }}</span><input type="date" v-model="noteEdit.dueDate" @keydown.esc="noteEdit = null"></label>
@@ -337,8 +339,6 @@
                     <button v-else type="button" class="icon-btn" :aria-label="t('notes.clearDueDate')" :title="t('notes.clearDueDate')" @click="noteEdit.dueDate = ''"><span class="ms" aria-hidden="true">close</span></button>
                   </div>
                   <div class="foot">
-                    <span>{{ noteEdit.text.length }} / 1000</span>
-                    <span v-if="!narrow">· {{ t('notes.shortcuts') }}</span>
                     <span class="grow"></span>
                     <button type="button" class="icon-btn" :aria-label="t('common.cancel')" @click="noteEdit = null"><span class="ms" aria-hidden="true">close</span></button>
                     <button type="button" class="icon-btn ok" :aria-label="t('notes.save')" :disabled="!noteEdit.text.trim()" @click="submitNote"><span class="ms" aria-hidden="true">check</span></button>
@@ -348,7 +348,7 @@
                 <template v-for="n in shownNotes" :key="n.id">
                   <div v-if="noteEdit && noteEdit.id === n.id" class="note-form">
                     <label><span class="sr">{{ t('notes.titlePlaceholder') }}</span><input v-model="noteEdit.title" maxlength="200" :placeholder="t('notes.titlePlaceholder')" @keydown.enter.prevent="submitNote" @keydown.esc="noteEdit = null"></label>
-                    <label><span class="sr">{{ t('notes.textLabel') }}</span><textarea v-model="noteEdit.text" maxlength="1000" rows="3" :placeholder="t('notes.textPlaceholder')" v-focus @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></textarea></label>
+                    <label><span class="sr">{{ t('notes.textLabel') }}</span><textarea v-model="noteEdit.text" maxlength="1000" rows="3" :placeholder="t('notes.textPlaceholder')" v-focus @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></textarea></label><p class="text-hint"><span>{{ noteEdit.text.length }} / 1000</span><span v-if="!narrow">· {{ t('notes.shortcuts') }}</span></p>
                     <div class="due-field">
                       <span class="ms" aria-hidden="true">event</span>
                       <label><span class="sr">{{ t('notes.dueDateLabel') }}</span><input type="date" v-model="noteEdit.dueDate" @keydown.esc="noteEdit = null"></label>
@@ -356,8 +356,6 @@
                       <button v-else type="button" class="icon-btn" :aria-label="t('notes.clearDueDate')" :title="t('notes.clearDueDate')" @click="noteEdit.dueDate = ''"><span class="ms" aria-hidden="true">close</span></button>
                     </div>
                     <div class="foot">
-                      <span>{{ noteEdit.text.length }} / 1000</span>
-                      <span v-if="!narrow">· {{ t('notes.shortcuts') }}</span>
                       <span class="grow"></span>
                       <button type="button" class="icon-btn" :aria-label="t('common.cancel')" @click="noteEdit = null"><span class="ms" aria-hidden="true">close</span></button>
                       <button type="button" class="icon-btn ok" :aria-label="t('notes.save')" :disabled="!noteEdit.text.trim()" @click="submitNote"><span class="ms" aria-hidden="true">check</span></button>

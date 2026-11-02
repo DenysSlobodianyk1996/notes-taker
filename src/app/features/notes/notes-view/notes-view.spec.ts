@@ -544,4 +544,18 @@ describe('NotesView', () => {
     expect(head.firstElementChild).toBe(getButton(view.root, 'New note'));
     expect(head.querySelector('h1')?.textContent?.trim()).toBe('Work');
   });
+
+  it('shows the character count and the shortcuts right below the text area', async () => {
+    const view = await render();
+    await openNewNote(view);
+
+    const textLabel = field<HTMLTextAreaElement>(view, 'textarea').closest('label')!;
+    const hint = textLabel.nextElementSibling!;
+    expect(hint.classList).toContain('text-hint');
+    expect([...hint.children].map((part) => part.textContent?.trim())).toEqual([
+      '0 / 1000',
+      '· Ctrl/⌘+Enter to save · Esc to cancel',
+    ]);
+    expect(view.root.querySelector('form .foot')?.textContent).not.toContain('1000');
+  });
 });
