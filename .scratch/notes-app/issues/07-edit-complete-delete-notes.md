@@ -4,16 +4,16 @@
 
 **Blocked by:** 06 (Notes list and creating notes), 07a (Design the Due date: approval)
 
-**Status:** ready-for-agent
+**Status:** done (implemented on `feature/07-edit-complete-delete-notes`)
 
-- [ ] Notes service: `updateNote(id, title, text)` (trims, bumps `updatedAt`), `toggleNote(id)`, `deleteNote(id)`.
-- [ ] The note row opens the edit form on click (as a real button with an accessible "Edit note: …" label); ✓ and Ctrl/⌘+Enter save; ✕ and Esc cancel; opening another form discards the current one.
-- [ ] Checkbox: a real `<input type="checkbox">` with an accessible label; the Completed style is crossed out and muted `#6B6B70`.
-- [ ] A shared confirm-dialog component on native `<dialog>` (`showModal`, focus trapped, Esc closes): title, body and confirm/cancel labels as inputs, with a danger style for the confirm button.
-- [ ] Due date data: `dueDate: string | null` on `users/{uid}/notes/{noteId}`, a local day as `'YYYY-MM-DD'`. A missing field (older Notes) reads as `null`. Security rules don't change.
-- [ ] Domain rule (pure, unit tested): `isOverdue(note, today)`: true only when `dueDate` is before `today` (local `'YYYY-MM-DD'`) and the Note isn't Completed.
-- [ ] Notes service: `createNote` and `updateNote` take an optional `dueDate`; clearing stores `null`.
-- [ ] Form row: an optional `<input type="date">` with a clear control, as in the design; the Signal Form keeps the existing Save rules (Text still required).
-- [ ] Note row: a Due date chip formatted for the current UI language (`Intl.DateTimeFormat`), red with "Overdue" when `isOverdue`; a Completed Note's chip stays plain.
-- [ ] Translations: copy the `notes.dueDateLabel`/`clearDueDate`/`due`/`overdue` keys from `docs/design/i18n/*.json` to `public/i18n/*.json`.
-- [ ] Tests (services replaced through DI): edit then save calls `updateNote` with trimmed values; Esc restores the row; the checkbox calls `toggleNote`; the delete flow only calls `deleteNote` after confirming; the one-form-open rule; `isOverdue` (yesterday Overdue; today and tomorrow not; Completed never; no Due date never); the form saves, changes and clears the Due date; the row shows the date and the Overdue style; the service payload writes `dueDate` or `null` (Firebase SDK mocked).
+- [x] Notes service: `updateNote(id, title, text)` (trims, bumps `updatedAt`), `toggleNote(id)`, `deleteNote(id)`.
+- [x] The note row opens the edit form on click (as a real button with an accessible "Edit note: …" label); ✓ and Ctrl/⌘+Enter save; ✕ and Esc cancel; opening another form discards the current one.
+- [x] Checkbox: a real `<input type="checkbox">` with an accessible label; the Completed style is crossed out and muted `#6B6B70`.
+- [x] A shared confirm-dialog component on native `<dialog>` (`showModal`, focus trapped, Esc closes): title, body and confirm/cancel labels as inputs, with a danger style for the confirm button.
+- [x] Due date data: `dueDate: string | null` on `users/{uid}/notes/{noteId}`, a local day as `'YYYY-MM-DD'`. A missing field (older Notes) reads as `null`. Security rules don't change.
+- [x] Domain rule (pure, unit tested): `isOverdue(note, today)`: true only when `dueDate` is before `today` (local `'YYYY-MM-DD'`) and the Note isn't Completed.
+- [x] Notes service: `createNote` and `updateNote` take an optional `dueDate`; clearing stores `null`.
+- [x] Form row: an optional `<input type="date">` with a clear control, as in the design; the Signal Form keeps the existing Save rules (Text still required).
+- [x] Note row: a Due date chip formatted for the current UI language (`Intl.DateTimeFormat`), red with "Overdue" when `isOverdue`; a Completed Note's chip stays plain.
+- [x] Translations: copy the `notes.dueDateLabel`/`clearDueDate`/`due`/`overdue` keys from `docs/design/i18n/*.json` to `public/i18n/*.json`.
+- [x] Tests (services replaced through DI): edit then save calls `updateNote` with trimmed values; Esc restores the row; the checkbox calls `toggleNote`; the delete flow only calls `deleteNote` after confirming; the one-form-open rule; `isOverdue` (yesterday Overdue; today and tomorrow not; Completed never; no Due date never); the form saves, changes and clears the Due date; the row shows the date and the Overdue style; the service payload writes `dueDate` or `null` (Firebase SDK mocked).

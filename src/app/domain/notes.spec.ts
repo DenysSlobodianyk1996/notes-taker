@@ -1,4 +1,4 @@
-import { Note, noteFormErrors, noteSummary, sortNotes } from './notes';
+import { Note, isOverdue, noteFormErrors, noteSummary, sortNotes, todayKey } from './notes';
 
 function note(fields: Partial<Note>): Note {
   return {
@@ -7,6 +7,7 @@ function note(fields: Partial<Note>): Note {
     title: '',
     text: 'Text',
     completed: false,
+    dueDate: null,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...fields,
@@ -61,5 +62,31 @@ describe('noteSummary', () => {
 
     expect(noteSummary(notes)).toEqual({ count: 3, completed: 2 });
     expect(noteSummary([])).toEqual({ count: 0, completed: 0 });
+  });
+});
+
+describe('todayKey', () => {
+  it('gives the local calendar day as YYYY-MM-DD', () => {
+    expect(todayKey(new Date(2026, 0, 5, 23, 59))).toBe('2026-01-05');
+    expect(todayKey(new Date(2026, 10, 30, 0, 1))).toBe('2026-11-30');
+  });
+});
+
+describe('isOverdue', () => {
+  const today = '2026-11-02';
+
+  it('marks a Note whose Due date has passed as Overdue', () => {
+    expect(isOverdue(note({ dueDate: '2026-11-01' }), today)).toBe(true);
+    expect(isOverdue(note({ dueDate: '2025-12-31' }), today)).toBe(true);
+  });
+
+  it('does not mark a Note due today or later', () => {
+    expect(isOverdue(note({ dueDate: '2026-11-02' }), today)).toBe(false);
+    expect(isOverdue(note({ dueDate: '2026-11-03' }), today)).toBe(false);
+  });
+
+  it('never marks a Completed Note, or one with no Due date', () => {
+    expect(isOverdue(note({ dueDate: '2026-11-01', completed: true }), today)).toBe(false);
+    expect(isOverdue(note({ dueDate: null }), today)).toBe(false);
   });
 });

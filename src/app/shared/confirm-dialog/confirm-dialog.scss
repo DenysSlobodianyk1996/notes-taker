@@ -1,0 +1,54 @@
+@use 'tokens' as *;
+
+.dialog {
+  width: calc(100% - 32px);
+  max-width: 420px;
+  padding: 24px;
+  border: 0;
+  border-radius: 16px;
+  background: $surface;
+  color: $text;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+
+  &::backdrop {
+    background: rgba(28, 28, 30, 0.4);
+  }
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-size: 19px;
+}
+
+p {
+  margin: 0;
+  color: $muted;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+
+  button {
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}
+
+.cancel {
+  border: 1px solid $border-strong;
+  background: $surface;
+}
+
+.danger {
+  border: 0;
+  background: $danger;
+  color: #fff;
+}

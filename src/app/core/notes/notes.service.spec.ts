@@ -70,7 +70,11 @@ describe('NotesService', () => {
   it('creates a Note with trimmed values, not Completed, and lists it', async () => {
     const notes = await setup();
 
-    const id = notes.createNote('work', '  Groceries ', '\n Milk\nBread  \n');
+    const id = notes.createNote('work', {
+      title: '  Groceries ',
+      text: '\n Milk\nBread  \n',
+      dueDate: null,
+    });
     await flushSnapshots();
 
     expect(id).toMatch(/^[0-9a-f-]{36}$/);
@@ -81,6 +85,7 @@ describe('NotesService', () => {
       title: 'Groceries',
       text: 'Milk\nBread',
       completed: false,
+      dueDate: null,
     });
     expect(data['createdAt']).toBeInstanceOf(FakeTimestamp);
     expect(data['updatedAt']).toEqual(data['createdAt']);
@@ -114,7 +119,68 @@ describe('NotesService', () => {
   it('refuses a Note without a Folder', async () => {
     const notes = await setup();
 
-    expect(() => notes.createNote('', '', 'Text')).toThrow();
+    expect(() => notes.createNote('', { title: '', text: 'Text', dueDate: null })).toThrow();
     expect(fakeDb.writes).toHaveLength(0);
+  });
+
+  it('stores a Due date as a local day, and reads a missing one as none', async () => {
+    seedNote('old', {});
+    seedNote('dated', { dueDate: '2026-11-05' });
+    const notes = await setup();
+
+    notes.createNote('default', { title: '', text: 'Pay rent', dueDate: '2026-12-01' });
+    await flushSnapshots();
+
+    expect(fakeDb.writes[0].data).toMatchObject({ dueDate: '2026-12-01' });
+    const byId = new Map(notes.notesIn('default').map((n) => [n.text, n.dueDate]));
+    expect(byId.get('old')).toBeNull();
+    expect(byId.get('dated')).toBe('2026-11-05');
+  });
+
+  it('edits a Note: trimmed values, Due date changed or cleared, updatedAt bumped', async () => {
+    seedNote('n1', { title: 'Old', dueDate: '2026-11-05' });
+    const notes = await setup();
+
+    notes.updateNote('n1', { title: ' New ', text: ' Text ', dueDate: null });
+    await flushSnapshots();
+
+    const { path, data } = fakeDb.writes[0];
+    expect(path).toBe(`${NOTES}/n1`);
+    expect(data).toMatchObject({ title: 'New', text: 'Text', dueDate: null });
+    expect((data['updatedAt'] as FakeTimestamp).toDate().getTime()).toBeGreaterThan(
+      new Date('2026-01-01').getTime(),
+    );
+    expect(data['createdAt']).toEqual(FakeTimestamp.fromDate(new Date('2026-01-01')));
+  });
+
+  it('toggles a Note Completed and back', async () => {
+    seedNote('n1', {});
+    const notes = await setup();
+
+    notes.toggleNote('n1');
+    await flushSnapshots();
+    expect(notes.notesIn('default')[0].completed).toBe(true);
+
+    notes.toggleNote('n1');
+    await flushSnapshots();
+    expect(notes.notesIn('default')[0].completed).toBe(false);
+  });
+
+  it('deletes a Note', async () => {
+    seedNote('n1', {});
+    seedNote('n2', {});
+    const notes = await setup();
+
+    notes.deleteNote('n1');
+    await flushSnapshots();
+
+    expect(notes.notesIn('default').map((n) => n.id)).toEqual(['n2']);
+  });
+
+  it('reads an impossible Due date as none', async () => {
+    seedNote('bad', { dueDate: '2026-02-31' });
+    const notes = await setup();
+
+    expect(notes.notesIn('default')[0].dueDate).toBeNull();
   });
 });

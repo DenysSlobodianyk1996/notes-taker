@@ -14,7 +14,7 @@
       class="add-note"
       [attr.aria-label]="'notes.new' | translate"
       [title]="'notes.new' | translate"
-      (click)="creating.set(true)"
+      (click)="startNew()"
     >
       <span class="material-symbols-outlined" aria-hidden="true">add</span>
     </button>
@@ -22,16 +22,58 @@
 
   <div class="list">
     @if (creating()) {
-      <app-note-form (saved)="create($event)" (cancelled)="creating.set(false)" />
+      <app-note-form (saved)="create($event)" (cancelled)="closeForm()" />
     }
 
     @for (note of notes(); track note.id) {
-      <article class="note" [class.completed]="note.completed">
-        @if (note.title) {
-          <h2 class="note-title">{{ note.title }}</h2>
-        }
-        <p class="note-text">{{ note.text }}</p>
-      </article>
+      @if (editingId() === note.id) {
+        <app-note-form [initial]="note" (saved)="update(note, $event)" (cancelled)="closeForm()" />
+      } @else {
+        <article class="note" [class.completed]="note.completed">
+          <label class="check">
+            <input
+              type="checkbox"
+              [checked]="note.completed"
+              [attr.aria-label]="
+                (note.completed ? 'notes.markNotCompleted' : 'notes.markCompleted')
+                  | translate: { note: name(note) }
+              "
+              (change)="toggle(note, $event)"
+            />
+          </label>
+          <button
+            type="button"
+            class="note-body"
+            [attr.aria-label]="'notes.edit' | translate: { note: name(note) }"
+            (click)="startEdit(note)"
+          >
+            @if (note.title) {
+              <span class="note-title">{{ note.title }}</span>
+            }
+            <span class="note-text">{{ note.text }}</span>
+            @if (note.dueDate; as dueDate) {
+              <span class="due" [class.overdue]="overdue(note)">
+                <span class="material-symbols-outlined" aria-hidden="true">
+                  {{ overdue(note) ? 'event_busy' : 'event' }}
+                </span>
+                {{
+                  (overdue(note) ? 'notes.overdue' : 'notes.due')
+                    | translate: { date: dueLabel(dueDate) }
+                }}
+              </span>
+            }
+          </button>
+          <button
+            type="button"
+            class="icon-btn delete"
+            [attr.aria-label]="'notes.delete' | translate"
+            [title]="'notes.delete' | translate"
+            (click)="deleting.set(note)"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+          </button>
+        </article>
+      }
     } @empty {
       @if (!creating() && loaded()) {
         <div class="empty">
@@ -43,3 +85,13 @@
     }
   </div>
 </div>
+
+<app-confirm-dialog
+  [open]="deleting() !== null"
+  [heading]="'dialogs.deleteNote.title' | translate"
+  [body]="'dialogs.deleteNote.body' | translate: { note: deleting() ? name(deleting()!, 60) : '' }"
+  [confirmLabel]="'dialogs.deleteNote.confirm' | translate"
+  [cancelLabel]="'common.cancel' | translate"
+  (confirmed)="confirmDelete()"
+  (cancelled)="deleting.set(null)"
+/>
