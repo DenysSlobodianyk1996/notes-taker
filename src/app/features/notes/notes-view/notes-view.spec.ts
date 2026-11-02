@@ -389,4 +389,122 @@ describe('NotesView', () => {
       expect(view.notes.deleteNote).not.toHaveBeenCalled();
     });
   });
+
+  describe('search', () => {
+    function searchBox(view: View): HTMLInputElement {
+      return view.root.querySelector<HTMLInputElement>('input[type="search"]')!;
+    }
+
+    async function search(view: View, query: string): Promise<void> {
+      searchBox(view).value = query;
+      searchBox(view).dispatchEvent(new Event('input'));
+      await view.fixture.whenStable();
+    }
+
+    function shown(view: View): string[] {
+      return [...view.root.querySelectorAll('article.note .note-text')].map((n) => n.textContent!);
+    }
+
+    async function withThreeNotes(): Promise<View> {
+      const notes = new FakeNotesService();
+      notes.notes.set([
+        aNote({
+          id: 'a',
+          folderId: 'work',
+          title: 'Groceries',
+          text: 'Milk',
+          createdAt: new Date(3),
+        }),
+        aNote({ id: 'b', folderId: 'work', text: 'Call the dentist', createdAt: new Date(2) }),
+        aNote({ id: 'c', folderId: 'work', text: 'Паспорт', createdAt: new Date(1) }),
+      ]);
+      return render(notes);
+    }
+
+    it('has a labelled search box naming the Folder', async () => {
+      const view = await render();
+
+      expect(searchBox(view).placeholder).toBe('Search in Work');
+      expect(searchBox(view).closest('label')?.textContent).toContain(
+        'Search notes in this folder',
+      );
+    });
+
+    it('filters the Notes by title or text as you type, ignoring case', async () => {
+      const view = await withThreeNotes();
+
+      await search(view, 'GROC');
+      expect(shown(view)).toEqual(['Milk']);
+
+      await search(view, 'паспорт');
+      expect(shown(view)).toEqual(['Паспорт']);
+
+      await search(view, '');
+      expect(shown(view)).toHaveLength(3);
+    });
+
+    it('says when nothing matches, not that the Folder is empty', async () => {
+      const view = await withThreeNotes();
+
+      await search(view, ' holiday ');
+
+      expect(view.root.textContent).toContain('No notes match “holiday”');
+      expect(view.root.textContent).toContain(
+        'Search looks at titles and text in this folder only.',
+      );
+      expect(view.root.textContent).not.toContain('No notes in Work yet');
+      expect(view.root.textContent).toContain('Notes: 3');
+    });
+
+    it('clears the search when another Folder opens, or a new Note starts', async () => {
+      const view = await withThreeNotes();
+
+      await search(view, 'milk');
+      view.fixture.componentInstance.folderId.set('travel');
+      await view.fixture.whenStable();
+      expect(searchBox(view).value).toBe('');
+
+      view.fixture.componentInstance.folderId.set('work');
+      await view.fixture.whenStable();
+      await search(view, 'milk');
+      await openNewNote(view);
+      expect(searchBox(view).value).toBe('');
+      expect(shown(view)).toHaveLength(3);
+    });
+
+    it('keeps an open edit visible while searching, so the draft survives', async () => {
+      const view = await withThreeNotes();
+      getButton(view.root, 'Edit note: Groceries').click();
+      await view.fixture.whenStable();
+      await type(view, 'textarea', 'Milk and eggs');
+
+      await search(view, 'dentist');
+
+      expect(field<HTMLTextAreaElement>(view, 'textarea').value).toBe('Milk and eggs');
+      expect(shown(view)).toEqual(['Call the dentist']);
+    });
+
+    it('clears the search when a saved edit no longer matches it', async () => {
+      const view = await withThreeNotes();
+      await search(view, 'milk');
+      getButton(view.root, 'Edit note: Groceries').click();
+      await view.fixture.whenStable();
+
+      await type(view, 'textarea', 'Oat drink');
+      saveButton(view).click();
+      await view.fixture.whenStable();
+
+      expect(searchBox(view).value).toBe('');
+      expect(shown(view)).toContain('Oat drink');
+    });
+
+    it('does not show "no match" next to the new-note form', async () => {
+      const view = await withThreeNotes();
+      await openNewNote(view);
+
+      await search(view, 'zzz');
+
+      expect(view.root.textContent).not.toContain('No notes match');
+    });
+  });
 });
