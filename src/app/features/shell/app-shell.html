@@ -18,6 +18,7 @@
     {{ 'app.name' | translate }}
   </div>
   <span class="spacer"></span>
+  <app-theme-picker />
   <app-language-toggle />
   @let user = auth.user();
   @if (!layout.narrow()) {

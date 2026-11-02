@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from './core/auth/auth.service';
+import { ThemeService } from './core/theme/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,8 @@ import { AuthService } from './core/auth/auth.service';
 })
 export class App {
   constructor() {
+    // Applies the Account's Theme on every page, whether or not the header (and its picker) is there.
+    inject(ThemeService);
     const auth = inject(AuthService);
     const router = inject(Router);
     let wasSignedIn: boolean | undefined;

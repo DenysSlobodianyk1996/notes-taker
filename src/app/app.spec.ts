@@ -7,6 +7,7 @@ import {
   provideFakeFolders,
   provideFakeNotes,
   provideFakeOnlineStatus,
+  provideFakeTheme,
 } from '@testing/fakes';
 import { provideTestTranslations } from '@testing/translations';
 import { App } from './app';
@@ -23,6 +24,7 @@ async function openFixture(url: string, auth: FakeAuthService) {
     providers: [
       provideRouter(routes),
       provideTestTranslations(),
+      provideFakeTheme(),
       provideFakeAuth(auth),
       provideFakeOnlineStatus(),
       provideFakeFolders(),

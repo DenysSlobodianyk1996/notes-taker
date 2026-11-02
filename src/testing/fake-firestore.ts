@@ -19,6 +19,14 @@ interface Listener {
   next: (snapshot: Snapshot) => void;
   error: (error: unknown) => void;
 }
+interface DocSnapshot {
+  exists: () => boolean;
+  data: () => Data | undefined;
+}
+interface DocListener {
+  path: string;
+  next: (snapshot: DocSnapshot) => void;
+}
 
 export class FakeTimestamp {
   constructor(private readonly date: Date) {}
@@ -36,6 +44,7 @@ export class FakeTimestamp {
 class FakeDb {
   private readonly collections = new Map<string, Map<string, Data>>();
   private listeners: Listener[] = [];
+  private docListeners: DocListener[] = [];
   readonly writes: { path: string; data: Data }[] = [];
   /** Paths deleted by each committed write batch. */
   readonly batches: string[][] = [];
@@ -43,6 +52,7 @@ class FakeDb {
   reset(): void {
     this.collections.clear();
     this.listeners = [];
+    this.docListeners = [];
     this.writes.length = 0;
     this.batches.length = 0;
   }
@@ -68,6 +78,21 @@ class FakeDb {
       // Real Firestore reports changes asynchronously; so does the fake.
       queueMicrotask(() => l.next(this.snapshot(collection)));
     }
+    for (const l of this.docListeners.filter((x) => x.path === path)) {
+      queueMicrotask(() => l.next(this.docSnapshot(path)));
+    }
+  }
+
+  listenToDoc(listener: DocListener): () => void {
+    this.docListeners.push(listener);
+    queueMicrotask(() => listener.next(this.docSnapshot(listener.path)));
+    return () => (this.docListeners = this.docListeners.filter((l) => l !== listener));
+  }
+
+  docSnapshot(path: string): DocSnapshot {
+    const { collection, id } = split(path);
+    const data = this.docsIn(collection).get(id);
+    return { exists: () => data !== undefined, data: () => data };
   }
 
   remove(path: string): void {
@@ -111,13 +136,22 @@ export const fakeFirestoreModule = {
     path: segments.join('/'),
     id: segments[segments.length - 1],
   }),
-  doc: (collection: Ref, id: string): Ref => ({ path: `${collection.path}/${id}`, id }),
+  /** `doc(collectionRef, id)` or `doc(db, 'users', uid)`, like the real one. */
+  doc: (parent: unknown, ...segments: string[]): Ref => {
+    const base = (parent as Partial<Ref>).path;
+    const path = [...(base ? [base] : []), ...segments].join('/');
+    return { path, id: segments[segments.length - 1] };
+  },
   getDoc: async (ref: Ref): Promise<{ exists: () => boolean }> => {
     const { collection, id } = split(ref.path);
     const found = fakeDb.docsIn(collection).has(id);
     return { exists: () => found };
   },
-  setDoc: async (ref: Ref, data: Data): Promise<void> => fakeDb.set(ref.path, data),
+  setDoc: async (ref: Ref, data: Data, options?: { merge?: boolean }): Promise<void> => {
+    const { collection, id } = split(ref.path);
+    const current = options?.merge ? fakeDb.docsIn(collection).get(id) : undefined;
+    fakeDb.set(ref.path, { ...current, ...data });
+  },
   updateDoc: async (ref: Ref, data: Data): Promise<void> => {
     const { collection, id } = split(ref.path);
     const current = fakeDb.docsIn(collection).get(id);
@@ -149,11 +183,15 @@ export const fakeFirestoreModule = {
       },
     };
   },
+  /** A collection (odd path length) or a single document (even path length), like the real one. */
   onSnapshot: (
-    collection: Ref,
-    next: (snapshot: Snapshot) => void,
+    ref: Ref,
+    next: (snapshot: never) => void,
     error: (error: unknown) => void,
-  ): (() => void) => fakeDb.listen({ collection: collection.path, next, error }),
+  ): (() => void) =>
+    ref.path.split('/').length % 2 === 0
+      ? fakeDb.listenToDoc({ path: ref.path, next: next as (s: DocSnapshot) => void })
+      : fakeDb.listen({ collection: ref.path, next: next as (s: Snapshot) => void, error }),
 };
 
 /** Lets queued snapshot callbacks run. */
