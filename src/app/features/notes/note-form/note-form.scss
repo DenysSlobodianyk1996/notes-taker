@@ -71,3 +71,34 @@ textarea {
     cursor: not-allowed;
   }
 }
+
+.due-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0 4px;
+  font-size: 13px;
+  color: $muted;
+
+  .material-symbols-outlined {
+    font-size: 18px;
+  }
+}
+
+.due-input {
+  width: auto;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid $border-strong;
+  border-radius: 8px;
+  background: $surface;
+  font-size: 14px;
+  color: $text;
+}
+
+.clear {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: $muted;
+}

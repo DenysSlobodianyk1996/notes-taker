@@ -6,7 +6,7 @@ import { FoldersService } from '@core/folders/folders.service';
 import { NotesService } from '@core/notes/notes.service';
 import { OnlineStatus } from '@core/network/online-status.service';
 import { Folder } from '@domain/folders';
-import { Note, sortNotes } from '@domain/notes';
+import { Note, NoteInput, sortNotes } from '@domain/notes';
 
 /** Stands in for AuthService: set `user` to sign in or out, and check the spies. */
 export class FakeAuthService {
@@ -80,6 +80,7 @@ export function aNote(fields: Partial<Note> = {}): Note {
     title: '',
     text: 'Buy milk',
     completed: false,
+    dueDate: null,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...fields,
@@ -96,16 +97,26 @@ export class FakeNotesService {
   countIn(folderId: string): number {
     return this.notesIn(folderId).length;
   }
-  readonly createNote = vi.fn((folderId: string, title: string, text: string) => {
+  readonly createNote = vi.fn((folderId: string, input: NoteInput) => {
     const note = aNote({
       id: `new-${this.notes().length}`,
       folderId,
-      title,
-      text,
+      ...input,
       createdAt: new Date(),
     });
     this.notes.update((list) => [...list, note]);
     return note.id;
+  });
+  readonly updateNote = vi.fn((id: string, input: NoteInput) => {
+    this.notes.update((list) => list.map((n) => (n.id === id ? { ...n, ...input } : n)));
+  });
+  readonly toggleNote = vi.fn((id: string) => {
+    this.notes.update((list) =>
+      list.map((n) => (n.id === id ? { ...n, completed: !n.completed } : n)),
+    );
+  });
+  readonly deleteNote = vi.fn((id: string) => {
+    this.notes.update((list) => list.filter((n) => n.id !== id));
   });
 }
 
