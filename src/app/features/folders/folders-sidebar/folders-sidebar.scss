@@ -84,7 +84,8 @@
 }
 
 .folder-name {
-  flex: 1;
+  // Shrinks (with …) only as far as needed, so the count stays right after it.
+  flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -92,6 +93,8 @@
 }
 
 .count {
+  flex-shrink: 0;
+  margin-left: -6px; // 4px from the name (the row's gap is 10px)
   font-size: 13px;
   font-weight: 400;
   color: $muted;
