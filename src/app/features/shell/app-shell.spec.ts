@@ -1,15 +1,28 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { getButton } from '@testing/dom';
-import { FakeAuthService, provideFakeAuth } from '@testing/fakes';
+import {
+  FakeAuthService,
+  provideFakeAuth,
+  FakeLayoutService,
+  provideFakeLayout,
+} from '@testing/fakes';
 import { provideTestTranslations } from '@testing/translations';
 import { UiLanguageService } from '@core/i18n/ui-language.service';
 import { AppShell } from './app-shell';
 
-async function render(auth: FakeAuthService): Promise<ComponentFixture<AppShell>> {
+async function render(
+  auth: FakeAuthService,
+  layout = new FakeLayoutService(),
+): Promise<ComponentFixture<AppShell>> {
   TestBed.configureTestingModule({
     imports: [AppShell],
-    providers: [provideRouter([]), provideTestTranslations(), provideFakeAuth(auth)],
+    providers: [
+      provideRouter([]),
+      provideTestTranslations(),
+      provideFakeAuth(auth),
+      provideFakeLayout(layout),
+    ],
   });
   await TestBed.inject(UiLanguageService).init();
   const fixture = TestBed.createComponent(AppShell);
@@ -76,5 +89,41 @@ describe('AppShell', () => {
 
     expect(root.querySelector('.avatar img')).toBeNull();
     expect(root.querySelector('.avatar')?.textContent?.trim()).toBe('person');
+  });
+
+  it('on a phone, shows ☰ to open the Folders and hides the avatar', async () => {
+    const auth = new FakeAuthService();
+    auth.signInAs();
+    const layout = new FakeLayoutService();
+    layout.narrow.set(true);
+    const fixture = await render(auth, layout);
+    const root = fixture.nativeElement as HTMLElement;
+
+    expect(root.querySelector('.avatar')).toBeNull();
+    const menu = getButton(root, 'Open folders');
+    menu.click();
+    await fixture.whenStable();
+    expect(layout.openDrawer).toHaveBeenCalled();
+    expect(menu.getAttribute('aria-expanded')).toBe('true');
+
+    layout.closeDrawer();
+    await fixture.whenStable();
+    expect(document.activeElement).toBe(menu);
+
+    // Closing because a Folder opened leaves focus where the new content is.
+    menu.blur();
+    layout.openDrawer();
+    layout.closeDrawer({ returnFocus: false });
+    await fixture.whenStable();
+    expect(document.activeElement).not.toBe(menu);
+  });
+
+  it('on a wide screen, has no ☰ and shows the avatar', async () => {
+    const auth = new FakeAuthService();
+    auth.signInAs();
+    const root = (await render(auth)).nativeElement as HTMLElement;
+
+    expect(() => getButton(root, 'Open folders')).toThrow();
+    expect(root.querySelector('.avatar')).not.toBeNull();
   });
 });

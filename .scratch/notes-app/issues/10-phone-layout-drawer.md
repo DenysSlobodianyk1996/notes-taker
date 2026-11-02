@@ -4,9 +4,9 @@
 
 **Blocked by:** 04 (Folders sidebar with the Default folder)
 
-**Status:** ready-for-agent
+**Status:** done (implemented on `feature/10-phone-drawer`)
 
-- [ ] A breakpoint signal (900px) used by the shell; the ☰ button has an accessible "Open folders" label; the backdrop button has "Close folders".
-- [ ] The drawer closes on folder pick, on backdrop tap and on Esc; focus moves into the drawer when it opens and returns to ☰ when it closes.
-- [ ] The compact header hides the avatar; nothing wraps or overflows at 390px wide in either language.
-- [ ] Tests: shell component tests for opening and closing the drawer and closing it on folder pick, with the breakpoint signal faked.
+- [x] A breakpoint signal (900px) used by the shell; the ☰ button has an accessible "Open folders" label; the backdrop button has "Close folders".
+- [x] The drawer closes on folder pick, on backdrop tap and on Esc; focus moves into the drawer when it opens and returns to ☰ when it closes.
+- [x] The compact header hides the avatar; nothing wraps or overflows at 390px wide in either language.
+- [x] Tests: shell component tests for opening and closing the drawer and closing it on folder pick, with the breakpoint signal faked.
