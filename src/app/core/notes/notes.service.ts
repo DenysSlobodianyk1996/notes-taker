@@ -3,7 +3,6 @@ import {
   CollectionReference,
   QueryDocumentSnapshot,
   Timestamp,
-  collection,
   deleteDoc,
   doc,
   onSnapshot,
@@ -13,6 +12,7 @@ import {
 import { Note, NoteInput, sortNotes } from '@domain/notes';
 import { AuthService } from '@core/auth/auth.service';
 import { FIRESTORE } from '@core/firebase/firebase';
+import { notesCollection } from '@core/firebase/paths';
 
 /**
  * The signed-in Account's Notes, live from Firestore (`users/{uid}/notes`). All of them are
@@ -120,7 +120,7 @@ export class NotesService {
   }
 
   private collection(uid: string): CollectionReference {
-    return collection(this.firestore, 'users', uid, 'notes');
+    return notesCollection(this.firestore, uid);
   }
 }
 

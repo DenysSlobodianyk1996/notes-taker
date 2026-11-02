@@ -11,6 +11,8 @@ import {
   provideFakeNotes,
   provideFakeAuth,
 } from '@testing/fakes';
+import { NotesService } from '@core/notes/notes.service';
+import { getButton } from '@testing/dom';
 import { provideTestTranslations } from '@testing/translations';
 import { UiLanguageService } from '@core/i18n/ui-language.service';
 import { FolderPage } from './folder-page';
@@ -120,5 +122,73 @@ describe('FolderPage', () => {
     const { root } = await open('work');
 
     expect(root.querySelectorAll('.note')).toHaveLength(2);
+  });
+
+  describe('deleting a Folder', () => {
+    function deleteButtons(root: HTMLElement): HTMLButtonElement[] {
+      return [...root.querySelectorAll<HTMLButtonElement>('nav button')].filter(
+        (b) => b.getAttribute('aria-label') === 'Delete folder',
+      );
+    }
+
+    it('offers delete only on the selected Folder, never on the Default folder', async () => {
+      const onDefault = await open('default');
+      expect(deleteButtons(onDefault.root)).toHaveLength(0);
+
+      TestBed.resetTestingModule();
+      const onWork = await open('work');
+      const buttons = deleteButtons(onWork.root);
+      expect(buttons).toHaveLength(1);
+      expect(buttons[0].closest('.folder')?.textContent).toContain('Work');
+    });
+
+    it('names the Folder and its note count, and deletes only after confirming', async () => {
+      const { harness, root, folders } = await open('work');
+      const dialog = root.querySelector<HTMLDialogElement>('app-folders-sidebar dialog')!;
+
+      deleteButtons(root)[0].click();
+      await harness.fixture.whenStable();
+      expect(dialog.open).toBe(true);
+      expect(dialog.textContent).toContain('Delete “Work”?');
+      expect(dialog.textContent).toContain(
+        'The folder and all its notes (notes: 2) will be deleted.',
+      );
+
+      getButton(dialog, 'Cancel').click();
+      await harness.fixture.whenStable();
+      expect(folders.deleteFolder).not.toHaveBeenCalled();
+
+      deleteButtons(root)[0].click();
+      await harness.fixture.whenStable();
+      getButton(dialog, 'Delete folder').click();
+      await harness.fixture.whenStable();
+
+      expect(folders.deleteFolder).toHaveBeenCalledWith('work');
+      expect(TestBed.inject(Router).url).toBe('/folders/default');
+    });
+
+    it('says plainly when the Folder is empty', async () => {
+      const { harness, root } = await open('travel');
+
+      deleteButtons(root)[0].click();
+      await harness.fixture.whenStable();
+
+      expect(root.querySelector('app-folders-sidebar dialog')?.textContent).toContain(
+        'This empty folder will be deleted.',
+      );
+    });
+
+    it('waits for the Notes to load before offering delete, so the count is right', async () => {
+      const { harness, root } = await open('work');
+      const notes = TestBed.inject(NotesService) as unknown as FakeNotesService;
+
+      notes.loaded.set(false);
+      await harness.fixture.whenStable();
+      expect(deleteButtons(root)[0].disabled).toBe(true);
+
+      notes.loaded.set(true);
+      await harness.fixture.whenStable();
+      expect(deleteButtons(root)[0].disabled).toBe(false);
+    });
   });
 });

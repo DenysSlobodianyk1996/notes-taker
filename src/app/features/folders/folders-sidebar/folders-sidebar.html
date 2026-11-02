@@ -57,8 +57,34 @@
           >
             <span class="material-symbols-outlined" aria-hidden="true">edit</span>
           </button>
+          <button
+            type="button"
+            class="icon-btn"
+            [attr.aria-label]="'folders.delete' | translate"
+            [title]="'folders.delete' | translate"
+            [disabled]="!notes.loaded()"
+            (click)="deleting.set(folder)"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+          </button>
         }
       </div>
     }
   }
 </nav>
+
+@let toDelete = deleting();
+@let noteCount = toDelete ? notes.countIn(toDelete.id) : 0;
+<app-confirm-dialog
+  [open]="toDelete !== null"
+  [heading]="'dialogs.deleteFolder.title' | translate: { folder: toDelete ? label(toDelete) : '' }"
+  [body]="
+    noteCount
+      ? ('dialogs.deleteFolder.body' | translate: { count: noteCount })
+      : ('dialogs.deleteFolder.bodyEmpty' | translate)
+  "
+  [confirmLabel]="'dialogs.deleteFolder.confirm' | translate"
+  [cancelLabel]="'common.cancel' | translate"
+  (confirmed)="confirmDelete()"
+  (cancelled)="deleting.set(null)"
+/>
