@@ -96,12 +96,26 @@ textarea {
   height: 40px;
 }
 
+.text-btn {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
 .cancel {
-  color: $muted;
+  border: 1px solid $border-strong;
+  background: $surface;
+  color: $text;
 }
 
 .ok {
+  border: 0;
   background: $accent;
+  color: $text;
 
   &:disabled {
     opacity: 0.4;

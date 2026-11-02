@@ -558,4 +558,16 @@ describe('NotesView', () => {
     ]);
     expect(view.root.querySelector('form .foot')?.textContent).not.toContain('1000');
   });
+
+  it('labels the form buttons with words, not icons', async () => {
+    const view = await render();
+    await openNewNote(view);
+
+    for (const name of ['Cancel', 'Save note']) {
+      const button = getButton(view.root.querySelector('form')!, name);
+      expect(button.textContent?.trim()).toBe(name);
+      expect(button.getAttribute('aria-label')).toBeNull();
+      expect(button.querySelector('.material-symbols-outlined')).toBeNull();
+    }
+  });
 });

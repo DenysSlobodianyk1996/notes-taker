@@ -146,6 +146,8 @@
   .note-form .foot .grow { flex: 1; }
   .note-form .icon-btn { width: 40px; height: 40px; border-radius: 9px; }
   .note-form .ok:disabled { opacity: .4; }
+  .note-form .text-btn { height: 40px; padding: 0 16px; border-radius: 10px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+  .note-form .text-btn.ok { border: 0; background: var(--accent); }
   .note { display: flex; align-items: flex-start; gap: 12px; padding: 12px 4px 12px 6px; border-bottom: 1px solid var(--divider); }
   .check { width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .check input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); cursor: pointer; }
@@ -340,8 +342,8 @@
                   </div>
                   <div class="foot">
                     <span class="grow"></span>
-                    <button type="button" class="icon-btn" :aria-label="t('common.cancel')" @click="noteEdit = null"><span class="ms" aria-hidden="true">close</span></button>
-                    <button type="button" class="icon-btn ok" :aria-label="t('notes.save')" :disabled="!noteEdit.text.trim()" @click="submitNote"><span class="ms" aria-hidden="true">check</span></button>
+                    <button type="button" class="text-btn btn-outline" @click="noteEdit = null">{{ t('common.cancel') }}</button>
+                    <button type="button" class="text-btn ok" :disabled="!noteEdit.text.trim()" @click="submitNote">{{ t('notes.save') }}</button>
                   </div>
                 </div>
 
@@ -357,8 +359,8 @@
                     </div>
                     <div class="foot">
                       <span class="grow"></span>
-                      <button type="button" class="icon-btn" :aria-label="t('common.cancel')" @click="noteEdit = null"><span class="ms" aria-hidden="true">close</span></button>
-                      <button type="button" class="icon-btn ok" :aria-label="t('notes.save')" :disabled="!noteEdit.text.trim()" @click="submitNote"><span class="ms" aria-hidden="true">check</span></button>
+                      <button type="button" class="text-btn btn-outline" @click="noteEdit = null">{{ t('common.cancel') }}</button>
+                      <button type="button" class="text-btn ok" :disabled="!noteEdit.text.trim()" @click="submitNote">{{ t('notes.save') }}</button>
                     </div>
                   </div>
                   <div v-else class="note" :class="{ done: n.completed }">
