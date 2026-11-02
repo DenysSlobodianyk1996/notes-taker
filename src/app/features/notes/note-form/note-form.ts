@@ -30,7 +30,7 @@ import {
   styleUrl: './note-form.scss',
 })
 export class NoteForm implements OnInit {
-  /** A new Note gets a taller text area and a note icon beside its fields. */
+  /** A new Note gets a note icon beside its fields. */
   readonly isNew = input(false);
 
   /** The Note's current fields when editing; empty for a new Note. */
