@@ -20,6 +20,26 @@
       (keydown.meta.enter)="save($event)"
     ></textarea>
   </label>
+  <div class="due-field">
+    <span class="material-symbols-outlined" aria-hidden="true">event</span>
+    <label>
+      <span class="visually-hidden">{{ 'notes.dueDateLabel' | translate }}</span>
+      <input type="date" class="due-input" [formField]="noteForm.dueDate" />
+    </label>
+    @if (model().dueDate) {
+      <button
+        type="button"
+        class="icon-btn clear"
+        [attr.aria-label]="'notes.clearDueDate' | translate"
+        [title]="'notes.clearDueDate' | translate"
+        (click)="clearDueDate()"
+      >
+        <span class="material-symbols-outlined" aria-hidden="true">close</span>
+      </button>
+    } @else {
+      <span aria-hidden="true">{{ 'notes.dueDateLabel' | translate }}</span>
+    }
+  </div>
   <div class="foot">
     <span>{{ model().text.length }} / {{ textMax }}</span>
     <span class="shortcuts">· {{ 'notes.shortcuts' | translate }}</span>

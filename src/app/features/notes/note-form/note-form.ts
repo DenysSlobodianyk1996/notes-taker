@@ -11,12 +11,12 @@ import {
 } from '@angular/core';
 import { FormField, form, maxLength, submit, validate } from '@angular/forms/signals';
 import { TranslatePipe } from '@ngx-translate/core';
-import { NOTE_TEXT_MAX_LENGTH, NOTE_TITLE_MAX_LENGTH, noteFormErrors } from '@domain/notes';
-
-export interface NoteFields {
-  title: string;
-  text: string;
-}
+import {
+  NOTE_TEXT_MAX_LENGTH,
+  NOTE_TITLE_MAX_LENGTH,
+  NoteInput,
+  noteFormErrors,
+} from '@domain/notes';
 
 /**
  * The inline form row for a new or edited Note (ADR-0004). Save is disabled while the text is
@@ -31,14 +31,15 @@ export interface NoteFields {
 })
 export class NoteForm implements OnInit {
   /** The Note's current fields when editing; empty for a new Note. */
-  readonly initial = input<NoteFields>({ title: '', text: '' });
+  readonly initial = input<NoteInput>({ title: '', text: '', dueDate: null });
 
-  readonly saved = output<NoteFields>();
+  readonly saved = output<NoteInput>();
   readonly cancelled = output<void>();
 
   protected readonly textMax = NOTE_TEXT_MAX_LENGTH;
 
-  protected readonly model = signal<NoteFields>({ title: '', text: '' });
+  /** The date input works in `'YYYY-MM-DD'` strings; `''` means no Due date. */
+  protected readonly model = signal({ title: '', text: '', dueDate: '' });
   protected readonly noteForm = form(this.model, (path) => {
     // Also sets the native maxlength, so the fields can't take more than the limits.
     maxLength(path.title, NOTE_TITLE_MAX_LENGTH);
@@ -61,7 +62,12 @@ export class NoteForm implements OnInit {
 
   ngOnInit(): void {
     // Taken once: a change from another device must not wipe what the user is typing.
-    this.model.set({ ...this.initial() });
+    const { title, text, dueDate } = this.initial();
+    this.model.set({ title, text, dueDate: dueDate ?? '' });
+  }
+
+  protected clearDueDate(): void {
+    this.model.update((m) => ({ ...m, dueDate: '' }));
   }
 
   /** Enter in the title saves, except while an input method is still composing a word. */
@@ -73,8 +79,8 @@ export class NoteForm implements OnInit {
   protected async save(event?: Event): Promise<void> {
     event?.preventDefault();
     await submit(this.noteForm, async () => {
-      const { title, text } = this.model();
-      this.saved.emit({ title: title.trim(), text: text.trim() });
+      const { title, text, dueDate } = this.model();
+      this.saved.emit({ title: title.trim(), text: text.trim(), dueDate: dueDate || null });
       return undefined;
     });
   }

@@ -9,6 +9,7 @@ import {
   FakeNotesService,
   aNote,
   provideFakeNotes,
+  provideFakeAuth,
 } from '@testing/fakes';
 import { provideTestTranslations } from '@testing/translations';
 import { UiLanguageService } from '@core/i18n/ui-language.service';
@@ -33,6 +34,7 @@ async function open(
     providers: [
       provideRouter([{ path: 'folders/:folderId', component: FolderPage }]),
       provideTestTranslations(),
+      provideFakeAuth(),
       provideFakeFolders(folders),
       provideFakeNotes(notes),
     ],

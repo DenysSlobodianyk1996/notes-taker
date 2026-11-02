@@ -6,8 +6,17 @@ export interface Note {
   title: string;
   text: string;
   completed: boolean;
+  /** A local calendar day, `'YYYY-MM-DD'`, or null for none. */
+  dueDate: string | null;
   createdAt: Date;
   updatedAt: Date;
+}
+
+/** What the user enters for a new or edited Note. */
+export interface NoteInput {
+  title: string;
+  text: string;
+  dueDate: string | null;
 }
 
 export const NOTE_TITLE_MAX_LENGTH = 200;
@@ -41,4 +50,15 @@ export function noteFormErrors(fields: { title: string; text: string }): {
 /** The counts shown under a Folder's name. */
 export function noteSummary(notes: readonly Note[]): { count: number; completed: number } {
   return { count: notes.length, completed: notes.filter((n) => n.completed).length };
+}
+
+/** A local calendar day as `'YYYY-MM-DD'`, the form Due dates are stored in. */
+export function todayKey(now: Date = new Date()): string {
+  const pad = (n: number): string => String(n).padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
+/** Overdue: the Due date is before `today` (`'YYYY-MM-DD'`) and the Note isn't Completed. */
+export function isOverdue(note: Pick<Note, 'dueDate' | 'completed'>, today: string): boolean {
+  return note.dueDate !== null && !note.completed && note.dueDate < today;
 }

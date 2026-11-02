@@ -54,27 +54,86 @@
 
 .note {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: flex-start;
+  gap: 12px;
   padding: 12px 4px 12px 6px;
   border-bottom: 1px solid $divider;
+}
 
-  &.completed {
+.check {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  input {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    accent-color: $accent;
+    cursor: pointer;
+  }
+}
+
+.note-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: text;
+}
+
+.note-title {
+  font-weight: 600;
+}
+
+.note-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.completed {
+  .note-title,
+  .note-text {
     color: $completed;
     text-decoration: line-through;
   }
 }
 
-.note-title {
-  margin: 0;
-  font-size: inherit;
+.due {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  background: $chip;
+  font-size: 12px;
   font-weight: 600;
+  color: $muted;
+
+  .material-symbols-outlined {
+    font-size: 15px;
+  }
+
+  &.overdue {
+    background: $danger-soft;
+    color: $danger;
+  }
 }
 
-.note-text {
-  margin: 0;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+.delete {
+  @include icon-button;
+  color: $muted;
 }
 
 .empty {
