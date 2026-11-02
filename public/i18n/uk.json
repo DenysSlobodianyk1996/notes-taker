@@ -51,7 +51,7 @@
     "new": "Нова нотатка",
     "titlePlaceholder": "Заголовок (необов'язково)",
     "textLabel": "Текст нотатки",
-    "textPlaceholder": "Напишіть нотатку…",
+    "textPlaceholder": "Напишіть нотатку… *",
     "shortcuts": "Ctrl/⌘+Enter — зберегти · Esc — скасувати",
     "save": "Зберегти нотатку",
     "markCompleted": "Позначити виконаною: {{note}}",

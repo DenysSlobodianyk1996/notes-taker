@@ -526,4 +526,14 @@ describe('NotesView', () => {
     expect(field<HTMLTextAreaElement>(view, 'textarea').rows).toBe(3);
     expect(view.root.querySelector('form .note-icon')).toBeNull();
   });
+
+  it('marks the note text as required: a "*" in its placeholder and aria-required', async () => {
+    const view = await render();
+    await openNewNote(view);
+
+    const text = field<HTMLTextAreaElement>(view, 'textarea');
+    expect(text.placeholder).toBe('Write a note… *');
+    expect(text.getAttribute('aria-required')).toBe('true');
+    expect(field<HTMLInputElement>(view, 'input').placeholder).toBe('Title (optional)');
+  });
 });
