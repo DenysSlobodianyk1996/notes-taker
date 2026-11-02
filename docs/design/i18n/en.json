@@ -51,7 +51,7 @@
     "new": "New note",
     "titlePlaceholder": "Title (optional)",
     "textLabel": "Note text",
-    "textPlaceholder": "Write a note…",
+    "textPlaceholder": "Write a note… *",
     "shortcuts": "Ctrl/⌘+Enter to save · Esc to cancel",
     "save": "Save note",
     "markCompleted": "Mark as completed: {{note}}",
