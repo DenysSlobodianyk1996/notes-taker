@@ -6,13 +6,21 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
   onSnapshot,
+  query,
   setDoc,
   updateDoc,
+  where,
+  writeBatch,
 } from 'firebase/firestore';
 import { DEFAULT_FOLDER_ID, Folder, normalizeFolderName, sortFolders } from '@domain/folders';
 import { AuthService } from '@core/auth/auth.service';
 import { FIRESTORE } from '@core/firebase/firebase';
+import { notesCollection } from '@core/firebase/paths';
+
+/** Firestore's limit of writes in one batch. */
+const BATCH_LIMIT = 500;
 
 interface Waiter {
   resolve: (folders: Folder[]) => void;
@@ -99,6 +107,29 @@ export class FoldersService {
         nameKey: normalizeFolderName(name),
       }),
     );
+  }
+
+  /**
+   * Deletes a Folder and all its Notes in one batched write (more than one only past Firestore's
+   * 500-write limit). The Default folder can't be deleted.
+   */
+  async deleteFolder(id: string): Promise<void> {
+    if (id === DEFAULT_FOLDER_ID || this.list().find((f) => f.id === id)?.isDefault) {
+      throw new Error("The Default folder can't be deleted");
+    }
+    // Asks Firestore (its offline cache when there's no connection) rather than any list in memory,
+    // so no Note is left behind without its Folder.
+    const notes = await getDocs(
+      query(notesCollection(this.firestore, this.uid()), where('folderId', '==', id)),
+    );
+    // The Folder goes last: if a later batch fails, it is still there to delete again, rather than
+    // leaving Notes nobody can reach.
+    const refs = [...notes.docs.map((note) => note.ref), doc(this.collection(), id)];
+    for (let start = 0; start < refs.length; start += BATCH_LIMIT) {
+      const batch = writeBatch(this.firestore);
+      refs.slice(start, start + BATCH_LIMIT).forEach((ref) => batch.delete(ref));
+      this.save(batch.commit());
+    }
   }
 
   /**

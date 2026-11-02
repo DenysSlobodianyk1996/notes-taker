@@ -4,9 +4,9 @@
 
 **Blocked by:** 05 (Create and rename folders inline), 07 (Edit, complete and delete notes, which provides the shared confirm dialog)
 
-**Status:** ready-for-agent
+**Status:** done (implemented on `feature/08-delete-folders`)
 
-- [ ] Folders service: `deleteFolder(id)` deletes the folder document and all notes with that `folderId` in one batched write; it refuses the Default folder.
-- [ ] The sidebar delete icon appears only on the selected non-default Folder and opens the shared confirm dialog with the translated texts and the note count.
-- [ ] After deleting, navigate to the Default folder.
-- [ ] Tests: the service batches the folder and its notes and refuses the Default folder (Firebase SDK mocked); the sidebar only calls `deleteFolder` after confirming; the empty-folder text; the navigation afterwards (services replaced through DI).
+- [x] Folders service: `deleteFolder(id)` deletes the folder document and all notes with that `folderId` in one batched write; it refuses the Default folder.
+- [x] The sidebar delete icon appears only on the selected non-default Folder and opens the shared confirm dialog with the translated texts and the note count.
+- [x] After deleting, navigate to the Default folder.
+- [x] Tests: the service batches the folder and its notes and refuses the Default folder (Firebase SDK mocked); the sidebar only calls `deleteFolder` after confirming; the empty-folder text; the navigation afterwards (services replaced through DI).
