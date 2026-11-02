@@ -5,6 +5,7 @@ import {
   effect,
   inject,
   input,
+  linkedSignal,
   signal,
   untracked,
 } from '@angular/core';
@@ -13,7 +14,7 @@ import { UiLanguageService } from '@core/i18n/ui-language.service';
 import { NotesService } from '@core/notes/notes.service';
 import { FormRowService } from '@core/ui/form-row.service';
 import { TodayService } from '@core/ui/today.service';
-import { Note, NoteInput, isOverdue, noteSummary } from '@domain/notes';
+import { Note, NoteInput, filterNotes, isOverdue, noteSummary } from '@domain/notes';
 import { formatDueDate } from '@features/notes/due-date';
 import { NoteForm } from '@features/notes/note-form/note-form';
 import { ConfirmDialog } from '@shared/confirm-dialog/confirm-dialog';
@@ -42,6 +43,15 @@ export class NotesView {
 
   protected readonly notes = computed(() => this.service.notesIn(this.folderId()));
   protected readonly summary = computed(() => noteSummary(this.notes()));
+  /** The search text; it covers the current Folder only, so it starts empty in each Folder. */
+  protected readonly query = linkedSignal({ source: this.folderId, computation: () => '' });
+  /** The matching Notes, plus the one being edited, so searching never drops an open form. */
+  protected readonly shown = computed(() => {
+    const matches = filterNotes(this.notes(), this.query());
+    const editing = this.editingId();
+    if (!editing || matches.some((n) => n.id === editing)) return matches;
+    return this.notes().filter((n) => n.id === editing || matches.includes(n));
+  });
   protected readonly loaded = this.service.loaded;
   protected readonly creating = computed(() => this.row()?.kind === 'new-note');
   protected readonly editingId = computed(() => {
@@ -64,6 +74,8 @@ export class NotesView {
   }
 
   protected startNew(): void {
+    // The new Note goes at the top of the full list, so show the full list.
+    this.query.set('');
     this.row.set({ kind: 'new-note' });
   }
 
@@ -84,6 +96,8 @@ export class NotesView {
     const changed =
       input.title !== note.title || input.text !== note.text || input.dueDate !== note.dueDate;
     if (changed) this.service.updateNote(note.id, input);
+    // An edit that no longer matches the search would vanish; show the whole Folder instead.
+    if (filterNotes([{ ...note, ...input }], this.query()).length === 0) this.query.set('');
     this.closeForm();
   }
 

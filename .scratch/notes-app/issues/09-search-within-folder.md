@@ -4,10 +4,10 @@
 
 **Blocked by:** 06 (Notes list and creating notes)
 
-**Status:** ready-for-agent
+**Status:** done (implemented on `feature/09-search`)
 
-- [ ] Domain rule (pure, unit tested): `filterNotes(notes, query)`, trimmed and case-insensitive, matching on title or text; an empty query returns everything.
-- [ ] A search input with a visually hidden label and a translated placeholder that uses the folder label; results update as the user types.
-- [ ] A no-match state distinct from the empty-folder state.
-- [ ] The search is cleared on folder change and when the new-note row opens.
-- [ ] Tests: domain filter cases (Cyrillic included); a component test for filtering, no-match, and clearing on folder switch.
+- [x] Domain rule (pure, unit tested): `filterNotes(notes, query)`, trimmed and case-insensitive, matching on title or text; an empty query returns everything.
+- [x] A search input with a visually hidden label and a translated placeholder that uses the folder label; results update as the user types.
+- [x] A no-match state distinct from the empty-folder state.
+- [x] The search is cleared on folder change and when the new-note row opens.
+- [x] Tests: domain filter cases (Cyrillic included); a component test for filtering, no-match, and clearing on folder switch.
