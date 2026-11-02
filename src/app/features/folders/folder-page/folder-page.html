@@ -1,4 +1,10 @@
-<app-folders-sidebar [selectedId]="folderId()" />
-<section class="notes">
+@if (!layout.narrow() || layout.drawerOpen()) {
+  @if (layout.narrow()) {
+    <!-- Not a tab stop: Esc and the backdrop close the drawer; ☰ is the labelled control. -->
+    <div class="backdrop" aria-hidden="true" (click)="layout.closeDrawer()"></div>
+  }
+  <app-folders-sidebar [class.drawer]="layout.narrow()" [selectedId]="folderId()" />
+}
+<section class="notes" [inert]="layout.narrow() && layout.drawerOpen()">
   <app-notes-view [folderId]="folderId()" [folderName]="title()" />
 </section>

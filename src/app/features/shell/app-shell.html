@@ -1,4 +1,16 @@
 <header class="top">
+  @if (layout.narrow()) {
+    <button
+      #menuButton
+      type="button"
+      class="menu"
+      [attr.aria-label]="'header.openFolders' | translate"
+      [attr.aria-expanded]="layout.drawerOpen()"
+      (click)="layout.openDrawer()"
+    >
+      <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+    </button>
+  }
   <div class="brand">
     <span class="brand-mark">
       <span class="material-symbols-outlined" aria-hidden="true">sticky_note_2</span>
@@ -8,18 +20,20 @@
   <span class="spacer"></span>
   <app-language-toggle />
   @let user = auth.user();
-  <span class="avatar">
-    @if (user?.photoURL && !photoFailed()) {
-      <img
-        [src]="user?.photoURL"
-        [alt]="user?.displayName ?? ''"
-        referrerpolicy="no-referrer"
-        (error)="photoFailed.set(true)"
-      />
-    } @else {
-      <span class="material-symbols-outlined" aria-hidden="true">person</span>
-    }
-  </span>
+  @if (!layout.narrow()) {
+    <span class="avatar">
+      @if (user?.photoURL && !photoFailed()) {
+        <img
+          [src]="user?.photoURL"
+          [alt]="user?.displayName ?? ''"
+          referrerpolicy="no-referrer"
+          (error)="photoFailed.set(true)"
+        />
+      } @else {
+        <span class="material-symbols-outlined" aria-hidden="true">person</span>
+      }
+    </span>
+  }
   <button
     type="button"
     class="sign-out"
