@@ -13,7 +13,16 @@
   gap: 16px;
 }
 
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .title {
+  flex: 1;
+  min-width: 0;
+
   h1 {
     margin: 0;
     font-size: 26px;
@@ -27,15 +36,6 @@
     font-size: 14px;
     color: $muted;
   }
-}
-
-.tools {
-  display: flex;
-  gap: 8px;
-}
-
-.grow {
-  flex: 1;
 }
 
 .add-note {
