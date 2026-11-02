@@ -507,4 +507,23 @@ describe('NotesView', () => {
       expect(view.root.textContent).not.toContain('No notes match');
     });
   });
+
+  it('gives a new Note a tall text area and a note icon beside its fields; edits stay compact', async () => {
+    const notes = new FakeNotesService();
+    notes.notes.set([aNote({ id: 'n1', folderId: 'work', title: 'Call' })]);
+    const view = await render(notes);
+
+    await openNewNote(view);
+    expect(field<HTMLTextAreaElement>(view, 'textarea').rows).toBe(9);
+    const icon = view.root.querySelector('form .note-icon');
+    expect(icon?.textContent?.trim()).toBe('sticky_note_2');
+    expect(icon?.getAttribute('aria-hidden')).toBe('true');
+
+    getButton(view.root, 'Cancel').click();
+    await view.fixture.whenStable();
+    getButton(view.root, 'Edit note: Call').click();
+    await view.fixture.whenStable();
+    expect(field<HTMLTextAreaElement>(view, 'textarea').rows).toBe(3);
+    expect(view.root.querySelector('form .note-icon')).toBeNull();
+  });
 });

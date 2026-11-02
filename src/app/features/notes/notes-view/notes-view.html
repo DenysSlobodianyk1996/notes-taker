@@ -34,7 +34,7 @@
 
   <div class="list">
     @if (creating()) {
-      <app-note-form (saved)="create($event)" (cancelled)="closeForm()" />
+      <app-note-form [isNew]="true" (saved)="create($event)" (cancelled)="closeForm()" />
     }
 
     @for (note of shown(); track note.id) {
