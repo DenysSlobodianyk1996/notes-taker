@@ -70,13 +70,11 @@ export class FolderPage {
   }
 
   constructor() {
-    // Focus moves into the drawer when it opens, onto the selected Folder.
+    // Focus moves into the drawer when it opens: onto the panel itself, so no folder shows a focus
+    // ring after a tap; Tab then reaches the first folder.
     afterRenderEffect(() => {
       if (!this.layout.narrow() || !this.layout.drawerOpen()) return;
-      const nav = this.host.nativeElement.querySelector('app-folders-sidebar');
-      const target =
-        nav?.querySelector<HTMLElement>('[aria-current="page"]') ?? nav?.querySelector('a');
-      target?.focus();
+      this.host.nativeElement.querySelector<HTMLElement>('app-folders-sidebar nav')?.focus();
     });
     const router = inject(Router);
     // The open Folder disappeared: deleted (here or on another device), or its save was refused.
