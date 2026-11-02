@@ -1,16 +1,14 @@
 <div class="col">
-  <div class="title">
-    <h1>{{ folderName() }}</h1>
-    <p>
-      {{ 'notes.count' | translate: { count: summary().count } }}
-      @if (summary().completed) {
-        · {{ 'notes.completed' | translate: { count: summary().completed } }}
-      }
-    </p>
-  </div>
-
-  <div class="tools">
-    <span class="grow"></span>
+  <div class="head">
+    <div class="title">
+      <h1>{{ folderName() }}</h1>
+      <p>
+        {{ 'notes.count' | translate: { count: summary().count } }}
+        @if (summary().completed) {
+          · {{ 'notes.completed' | translate: { count: summary().completed } }}
+        }
+      </p>
+    </div>
     <button
       type="button"
       class="add-note"
