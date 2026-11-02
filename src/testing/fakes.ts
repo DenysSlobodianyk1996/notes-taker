@@ -66,6 +66,9 @@ export class FakeFoldersService {
     return folder.id;
   });
   readonly renameFolder = vi.fn();
+  readonly deleteFolder = vi.fn(async (id: string) => {
+    this.folders.update((list) => list.filter((f) => f.id !== id));
+  });
 }
 
 export function provideFakeFolders(fake = new FakeFoldersService()): Provider {

@@ -172,4 +172,33 @@ describe('FoldersService', () => {
     expect(() => folders.renameFolder('default', 'Inbox')).toThrow();
     expect(fakeDb.writes).toHaveLength(0);
   });
+
+  it('deletes a Folder and all its Notes in one batch', async () => {
+    seedFolder('default', { name: '', nameKey: '', isDefault: true });
+    seedFolder('work', { name: 'Work' });
+    const note = (folderId: string) => ({ folderId, title: '', text: 'x', completed: false });
+    fakeDb.seed('users/u1/notes', 'w1', note('work'));
+    fakeDb.seed('users/u1/notes', 'w2', note('work'));
+    fakeDb.seed('users/u1/notes', 'g1', note('default'));
+    const folders = setup();
+    await folders.whenLoaded();
+
+    await folders.deleteFolder('work');
+    await flushSnapshots();
+
+    expect(fakeDb.batches).toEqual([
+      ['users/u1/notes/w1', 'users/u1/notes/w2', 'users/u1/folders/work'],
+    ]);
+    expect(folders.folders().map((f) => f.id)).toEqual(['default']);
+    expect([...fakeDb.docsIn('users/u1/notes').keys()]).toEqual(['g1']);
+  });
+
+  it('refuses to delete the Default folder', async () => {
+    seedFolder('default', { name: '', nameKey: '', isDefault: true });
+    const folders = setup();
+    await folders.whenLoaded();
+
+    await expect(folders.deleteFolder('default')).rejects.toThrow();
+    expect(fakeDb.batches).toHaveLength(0);
+  });
 });
