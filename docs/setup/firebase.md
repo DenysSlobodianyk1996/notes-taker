@@ -86,3 +86,13 @@ The app is then at `https://<project>.web.app`.
 - **iPhone:** open the URL in Safari, choose **Share → Add to Home Screen**, launch the app from the icon, then **Sign in with Google**. You should come back signed in.
 - **Android:** open the URL in Chrome and choose **Install app**, then sign in the same way.
 - If sign-in in the iPhone home-screen app fails, record the result in ADR-0003 and switch to the Google Identity Services fallback.
+
+### Offline check (ticket 11)
+
+The service worker caches the app and the icon font while you use it online (the font cache survives app updates), so open the installed app online once or twice first.
+
+1. Sign in, then turn on airplane mode.
+2. Close and reopen the installed app: it opens with your Folders and Notes, and icons look right (not words like "add").
+3. Still offline: add a Note, edit one, tick one Completed.
+4. Turn the network back on. Within a few seconds the changes appear on another device signed in to the same Account.
+5. Sign out: you land on the login page. Turn off the network, reopen the app: it stays on the login page ("You're offline. Connect to sign in.") and shows no Notes.
