@@ -1,0 +1,73 @@
+@use '../../../../styles/tokens' as *;
+@use '../../../../styles/mixins' as *;
+
+.note-form {
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 12px 8px 14px;
+  border: 1.5px solid $accent;
+  border-radius: 12px;
+  background: $accent-tint;
+}
+
+label {
+  display: flex;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+}
+
+.title {
+  padding: 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+textarea {
+  padding: 2px 0;
+  resize: vertical;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: $muted;
+}
+
+.grow {
+  flex: 1;
+}
+
+.shortcuts {
+  @media (max-width: $breakpoint-wide - 1px) {
+    display: none;
+  }
+}
+
+.icon-btn {
+  @include icon-button;
+  width: 40px;
+  height: 40px;
+}
+
+.cancel {
+  color: $muted;
+}
+
+.ok {
+  background: $accent;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}

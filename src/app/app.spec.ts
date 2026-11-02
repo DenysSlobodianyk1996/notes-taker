@@ -5,6 +5,7 @@ import {
   FakeAuthService,
   provideFakeAuth,
   provideFakeFolders,
+  provideFakeNotes,
   provideFakeOnlineStatus,
 } from '../testing/fakes';
 import { provideTestTranslations } from '../testing/translations';
@@ -25,6 +26,7 @@ async function openFixture(url: string, auth: FakeAuthService) {
       provideFakeAuth(auth),
       provideFakeOnlineStatus(),
       provideFakeFolders(),
+      provideFakeNotes(),
     ],
   });
   await TestBed.inject(UiLanguageService).init();

@@ -5,12 +5,13 @@ import { map } from 'rxjs';
 import { FoldersService } from '../../../core/folders/folders.service';
 import { folderLabel } from '../../../domain/folders';
 import { injectDefaultFolderName } from '../default-folder-name';
+import { NotesView } from '../../notes/notes-view/notes-view';
 import { FoldersSidebar } from '../folders-sidebar/folders-sidebar';
 
-/** `/folders/:folderId`: the Folders sidebar next to the selected Folder (its Notes come in 06). */
+/** `/folders/:folderId`: the Folders sidebar next to the selected Folder's Notes. */
 @Component({
   selector: 'app-folder-page',
-  imports: [FoldersSidebar],
+  imports: [FoldersSidebar, NotesView],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './folder-page.html',
   styleUrl: './folder-page.scss',

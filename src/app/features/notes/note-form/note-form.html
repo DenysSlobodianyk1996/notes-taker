@@ -1,0 +1,44 @@
+<form class="note-form" novalidate (submit)="save($event)" (keydown.escape)="cancelled.emit()">
+  <label>
+    <span class="visually-hidden">{{ 'notes.titlePlaceholder' | translate }}</span>
+    <input
+      class="title"
+      [formField]="noteForm.title"
+      [placeholder]="'notes.titlePlaceholder' | translate"
+      autocomplete="off"
+      (keydown.enter)="saveFromTitle($event)"
+    />
+  </label>
+  <label>
+    <span class="visually-hidden">{{ 'notes.textLabel' | translate }}</span>
+    <textarea
+      #textInput
+      [formField]="noteForm.text"
+      rows="3"
+      [placeholder]="'notes.textPlaceholder' | translate"
+      (keydown.control.enter)="save($event)"
+      (keydown.meta.enter)="save($event)"
+    ></textarea>
+  </label>
+  <div class="foot">
+    <span>{{ model().text.length }} / {{ textMax }}</span>
+    <span class="shortcuts">· {{ 'notes.shortcuts' | translate }}</span>
+    <span class="grow"></span>
+    <button
+      type="button"
+      class="icon-btn cancel"
+      [attr.aria-label]="'common.cancel' | translate"
+      (click)="cancelled.emit()"
+    >
+      <span class="material-symbols-outlined" aria-hidden="true">close</span>
+    </button>
+    <button
+      type="submit"
+      class="icon-btn ok"
+      [attr.aria-label]="'notes.save' | translate"
+      [disabled]="noteForm().invalid()"
+    >
+      <span class="material-symbols-outlined" aria-hidden="true">check</span>
+    </button>
+  </div>
+</form>

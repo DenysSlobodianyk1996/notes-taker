@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angu
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { FoldersService } from '../../../core/folders/folders.service';
+import { NotesService } from '../../../core/notes/notes.service';
 import { DEFAULT_FOLDER_NAMES } from '../../../core/i18n/default-folder-names';
 import { Folder, FolderNameError, folderLabel, folderNameError } from '../../../domain/folders';
 import { injectDefaultFolderName } from '../default-folder-name';
@@ -26,6 +27,7 @@ export class FoldersSidebar {
   readonly selectedId = input<string>();
 
   private readonly service = inject(FoldersService);
+  protected readonly notes = inject(NotesService);
   private readonly router = inject(Router);
   private readonly defaultName = injectDefaultFolderName();
 

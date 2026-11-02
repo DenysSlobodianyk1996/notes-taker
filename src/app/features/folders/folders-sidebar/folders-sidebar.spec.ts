@@ -7,6 +7,7 @@ import {
   aDefaultFolder,
   aFolder,
   provideFakeFolders,
+  provideFakeNotes,
 } from '../../../../testing/fakes';
 import { provideTestTranslations } from '../../../../testing/translations';
 import { UiLanguageService } from '../../../core/i18n/ui-language.service';
@@ -30,6 +31,7 @@ async function open(folderId = 'default'): Promise<Page> {
       provideRouter([{ path: 'folders/:folderId', component: FolderPage }]),
       provideTestTranslations(),
       provideFakeFolders(folders),
+      provideFakeNotes(),
     ],
   });
   await TestBed.inject(UiLanguageService).init();
