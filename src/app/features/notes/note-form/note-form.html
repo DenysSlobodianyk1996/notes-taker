@@ -1,25 +1,32 @@
 <form class="note-form" novalidate (submit)="save($event)" (keydown.escape)="cancelled.emit()">
-  <label>
-    <span class="visually-hidden">{{ 'notes.titlePlaceholder' | translate }}</span>
-    <input
-      class="title"
-      [formField]="noteForm.title"
-      [placeholder]="'notes.titlePlaceholder' | translate"
-      autocomplete="off"
-      (keydown.enter)="saveFromTitle($event)"
-    />
-  </label>
-  <label>
-    <span class="visually-hidden">{{ 'notes.textLabel' | translate }}</span>
-    <textarea
-      #textInput
-      [formField]="noteForm.text"
-      rows="3"
-      [placeholder]="'notes.textPlaceholder' | translate"
-      (keydown.control.enter)="save($event)"
-      (keydown.meta.enter)="save($event)"
-    ></textarea>
-  </label>
+  <div class="fields-row">
+    @if (isNew()) {
+      <span class="material-symbols-outlined note-icon" aria-hidden="true">sticky_note_2</span>
+    }
+    <div class="fields">
+      <label>
+        <span class="visually-hidden">{{ 'notes.titlePlaceholder' | translate }}</span>
+        <input
+          class="title"
+          [formField]="noteForm.title"
+          [placeholder]="'notes.titlePlaceholder' | translate"
+          autocomplete="off"
+          (keydown.enter)="saveFromTitle($event)"
+        />
+      </label>
+      <label>
+        <span class="visually-hidden">{{ 'notes.textLabel' | translate }}</span>
+        <textarea
+          #textInput
+          [formField]="noteForm.text"
+          [rows]="isNew() ? 9 : 3"
+          [placeholder]="'notes.textPlaceholder' | translate"
+          (keydown.control.enter)="save($event)"
+          (keydown.meta.enter)="save($event)"
+        ></textarea>
+      </label>
+    </div>
+  </div>
   <div class="due-field">
     <span class="material-symbols-outlined" aria-hidden="true">event</span>
     <label>

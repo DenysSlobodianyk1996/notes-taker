@@ -12,6 +12,27 @@
   background: $accent-tint;
 }
 
+.fields-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.note-icon {
+  flex-shrink: 0;
+  margin-top: 4px;
+  font-size: 22px;
+  color: $accent-ink;
+}
+
+.fields {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 label {
   display: flex;
 }
