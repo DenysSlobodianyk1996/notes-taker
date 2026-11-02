@@ -69,9 +69,8 @@ body{margin:0}
       <span class="material-symbols-outlined" style="font-size: 20px">person</span>
     </span>
   </sc-if>
-  <button type="button" onClick="{{signOut}}" style="height: 40px; flex-shrink: 0; padding: 0 {{btnPad}}; border-radius: 10px; border: 0; background: none; font: inherit; font-size: 14px; font-weight: 600; color: #5F5F64; display: flex; align-items: center; gap: 6px; white-space: nowrap; cursor: pointer">
-    <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px">logout</span>
-    {{t.header.signOut}}
+  <button type="button" onClick="{{signOut}}" aria-label="{{t.header.signOut}}" title="{{t.header.signOut}}" style="width: 40px; height: 40px; flex-shrink: 0; padding: 0; border-radius: 10px; border: 0; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
+    <span class="material-symbols-outlined" aria-hidden="true">logout</span>
   </button>
 </header>
 
@@ -159,9 +158,14 @@ body{margin:0}
     <div style="max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px">
 
 
-      <div style="min-width: 0">
-        <h1 style="margin: 0; font-size: 26px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{folderName}}</h1>
-        <p style="margin: 2px 0 0; font-size: 14px; color: #5F5F64">{{folderSummary}}</p>
+      <div style="display: flex; align-items: center; gap: 12px">
+        <div style="flex: 1; min-width: 0">
+          <h1 style="margin: 0; font-size: 26px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{folderName}}</h1>
+          <p style="margin: 2px 0 0; font-size: 14px; color: #5F5F64">{{folderSummary}}</p>
+        </div>
+        <button type="button" aria-label="{{t.notes.new}}" title="{{t.notes.new}}" onClick="{{startNewNote}}" style="width: 44px; height: 44px; flex-shrink: 0; border: 0; border-radius: 10px; background: {{accent}}; color: #1C1C1E; display: flex; align-items: center; justify-content: center; cursor: pointer">
+          <span class="material-symbols-outlined" aria-hidden="true">add</span>
+        </button>
       </div>
 
       <div style="display: flex; gap: 8px">
@@ -170,9 +174,6 @@ body{margin:0}
           <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.searchLabel}}</span>
           <input type="search" value="{{search}}" onChange="{{onSearch}}" placeholder="{{searchPlaceholder}}" style="flex: 1; min-width: 0; height: 100%; border: 0; outline: none; background: transparent; font: inherit; color: #1C1C1E">
         </label>
-        <button type="button" aria-label="{{t.notes.new}}" onClick="{{startNewNote}}" style="width: 44px; height: 44px; flex-shrink: 0; border: 0; border-radius: 10px; background: {{accent}}; color: #1C1C1E; display: flex; align-items: center; justify-content: center; cursor: pointer">
-          <span class="material-symbols-outlined" aria-hidden="true">add</span>
-        </button>
       </div>
 
       <div style="display: flex; flex-direction: column; border-top: 1px solid #ECEBE7">

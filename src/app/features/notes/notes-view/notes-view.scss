@@ -46,6 +46,27 @@
   background: $accent;
 }
 
+.search {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: $chip;
+  color: $muted;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: $text;
+  }
+}
+
 .list {
   display: flex;
   flex-direction: column;

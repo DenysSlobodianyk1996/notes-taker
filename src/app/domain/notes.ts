@@ -62,3 +62,18 @@ export function todayKey(now: Date = new Date()): string {
 export function isOverdue(note: Pick<Note, 'dueDate' | 'completed'>, today: string): boolean {
   return note.dueDate !== null && !note.completed && note.dueDate < today;
 }
+
+/**
+ * The Notes matching a search: the query, trimmed, found in the title or the text, ignoring case.
+ * An empty query keeps every Note.
+ */
+export function filterNotes(notes: readonly Note[], query: string): readonly Note[] {
+  const q = searchForm(query.trim());
+  if (!q) return notes;
+  return notes.filter((n) => searchForm(n.title).includes(q) || searchForm(n.text).includes(q));
+}
+
+/** One Unicode form (so a pasted "й" matches a typed one), lowercased. */
+function searchForm(value: string): string {
+  return value.normalize('NFC').toLocaleLowerCase();
+}
