@@ -536,4 +536,12 @@ describe('NotesView', () => {
     expect(text.getAttribute('aria-required')).toBe('true');
     expect(field<HTMLInputElement>(view, 'input').placeholder).toBe('Title (optional)');
   });
+
+  it('puts the New note button first in the Folder header, left of the title', async () => {
+    const view = await render();
+
+    const head = view.root.querySelector('.head')!;
+    expect(head.firstElementChild).toBe(getButton(view.root, 'New note'));
+    expect(head.querySelector('h1')?.textContent?.trim()).toBe('Work');
+  });
 });

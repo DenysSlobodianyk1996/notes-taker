@@ -310,11 +310,11 @@
           <main class="notes">
             <div class="col">
               <div class="head">
+                <button type="button" class="add-note" :aria-label="t('notes.new')" @click="startNewNote"><span class="ms" aria-hidden="true">add</span></button>
                 <div class="title">
                   <h1>{{ currentName }}</h1>
                   <p>{{ summary }}</p>
                 </div>
-                <button type="button" class="add-note" :aria-label="t('notes.new')" @click="startNewNote"><span class="ms" aria-hidden="true">add</span></button>
               </div>
 
               <div class="tools">
