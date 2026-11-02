@@ -54,21 +54,11 @@
   </div>
   <div class="foot">
     <span class="grow"></span>
-    <button
-      type="button"
-      class="icon-btn cancel"
-      [attr.aria-label]="'common.cancel' | translate"
-      (click)="cancelled.emit()"
-    >
-      <span class="material-symbols-outlined" aria-hidden="true">close</span>
+    <button type="button" class="text-btn cancel" (click)="cancelled.emit()">
+      {{ 'common.cancel' | translate }}
     </button>
-    <button
-      type="submit"
-      class="icon-btn ok"
-      [attr.aria-label]="'notes.save' | translate"
-      [disabled]="noteForm().invalid()"
-    >
-      <span class="material-symbols-outlined" aria-hidden="true">check</span>
+    <button type="submit" class="text-btn ok" [disabled]="noteForm().invalid()">
+      {{ 'notes.save' | translate }}
     </button>
   </div>
 </form>
