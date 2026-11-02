@@ -26,6 +26,10 @@
           (keydown.meta.enter)="save($event)"
         ></textarea>
       </label>
+      <p class="text-hint">
+        <span>{{ model().text.length }} / {{ textMax }}</span>
+        <span class="shortcuts">· {{ 'notes.shortcuts' | translate }}</span>
+      </p>
     </div>
   </div>
   <div class="due-field">
@@ -49,8 +53,6 @@
     }
   </div>
   <div class="foot">
-    <span>{{ model().text.length }} / {{ textMax }}</span>
-    <span class="shortcuts">· {{ 'notes.shortcuts' | translate }}</span>
     <span class="grow"></span>
     <button
       type="button"
