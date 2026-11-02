@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { FoldersService } from '../../../core/folders/folders.service';
-import { DEFAULT_FOLDER_NAMES } from '../../../core/i18n/default-folder-names';
-import { Folder, FolderNameError, folderLabel, folderNameError } from '../../../domain/folders';
-import { injectDefaultFolderName } from '../default-folder-name';
-import { FolderNameForm } from '../folder-name-form/folder-name-form';
+import { FoldersService } from '@core/folders/folders.service';
+import { NotesService } from '@core/notes/notes.service';
+import { DEFAULT_FOLDER_NAMES } from '@core/i18n/default-folder-names';
+import { Folder, FolderNameError, folderLabel, folderNameError } from '@domain/folders';
+import { injectDefaultFolderName } from '@features/folders/default-folder-name';
+import { FolderNameForm } from '@features/folders/folder-name-form/folder-name-form';
 
 /** Which form row is open: a new Folder, renaming one, or none. Only one at a time. */
 type Editing = { mode: 'new' } | { mode: 'rename'; id: string } | null;
@@ -26,6 +27,7 @@ export class FoldersSidebar {
   readonly selectedId = input<string>();
 
   private readonly service = inject(FoldersService);
+  protected readonly notes = inject(NotesService);
   private readonly router = inject(Router);
   private readonly defaultName = injectDefaultFolderName();
 

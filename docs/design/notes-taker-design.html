@@ -125,6 +125,8 @@
   .offline { margin: 6px 0 0; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; color: #92400E; }
   .offline .ms { font-size: 18px; }
   .btn-lg:disabled { opacity: .45; }
+  .head { display: flex; align-items: center; gap: 12px; }
+  .title { flex: 1; min-width: 0; }
   .title h1 { margin: 0; font-size: 26px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .title p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
   .tools { display: flex; gap: 8px; }
@@ -304,9 +306,12 @@
 
           <main class="notes">
             <div class="col">
-              <div class="title">
-                <h1>{{ currentName }}</h1>
-                <p>{{ summary }}</p>
+              <div class="head">
+                <div class="title">
+                  <h1>{{ currentName }}</h1>
+                  <p>{{ summary }}</p>
+                </div>
+                <button type="button" class="add-note" :aria-label="t('notes.new')" @click="startNewNote"><span class="ms" aria-hidden="true">add</span></button>
               </div>
 
               <div class="tools">
@@ -315,7 +320,6 @@
                   <span class="sr">{{ t('notes.searchLabel') }}</span>
                   <input type="search" v-model="search" :placeholder="t('notes.searchIn', { folder: currentName })">
                 </label>
-                <button type="button" class="add-note" :aria-label="t('notes.new')" @click="startNewNote"><span class="ms" aria-hidden="true">add</span></button>
               </div>
 
               <div class="list">

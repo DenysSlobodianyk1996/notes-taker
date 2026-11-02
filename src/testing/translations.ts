@@ -6,8 +6,8 @@ import {
   provideTranslateService,
 } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
-import en from '../../public/i18n/en.json';
-import uk from '../../public/i18n/uk.json';
+import en from '@i18n/en.json';
+import uk from '@i18n/uk.json';
 
 /** Serves the real translation files from memory, so tests see the app's actual texts. */
 class InMemoryTranslateLoader implements TranslateLoader {

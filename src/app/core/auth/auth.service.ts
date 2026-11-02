@@ -10,7 +10,7 @@ import {
   signOut,
 } from 'firebase/auth';
 import { clearIndexedDbPersistence, terminate } from 'firebase/firestore';
-import { FIREBASE_AUTH, FIRESTORE } from '../firebase/firebase';
+import { FIREBASE_AUTH, FIRESTORE } from '@core/firebase/firebase';
 import { SignInContext, signInMethod } from './sign-in-method';
 
 /** The user closed or replaced the popup: not an error worth reporting. */

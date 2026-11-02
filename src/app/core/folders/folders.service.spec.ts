@@ -1,14 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-import { FakeTimestamp, fakeDb, flushSnapshots } from '../../../testing/fake-firestore';
-import { FakeAuthService, provideFakeAuth } from '../../../testing/fakes';
-import { FIRESTORE } from '../firebase/firebase';
+import { FakeTimestamp, fakeDb, flushSnapshots } from '@testing/fake-firestore';
+import { FakeAuthService, provideFakeAuth } from '@testing/fakes';
+import { FIRESTORE } from '@core/firebase/firebase';
 import { FoldersService } from './folders.service';
 
 // Uses the global `vi` (no import): another file in this bundle imports `vi` too, so an imported
 // one gets renamed and Vitest no longer finds `vi.mock` to hoist it.
 vi.mock(
   'firebase/firestore',
-  async () => (await import('../../../testing/fake-firestore')).fakeFirestoreModule,
+  async () => (await import('@testing/fake-firestore')).fakeFirestoreModule,
 );
 
 const FOLDERS = 'users/u1/folders';

@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { accessibleName, getButton } from '../../../testing/dom';
+import { accessibleName, getButton } from '@testing/dom';
 import {
   FakeAuthService,
   FakeOnlineStatus,
   provideFakeAuth,
   provideFakeOnlineStatus,
-} from '../../../testing/fakes';
-import { provideTestTranslations } from '../../../testing/translations';
-import { UiLanguageService } from '../../core/i18n/ui-language.service';
+} from '@testing/fakes';
+import { provideTestTranslations } from '@testing/translations';
+import { UiLanguageService } from '@core/i18n/ui-language.service';
 import { LoginPage } from './login-page';
 
 interface Rendered {
