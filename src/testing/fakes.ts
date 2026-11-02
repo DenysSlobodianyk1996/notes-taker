@@ -2,6 +2,7 @@ import { Provider, signal } from '@angular/core';
 import { User } from 'firebase/auth';
 import { vi } from 'vitest';
 import { AuthService } from '@core/auth/auth.service';
+import { LayoutService } from '@core/layout/layout.service';
 import { FoldersService } from '@core/folders/folders.service';
 import { NotesService } from '@core/notes/notes.service';
 import { OnlineStatus } from '@core/network/online-status.service';
@@ -125,4 +126,21 @@ export class FakeNotesService {
 
 export function provideFakeNotes(fake = new FakeNotesService()): Provider {
   return { provide: NotesService, useValue: fake };
+}
+
+/** Stands in for LayoutService: set `narrow` for a phone-sized screen; the drawer works for real. */
+export class FakeLayoutService {
+  readonly narrow = signal(false);
+  readonly drawerOpen = signal(false);
+  readonly openDrawer = vi.fn(() => this.drawerOpen.set(true));
+  readonly returnFocus = signal(0);
+  readonly closeDrawer = vi.fn(({ returnFocus = true } = {}) => {
+    if (!this.drawerOpen()) return;
+    this.drawerOpen.set(false);
+    if (returnFocus) this.returnFocus.update((n) => n + 1);
+  });
+}
+
+export function provideFakeLayout(fake = new FakeLayoutService()): Provider {
+  return { provide: LayoutService, useValue: fake };
 }
