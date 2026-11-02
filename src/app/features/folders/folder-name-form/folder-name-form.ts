@@ -15,7 +15,8 @@ import { FolderNameError } from '@domain/folders';
 
 /**
  * The inline form row for a new or renamed Folder (ADR-0004): ✓ or Enter saves, ✕ or Esc cancels.
- * Errors show once the user tries to save, then follow their typing.
+ * Errors show once the user tries to save, then follow their typing; never just for leaving the
+ * field.
  */
 @Component({
   selector: 'app-folder-name-form',
@@ -54,13 +55,19 @@ export class FolderNameForm implements OnInit {
     this.model.set({ name: this.initialName() });
   }
 
+  /**
+   * Set on the first save attempt. Errors wait for it, not for the field losing focus: moving to ✕
+   * blurs the field, and cancelling must not flash "Enter a folder name".
+   */
+  private readonly tried = signal(false);
+
   protected error(): string | null {
-    const field = this.nameForm.name();
-    return field.touched() ? (field.errors()[0]?.kind ?? null) : null;
+    return this.tried() ? (this.nameForm.name().errors()[0]?.kind ?? null) : null;
   }
 
   protected async save(event: Event): Promise<void> {
     event.preventDefault();
+    this.tried.set(true);
     await submit(this.nameForm, async () => {
       this.saved.emit(this.model().name.trim());
       return undefined;
