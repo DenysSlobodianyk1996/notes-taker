@@ -9,9 +9,9 @@ import {
   FakeNotesService,
   aNote,
   provideFakeNotes,
-} from '../../../../testing/fakes';
-import { provideTestTranslations } from '../../../../testing/translations';
-import { UiLanguageService } from '../../../core/i18n/ui-language.service';
+} from '@testing/fakes';
+import { provideTestTranslations } from '@testing/translations';
+import { UiLanguageService } from '@core/i18n/ui-language.service';
 import { FolderPage } from './folder-page';
 
 async function open(

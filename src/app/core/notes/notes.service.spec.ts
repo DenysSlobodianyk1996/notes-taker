@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { FakeTimestamp, fakeDb, flushSnapshots } from '../../../testing/fake-firestore';
-import { FakeAuthService, provideFakeAuth } from '../../../testing/fakes';
-import { FIRESTORE } from '../firebase/firebase';
+import { FakeTimestamp, fakeDb, flushSnapshots } from '@testing/fake-firestore';
+import { FakeAuthService, provideFakeAuth } from '@testing/fakes';
+import { FIRESTORE } from '@core/firebase/firebase';
 import { NotesService } from './notes.service';
 
 // Uses the global `vi` (no import): see folders.service.spec.ts.
 vi.mock(
   'firebase/firestore',
-  async () => (await import('../../../testing/fake-firestore')).fakeFirestoreModule,
+  async () => (await import('@testing/fake-firestore')).fakeFirestoreModule,
 );
 
 const NOTES = 'users/u1/notes';

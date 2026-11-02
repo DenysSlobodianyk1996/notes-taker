@@ -1,12 +1,12 @@
 import { Provider, signal } from '@angular/core';
 import { User } from 'firebase/auth';
 import { vi } from 'vitest';
-import { AuthService } from '../app/core/auth/auth.service';
-import { FoldersService } from '../app/core/folders/folders.service';
-import { NotesService } from '../app/core/notes/notes.service';
-import { OnlineStatus } from '../app/core/network/online-status.service';
-import { Folder } from '../app/domain/folders';
-import { Note, sortNotes } from '../app/domain/notes';
+import { AuthService } from '@core/auth/auth.service';
+import { FoldersService } from '@core/folders/folders.service';
+import { NotesService } from '@core/notes/notes.service';
+import { OnlineStatus } from '@core/network/online-status.service';
+import { Folder } from '@domain/folders';
+import { Note, sortNotes } from '@domain/notes';
 
 /** Stands in for AuthService: set `user` to sign in or out, and check the spies. */
 export class FakeAuthService {

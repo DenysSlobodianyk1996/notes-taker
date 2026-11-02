@@ -8,6 +8,11 @@ An Angular 22 PWA for notes grouped into folders. Sign-in is Google only; all da
 - Setup: `docs/setup/firebase.md` and `docs/setup/deploy.md`
 - Design: `docs/design/`. This is the source of truth for UI and flows: `notes-taker-design.html` is the standalone prototype, `project/` is the Claude Design canvas source, and the canvas link is in `docs/design/README.md`.
 
+## Code conventions
+
+- Imports use the `tsconfig.json` path aliases (`@core`, `@domain`, `@features`, `@shared`, `@env`, `@testing`, `@i18n`, `@app`), never `../`. Only same-folder imports use `./`. ESLint enforces this.
+- SCSS uses `@use 'tokens'` and `@use 'mixins'`, which resolve through `src/styles`.
+
 ## Workflow
 
 Follows the ask-matt main flow: grill-with-docs → design prototype → `/to-spec` → `/to-tickets` → `/implement` per ticket (TDD), then `/code-review`.

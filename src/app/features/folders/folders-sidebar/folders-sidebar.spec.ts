@@ -1,17 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { accessibleName, getButton } from '../../../../testing/dom';
+import { accessibleName, getButton } from '@testing/dom';
 import {
   FakeFoldersService,
   aDefaultFolder,
   aFolder,
   provideFakeFolders,
   provideFakeNotes,
-} from '../../../../testing/fakes';
-import { provideTestTranslations } from '../../../../testing/translations';
-import { UiLanguageService } from '../../../core/i18n/ui-language.service';
-import { FolderPage } from '../folder-page/folder-page';
+} from '@testing/fakes';
+import { provideTestTranslations } from '@testing/translations';
+import { UiLanguageService } from '@core/i18n/ui-language.service';
+import { FolderPage } from '@features/folders/folder-page/folder-page';
 
 interface Page {
   harness: RouterTestingHarness;

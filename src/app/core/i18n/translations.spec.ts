@@ -1,5 +1,5 @@
-import en from '../../../../public/i18n/en.json';
-import uk from '../../../../public/i18n/uk.json';
+import en from '@i18n/en.json';
+import uk from '@i18n/uk.json';
 
 function keyPaths(node: unknown, prefix = ''): string[] {
   if (typeof node !== 'object' || node === null) return [prefix];

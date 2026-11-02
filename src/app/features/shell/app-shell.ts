@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { AuthService } from '../../core/auth/auth.service';
-import { LanguageToggle } from '../../shared/language-toggle/language-toggle';
+import { AuthService } from '@core/auth/auth.service';
+import { LanguageToggle } from '@shared/language-toggle/language-toggle';
 
 /** The signed-in frame: a header (brand, EN | UA, avatar, Sign out) above the routed page. */
 @Component({
