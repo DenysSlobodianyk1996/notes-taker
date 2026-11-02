@@ -113,13 +113,15 @@ describe('FolderPage', () => {
     expect(TestBed.inject(Router).url).toBe('/folders/default');
   });
 
-  it('shows how many Notes each Folder holds', async () => {
+  it('shows how many Notes each Folder holds, in brackets right after its name', async () => {
     const { root } = await open('work');
 
-    const counts = [...root.querySelectorAll('nav .folder')].map((row) =>
-      row.querySelector('.count')?.textContent?.trim(),
-    );
-    expect(counts).toEqual(['1', '2', '0']);
+    const counts = [...root.querySelectorAll('nav .folder')].map((row) => {
+      const count = row.querySelector('.count');
+      expect(count?.previousElementSibling?.classList).toContain('folder-name');
+      return count?.textContent?.trim();
+    });
+    expect(counts).toEqual(['(1)', '(2)', '(0)']);
   });
 
   it("shows the selected Folder's Notes", async () => {

@@ -507,4 +507,67 @@ describe('NotesView', () => {
       expect(view.root.textContent).not.toContain('No notes match');
     });
   });
+
+  it('gives new and edited Notes the same tall text area; the note icon marks a new Note', async () => {
+    const notes = new FakeNotesService();
+    notes.notes.set([aNote({ id: 'n1', folderId: 'work', title: 'Call' })]);
+    const view = await render(notes);
+
+    await openNewNote(view);
+    expect(field<HTMLTextAreaElement>(view, 'textarea').rows).toBe(9);
+    const icon = view.root.querySelector('form .note-icon');
+    expect(icon?.textContent?.trim()).toBe('sticky_note_2');
+    expect(icon?.getAttribute('aria-hidden')).toBe('true');
+
+    getButton(view.root, 'Cancel').click();
+    await view.fixture.whenStable();
+    getButton(view.root, 'Edit note: Call').click();
+    await view.fixture.whenStable();
+    expect(field<HTMLTextAreaElement>(view, 'textarea').rows).toBe(9);
+    expect(view.root.querySelector('form .note-icon')).toBeNull();
+  });
+
+  it('marks the note text as required: a "*" in its placeholder and aria-required', async () => {
+    const view = await render();
+    await openNewNote(view);
+
+    const text = field<HTMLTextAreaElement>(view, 'textarea');
+    expect(text.placeholder).toBe('Write a note… *');
+    expect(text.getAttribute('aria-required')).toBe('true');
+    expect(field<HTMLInputElement>(view, 'input').placeholder).toBe('Title (optional)');
+  });
+
+  it('puts the New note button first in the Folder header, left of the title', async () => {
+    const view = await render();
+
+    const head = view.root.querySelector('.head')!;
+    expect(head.firstElementChild).toBe(getButton(view.root, 'New note'));
+    expect(head.querySelector('h1')?.textContent?.trim()).toBe('Work');
+  });
+
+  it('shows the character count and the shortcuts right below the text area', async () => {
+    const view = await render();
+    await openNewNote(view);
+
+    const textLabel = field<HTMLTextAreaElement>(view, 'textarea').closest('label')!;
+    const hint = textLabel.nextElementSibling!;
+    expect(hint.classList).toContain('text-hint');
+    expect([...hint.children].map((part) => part.textContent?.trim())).toEqual([
+      '0 / 1000',
+      '· Ctrl/⌘+Enter to save · Esc to cancel',
+    ]);
+    expect(view.root.querySelector('form .foot')?.textContent).not.toContain('1000');
+  });
+
+  it('labels the form buttons with words, not icons', async () => {
+    const view = await render();
+    await openNewNote(view);
+
+    for (const name of ['Cancel', 'Save note']) {
+      const button = getButton(view.root.querySelector('form')!, name);
+      expect(button.textContent?.trim()).toBe(name);
+      expect(button.getAttribute('aria-label')).toBeNull();
+      expect(button.querySelector('.material-symbols-outlined')).toBeNull();
+    }
+  });
 });
