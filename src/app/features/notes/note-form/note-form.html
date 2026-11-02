@@ -19,7 +19,7 @@
         <textarea
           #textInput
           [formField]="noteForm.text"
-          [rows]="isNew() ? 9 : 3"
+          rows="9"
           [placeholder]="'notes.textPlaceholder' | translate"
           aria-required="true"
           (keydown.control.enter)="save($event)"

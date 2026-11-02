@@ -508,7 +508,7 @@ describe('NotesView', () => {
     });
   });
 
-  it('gives a new Note a tall text area and a note icon beside its fields; edits stay compact', async () => {
+  it('gives new and edited Notes the same tall text area; the note icon marks a new Note', async () => {
     const notes = new FakeNotesService();
     notes.notes.set([aNote({ id: 'n1', folderId: 'work', title: 'Call' })]);
     const view = await render(notes);
@@ -523,7 +523,7 @@ describe('NotesView', () => {
     await view.fixture.whenStable();
     getButton(view.root, 'Edit note: Call').click();
     await view.fixture.whenStable();
-    expect(field<HTMLTextAreaElement>(view, 'textarea').rows).toBe(3);
+    expect(field<HTMLTextAreaElement>(view, 'textarea').rows).toBe(9);
     expect(view.root.querySelector('form .note-icon')).toBeNull();
   });
 

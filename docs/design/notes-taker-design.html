@@ -350,7 +350,7 @@
                 <template v-for="n in shownNotes" :key="n.id">
                   <div v-if="noteEdit && noteEdit.id === n.id" class="note-form">
                     <label><span class="sr">{{ t('notes.titlePlaceholder') }}</span><input v-model="noteEdit.title" maxlength="200" :placeholder="t('notes.titlePlaceholder')" @keydown.enter.prevent="submitNote" @keydown.esc="noteEdit = null"></label>
-                    <label><span class="sr">{{ t('notes.textLabel') }}</span><textarea v-model="noteEdit.text" maxlength="1000" rows="3" :placeholder="t('notes.textPlaceholder')" v-focus @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></textarea></label><p class="text-hint"><span>{{ noteEdit.text.length }} / 1000</span><span v-if="!narrow">· {{ t('notes.shortcuts') }}</span></p>
+                    <label><span class="sr">{{ t('notes.textLabel') }}</span><textarea v-model="noteEdit.text" maxlength="1000" rows="9" :placeholder="t('notes.textPlaceholder')" v-focus @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></textarea></label><p class="text-hint"><span>{{ noteEdit.text.length }} / 1000</span><span v-if="!narrow">· {{ t('notes.shortcuts') }}</span></p>
                     <div class="due-field">
                       <span class="ms" aria-hidden="true">event</span>
                       <label><span class="sr">{{ t('notes.dueDateLabel') }}</span><input type="date" v-model="noteEdit.dueDate" @keydown.esc="noteEdit = null"></label>
