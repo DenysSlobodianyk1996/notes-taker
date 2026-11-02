@@ -10,6 +10,8 @@ import {
   aNote,
   provideFakeNotes,
   provideFakeAuth,
+  FakeLayoutService,
+  provideFakeLayout,
 } from '@testing/fakes';
 import { NotesService } from '@core/notes/notes.service';
 import { getButton } from '@testing/dom';
@@ -19,6 +21,7 @@ import { FolderPage } from './folder-page';
 
 async function open(
   folderId: string,
+  layout?: FakeLayoutService,
 ): Promise<{ harness: RouterTestingHarness; root: HTMLElement; folders: FakeFoldersService }> {
   const folders = new FakeFoldersService();
   const notes = new FakeNotesService();
@@ -39,6 +42,7 @@ async function open(
       provideFakeAuth(),
       provideFakeFolders(folders),
       provideFakeNotes(notes),
+      ...(layout ? [provideFakeLayout(layout)] : []),
     ],
   });
   await TestBed.inject(UiLanguageService).init();
@@ -190,5 +194,86 @@ describe('FolderPage', () => {
       await harness.fixture.whenStable();
       expect(deleteButtons(root)[0].disabled).toBe(false);
     });
+  });
+
+  describe('on a phone-sized screen', () => {
+    async function openNarrow(folderId = 'work') {
+      const layout = new FakeLayoutService();
+      layout.narrow.set(true);
+      return { ...(await open(folderId, layout)), layout };
+    }
+
+    async function settle(harness: RouterTestingHarness): Promise<void> {
+      await harness.fixture.whenStable();
+    }
+
+    function escape(target: Element): void {
+      target.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    }
+
+    it('hides the Folders until the drawer is opened, then makes the Notes inert', async () => {
+      const { harness, root, layout } = await openNarrow();
+      expect(root.querySelector('nav')).toBeNull();
+      expect(root.querySelector<HTMLElement>('section.notes')?.inert).toBe(false);
+
+      layout.openDrawer();
+      await settle(harness);
+
+      expect(root.querySelector('app-folders-sidebar')?.classList).toContain('drawer');
+      expect(root.querySelector<HTMLElement>('section.notes')?.inert).toBe(true);
+      expect(document.activeElement?.textContent).toContain('Work');
+    });
+
+    it('closes the drawer from the backdrop and with Esc, sending focus back to ☰', async () => {
+      const { harness, root, layout } = await openNarrow();
+
+      layout.openDrawer();
+      await settle(harness);
+      root.querySelector<HTMLElement>('.backdrop')!.click();
+      await settle(harness);
+      expect(root.querySelector('nav')).toBeNull();
+      expect(layout.closeDrawer).toHaveBeenLastCalledWith();
+
+      layout.openDrawer();
+      await settle(harness);
+      escape(root.querySelector('nav a')!);
+      await settle(harness);
+      expect(layout.drawerOpen()).toBe(false);
+      expect(layout.returnFocus()).toBe(2);
+    });
+
+    it('closes the drawer on tapping the open Folder, without pulling focus to ☰', async () => {
+      const { harness, root, layout } = await openNarrow('work');
+      layout.openDrawer();
+      await settle(harness);
+
+      root.querySelector<HTMLAnchorElement>('nav a[aria-current="page"]')!.click();
+      await settle(harness);
+
+      expect(layout.drawerOpen()).toBe(false);
+      expect(layout.returnFocus()).toBe(0);
+    });
+
+    it('lets Esc cancel a folder form inside the drawer without closing the drawer', async () => {
+      const { harness, root, layout } = await openNarrow();
+      layout.openDrawer();
+      await settle(harness);
+      getButton(root.querySelector('nav')!, 'New folder').click();
+      await settle(harness);
+
+      escape(root.querySelector('nav form input')!);
+      await settle(harness);
+
+      expect(root.querySelector('nav form')).toBeNull();
+      expect(layout.drawerOpen()).toBe(true);
+    });
+  });
+
+  it('keeps the sidebar beside the Notes on a wide screen', async () => {
+    const { root } = await open('work');
+
+    expect(root.querySelector('nav')).not.toBeNull();
+    expect(root.querySelector('app-folders-sidebar')?.classList).not.toContain('drawer');
+    expect(root.querySelector('.backdrop')).toBeNull();
   });
 });
