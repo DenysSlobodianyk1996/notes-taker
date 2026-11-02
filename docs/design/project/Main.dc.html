@@ -159,13 +159,13 @@ body{margin:0}
 
 
       <div style="display: flex; align-items: center; gap: 12px">
+        <button type="button" aria-label="{{t.notes.new}}" title="{{t.notes.new}}" onClick="{{startNewNote}}" style="width: 44px; height: 44px; flex-shrink: 0; border: 0; border-radius: 10px; background: {{accent}}; color: #1C1C1E; display: flex; align-items: center; justify-content: center; cursor: pointer">
+          <span class="material-symbols-outlined" aria-hidden="true">add</span>
+        </button>
         <div style="flex: 1; min-width: 0">
           <h1 style="margin: 0; font-size: 26px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{folderName}}</h1>
           <p style="margin: 2px 0 0; font-size: 14px; color: #5F5F64">{{folderSummary}}</p>
         </div>
-        <button type="button" aria-label="{{t.notes.new}}" title="{{t.notes.new}}" onClick="{{startNewNote}}" style="width: 44px; height: 44px; flex-shrink: 0; border: 0; border-radius: 10px; background: {{accent}}; color: #1C1C1E; display: flex; align-items: center; justify-content: center; cursor: pointer">
-          <span class="material-symbols-outlined" aria-hidden="true">add</span>
-        </button>
       </div>
 
       <div style="display: flex; gap: 8px">
@@ -335,7 +335,7 @@ var I18N = {
       "new": "New note",
       "titlePlaceholder": "Title (optional)",
       "textLabel": "Note text",
-      "textPlaceholder": "Write a note…",
+      "textPlaceholder": "Write a note… *",
       "shortcuts": "Ctrl/⌘+Enter to save · Esc to cancel",
       "save": "Save note",
       "markCompleted": "Mark as completed: {{note}}",
@@ -418,7 +418,7 @@ var I18N = {
       "new": "Нова нотатка",
       "titlePlaceholder": "Заголовок (необов'язково)",
       "textLabel": "Текст нотатки",
-      "textPlaceholder": "Напишіть нотатку…",
+      "textPlaceholder": "Напишіть нотатку… *",
       "shortcuts": "Ctrl/⌘+Enter — зберегти · Esc — скасувати",
       "save": "Зберегти нотатку",
       "markCompleted": "Позначити виконаною: {{note}}",
