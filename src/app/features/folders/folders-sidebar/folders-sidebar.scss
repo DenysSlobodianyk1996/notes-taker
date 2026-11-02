@@ -2,14 +2,17 @@
 @use 'mixins' as *;
 
 :host {
+  // The width lives here, on the element a drawer positions and shadows, so the panel and its
+  // shadow always end at the same edge.
+  width: 288px;
+  flex-shrink: 0;
   display: flex;
   min-height: 0;
 }
 
 .folders {
-  width: 288px;
-  max-width: 85%;
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -17,6 +20,10 @@
   overflow-y: auto;
   background: $sidebar;
   border-right: 1px solid $border;
+
+  &:focus {
+    outline: none; // focused only to move focus into the drawer; links show their own focus
+  }
 }
 
 .folders-head {
