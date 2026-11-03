@@ -60,12 +60,34 @@ body{margin:0}
     {{t.app.name}}
   </div>
   <div style="flex: 1"></div>
+  <div style="position: relative; flex-shrink: 0">
+    <button type="button" aria-label="{{t.theme.label}}" title="{{t.theme.label}}" aria-haspopup="true" aria-expanded="{{themeExpanded}}" onClick="{{toggleTheme}}" style="width: 40px; height: 40px; border: 0; border-radius: 10px; background: {{themeBtnBg}}; color: {{themeBtnColor}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <span class="material-symbols-outlined" aria-hidden="true">palette</span>
+    </button>
+    <sc-if value="{{themeOpen}}" hint-placeholder-val="{{false}}">
+      <button type="button" tabIndex="{{-1}}" aria-hidden="true" onClick="{{closeTheme}}" style="position: fixed; inset: 0; z-index: 30; border: 0; padding: 0; background: transparent; cursor: default"></button>
+      <div style="position: absolute; top: 46px; right: 0; z-index: 31; display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid #E5E4E0; border-radius: 14px; background: #FFFFFF; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14)">
+        <p id="theme-title" style="margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #5F5F64">{{t.theme.label}}</p>
+        <div role="radiogroup" aria-labelledby="theme-title" style="display: flex; gap: 10px">
+          <sc-for list="{{themes}}" as="th" hint-placeholder-count="3">
+            <button type="button" role="radio" aria-checked="{{th.checked}}" aria-label="{{th.label}}" title="{{th.label}}" onClick="{{th.pick}}" style="width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: none; box-shadow: {{th.ring}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+              <span style="width: 28px; height: 28px; border-radius: 50%; background: {{th.accent}}; color: #1C1C1E; display: flex; align-items: center; justify-content: center">
+                <sc-if value="{{th.selected}}" hint-placeholder-val="{{false}}">
+                  <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px">check</span>
+                </sc-if>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+  </div>
   <div role="group" aria-label="{{t.lang.label}}" style="display: flex; flex-shrink: 0; height: 32px; border: 1px solid #D4D3CE; border-radius: 8px; overflow: hidden; background: #FFFFFF">
     <button type="button" aria-pressed="{{enPressed}}" onClick="{{setEn}}" style="min-width: 38px; border: 0; padding: 0 8px; font: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; background: {{enBg}}; color: {{enColor}}; cursor: pointer">{{t.lang.en}}</button>
     <button type="button" aria-pressed="{{ukPressed}}" onClick="{{setUk}}" style="min-width: 38px; border: 0; border-left: 1px solid #D4D3CE; padding: 0 8px; font: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; background: {{ukBg}}; color: {{ukColor}}; cursor: pointer">{{t.lang.uk}}</button>
   </div>
   <sc-if value="{{wide}}" hint-placeholder-val="{{true}}">
-    <span aria-hidden="true" style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: #FEF3C7; color: #92400E; display: flex; align-items: center; justify-content: center">
+    <span aria-hidden="true" style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: {{accentSoft}}; color: {{accentInk}}; display: flex; align-items: center; justify-content: center">
       <span class="material-symbols-outlined" style="font-size: 20px">person</span>
     </span>
   </sc-if>
@@ -132,8 +154,8 @@ body{margin:0}
         <div style="display: flex; align-items: center; border-radius: 10px; background: {{f.bg}}">
           <button type="button" onClick="{{f.pick}}" aria-current="{{f.current}}" style="flex: 1; min-width: 0; height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 8px 0 10px; border: 0; background: none; font: inherit; color: #1C1C1E; font-weight: {{f.weight}}; text-align: left; cursor: pointer">
             <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px; color: {{f.iconColor}}">folder</span>
-            <span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{f.name}}</span>
-            <span style="font-size: 13px; color: #5F5F64; font-weight: 400">{{f.count}}</span>
+            <span style="flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{f.name}}</span>
+            <span style="flex-shrink: 0; margin-left: -6px; font-size: 13px; color: #5F5F64; font-weight: 400">({{f.count}})</span>
           </button>
           <sc-if value="{{f.locked}}" hint-placeholder-val="{{false}}">
             <span title="{{t.folders.defaultLocked}}" style="width: 36px; height: 36px; margin-right: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #8A8880">
@@ -179,50 +201,83 @@ body{margin:0}
       <div style="display: flex; flex-direction: column; border-top: 1px solid #ECEBE7">
 
         <sc-if value="{{newNoteOpen}}" hint-placeholder-val="{{false}}">
-          <div style="margin: 10px 0; display: flex; flex-direction: column; gap: 6px; padding: 12px 12px 8px 14px; border-radius: 12px; border: 1.5px solid {{accent}}; background: #FFFDF7">
-            <label>
-              <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.titlePlaceholder}}</span>
-              <input type="text" value="{{noteTitle}}" onChange="{{onNoteTitle}}" onKeyDown="{{onNoteTitleKey}}" maxLength="{{200}}" placeholder="{{t.notes.titlePlaceholder}}" style="width: 100%; box-sizing: border-box; border: 0; outline: none; background: transparent; font: inherit; font-size: 16px; font-weight: 600; color: #1C1C1E; padding: 4px 0">
-            </label>
-            <label>
-              <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.textLabel}}</span>
-              <textarea value="{{noteText}}" onChange="{{onNoteText}}" onKeyDown="{{onNoteTextKey}}" maxLength="{{1000}}" rows="3" autoFocus="{{true}}" placeholder="{{t.notes.textPlaceholder}}" style="width: 100%; box-sizing: border-box; border: 0; outline: none; background: transparent; font: inherit; color: #1C1C1E; padding: 2px 0; resize: vertical"></textarea>
-            </label>
-            <div style="display: flex; align-items: center; gap: 6px">
-              <span style="font-size: 12px; color: #5F5F64">{{noteCount}}</span>
-              <span style="font-size: 12px; color: #5F5F64; display: {{hintDisplay}}">· {{t.notes.shortcuts}}</span>
-              <span style="flex: 1"></span>
-              <button type="button" aria-label="{{t.common.cancel}}" onClick="{{cancelNote}}" style="width: 40px; height: 40px; border: 0; border-radius: 9px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
-                <span class="material-symbols-outlined" aria-hidden="true">close</span>
-              </button>
-              <button type="button" aria-label="{{t.notes.save}}" onClick="{{submitNote}}" disabled="{{noteSubmitDisabled}}" style="width: 40px; height: 40px; border: 0; border-radius: 9px; background: {{accent}}; color: #1C1C1E; opacity: {{noteSubmitOpacity}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
-                <span class="material-symbols-outlined" aria-hidden="true">check</span>
-              </button>
+          <div style="margin: 10px 0; display: flex; flex-direction: column; gap: 6px; padding: 12px 12px 12px 14px; border-radius: 12px; border: 1.5px solid {{accent}}; background: {{accentTint}}">
+            <div style="display: flex; align-items: flex-start; gap: 10px">
+              <span class="material-symbols-outlined" aria-hidden="true" style="flex-shrink: 0; margin-top: 4px; font-size: 22px; color: {{accentInk}}">sticky_note_2</span>
+              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+                <label>
+                  <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.titlePlaceholder}}</span>
+                  <input type="text" value="{{noteTitle}}" onChange="{{onNoteTitle}}" onKeyDown="{{onNoteTitleKey}}" maxLength="{{200}}" placeholder="{{t.notes.titlePlaceholder}}" style="width: 100%; box-sizing: border-box; border: 0; outline: none; background: transparent; font: inherit; font-size: 16px; font-weight: 600; color: #1C1C1E; padding: 4px 0">
+                </label>
+                <label>
+                  <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.textLabel}}</span>
+                  <textarea value="{{noteText}}" onChange="{{onNoteText}}" onKeyDown="{{onNoteTextKey}}" maxLength="{{1000}}" rows="9" autoFocus="{{true}}" aria-required="true" placeholder="{{t.notes.textPlaceholder}}" style="width: 100%; box-sizing: border-box; border: 1px solid #D4D3CE; border-radius: 8px; outline: none; background: #FFFFFF; font: inherit; color: #1C1C1E; padding: 8px 10px; resize: vertical"></textarea>
+                </label>
+                <p style="margin: -2px 0 0; display: flex; flex-wrap: wrap; gap: 0 6px; font-size: 12px; color: #5F5F64">
+                  <span>{{noteCount}}</span>
+                  <span style="display: {{hintDisplay}}">· {{t.notes.shortcuts}}</span>
+                </p>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px; padding: 2px 0 4px; font-size: 13px; color: #5F5F64">
+              <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px">event</span>
+              <label>
+                <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.dueDateLabel}}</span>
+                <input type="date" value="{{noteDue}}" onChange="{{onNoteDue}}" onKeyDown="{{onNoteDueKey}}" style="height: 32px; box-sizing: border-box; padding: 0 8px; border: 1px solid #D4D3CE; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #1C1C1E">
+              </label>
+              <sc-if value="{{hasNoteDue}}" hint-placeholder-val="{{false}}">
+                <button type="button" aria-label="{{t.notes.clearDueDate}}" title="{{t.notes.clearDueDate}}" onClick="{{clearNoteDue}}" style="width: 32px; height: 32px; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
+                  <span class="material-symbols-outlined" aria-hidden="true">close</span>
+                </button>
+              </sc-if>
+              <sc-if value="{{noNoteDue}}" hint-placeholder-val="{{true}}">
+                <span aria-hidden="true">{{t.notes.dueDateLabel}}</span>
+              </sc-if>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px">
+              <button type="button" onClick="{{cancelNote}}" style="height: 40px; padding: 0 16px; border-radius: 10px; border: 1px solid #D4D3CE; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1C1C1E; white-space: nowrap; cursor: pointer">{{t.common.cancel}}</button>
+              <button type="button" onClick="{{submitNote}}" disabled="{{noteSubmitDisabled}}" style="height: 40px; padding: 0 16px; border-radius: 10px; border: 0; background: {{accent}}; font: inherit; font-size: 14px; font-weight: 600; color: #1C1C1E; opacity: {{noteSubmitOpacity}}; white-space: nowrap; cursor: pointer">{{t.notes.save}}</button>
             </div>
           </div>
         </sc-if>
 
         <sc-for list="{{notes}}" as="n" hint-placeholder-count="4">
           <sc-if value="{{n.editing}}" hint-placeholder-val="{{false}}">
-            <div style="margin: 10px 0; display: flex; flex-direction: column; gap: 6px; padding: 12px 12px 8px 14px; border-radius: 12px; border: 1.5px solid {{accent}}; background: #FFFDF7">
-              <label>
-                <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.titlePlaceholder}}</span>
-                <input type="text" value="{{noteTitle}}" onChange="{{onNoteTitle}}" onKeyDown="{{onNoteTitleKey}}" maxLength="{{200}}" placeholder="{{t.notes.titlePlaceholder}}" style="width: 100%; box-sizing: border-box; border: 0; outline: none; background: transparent; font: inherit; font-size: 16px; font-weight: 600; color: #1C1C1E; padding: 4px 0">
-              </label>
-              <label>
-                <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.textLabel}}</span>
-                <textarea value="{{noteText}}" onChange="{{onNoteText}}" onKeyDown="{{onNoteTextKey}}" maxLength="{{1000}}" rows="3" autoFocus="{{true}}" placeholder="{{t.notes.textPlaceholder}}" style="width: 100%; box-sizing: border-box; border: 0; outline: none; background: transparent; font: inherit; color: #1C1C1E; padding: 2px 0; resize: vertical"></textarea>
-              </label>
-              <div style="display: flex; align-items: center; gap: 6px">
-                <span style="font-size: 12px; color: #5F5F64">{{noteCount}}</span>
-                <span style="font-size: 12px; color: #5F5F64; display: {{hintDisplay}}">· {{t.notes.shortcuts}}</span>
-                <span style="flex: 1"></span>
-                <button type="button" aria-label="{{t.common.cancel}}" onClick="{{cancelNote}}" style="width: 40px; height: 40px; border: 0; border-radius: 9px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
-                  <span class="material-symbols-outlined" aria-hidden="true">close</span>
-                </button>
-                <button type="button" aria-label="{{t.notes.save}}" onClick="{{submitNote}}" disabled="{{noteSubmitDisabled}}" style="width: 40px; height: 40px; border: 0; border-radius: 9px; background: {{accent}}; color: #1C1C1E; opacity: {{noteSubmitOpacity}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
-                  <span class="material-symbols-outlined" aria-hidden="true">check</span>
-                </button>
+            <div style="margin: 10px 0; display: flex; flex-direction: column; gap: 6px; padding: 12px 12px 12px 14px; border-radius: 12px; border: 1.5px solid {{accent}}; background: {{accentTint}}">
+              <div style="display: flex; align-items: flex-start; gap: 10px">
+                <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+                  <label>
+                    <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.titlePlaceholder}}</span>
+                    <input type="text" value="{{noteTitle}}" onChange="{{onNoteTitle}}" onKeyDown="{{onNoteTitleKey}}" maxLength="{{200}}" placeholder="{{t.notes.titlePlaceholder}}" style="width: 100%; box-sizing: border-box; border: 0; outline: none; background: transparent; font: inherit; font-size: 16px; font-weight: 600; color: #1C1C1E; padding: 4px 0">
+                  </label>
+                  <label>
+                    <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.textLabel}}</span>
+                    <textarea value="{{noteText}}" onChange="{{onNoteText}}" onKeyDown="{{onNoteTextKey}}" maxLength="{{1000}}" rows="9" autoFocus="{{true}}" aria-required="true" placeholder="{{t.notes.textPlaceholder}}" style="width: 100%; box-sizing: border-box; border: 1px solid #D4D3CE; border-radius: 8px; outline: none; background: #FFFFFF; font: inherit; color: #1C1C1E; padding: 8px 10px; resize: vertical"></textarea>
+                  </label>
+                  <p style="margin: -2px 0 0; display: flex; flex-wrap: wrap; gap: 0 6px; font-size: 12px; color: #5F5F64">
+                    <span>{{noteCount}}</span>
+                    <span style="display: {{hintDisplay}}">· {{t.notes.shortcuts}}</span>
+                  </p>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px; padding: 2px 0 4px; font-size: 13px; color: #5F5F64">
+                <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px">event</span>
+                <label>
+                  <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.dueDateLabel}}</span>
+                  <input type="date" value="{{noteDue}}" onChange="{{onNoteDue}}" onKeyDown="{{onNoteDueKey}}" style="height: 32px; box-sizing: border-box; padding: 0 8px; border: 1px solid #D4D3CE; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; color: #1C1C1E">
+                </label>
+                <sc-if value="{{hasNoteDue}}" hint-placeholder-val="{{false}}">
+                  <button type="button" aria-label="{{t.notes.clearDueDate}}" title="{{t.notes.clearDueDate}}" onClick="{{clearNoteDue}}" style="width: 32px; height: 32px; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
+                    <span class="material-symbols-outlined" aria-hidden="true">close</span>
+                  </button>
+                </sc-if>
+                <sc-if value="{{noNoteDue}}" hint-placeholder-val="{{true}}">
+                  <span aria-hidden="true">{{t.notes.dueDateLabel}}</span>
+                </sc-if>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px">
+                <button type="button" onClick="{{cancelNote}}" style="height: 40px; padding: 0 16px; border-radius: 10px; border: 1px solid #D4D3CE; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1C1C1E; white-space: nowrap; cursor: pointer">{{t.common.cancel}}</button>
+                <button type="button" onClick="{{submitNote}}" disabled="{{noteSubmitDisabled}}" style="height: 40px; padding: 0 16px; border-radius: 10px; border: 0; background: {{accent}}; font: inherit; font-size: 14px; font-weight: 600; color: #1C1C1E; opacity: {{noteSubmitOpacity}}; white-space: nowrap; cursor: pointer">{{t.notes.save}}</button>
               </div>
             </div>
           </sc-if>
@@ -236,6 +291,12 @@ body{margin:0}
                   <span style="font-weight: 600; text-decoration: {{n.deco}}">{{n.title}}</span>
                 </sc-if>
                 <span style="white-space: pre-wrap; overflow-wrap: anywhere; text-decoration: {{n.deco}}">{{n.text}}</span>
+                <sc-if value="{{n.hasDue}}" hint-placeholder-val="{{false}}">
+                  <span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 2px 8px 2px 6px; border-radius: 999px; background: {{n.dueBg}}; font-size: 12px; font-weight: 600; color: {{n.dueColor}}">
+                    <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 15px">{{n.dueIcon}}</span>
+                    {{n.dueLabel}}
+                  </span>
+                </sc-if>
               </button>
               <button type="button" aria-label="{{t.notes.delete}}" onClick="{{n.del}}" style="width: 36px; height: 36px; flex-shrink: 0; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
                 <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">delete</span>
@@ -279,7 +340,7 @@ body{margin:0}
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"preset":{"editor":"enum","default":"login","options":["login","offline","app","new-account","desktop-editing","delete-folder","mobile-drawer","new-note","empty"],"section":"Start state"},"lang":{"editor":"enum","default":"en","options":["en","uk"],"section":"Start state"},"accent":{"editor":"color","default":"#F59E0B","options":["#F59E0B","#FBBF24","#FB923C"]},"$preview":{"width":1280,"height":800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"preset":{"editor":"enum","default":"login","options":["login","offline","app","new-account","desktop-editing","delete-folder","mobile-drawer","new-note","empty","due-dates","theme"],"section":"Start state"},"lang":{"editor":"enum","default":"en","options":["en","uk"],"section":"Start state"},"theme":{"editor":"enum","default":"orange","options":["orange","pink","purple"],"section":"Start state"},"accent":{"editor":"color","default":"#F59E0B","options":["#F59E0B","#FBBF24","#FB923C"]},"$preview":{"width":1280,"height":800}}'>
 /* I18N:BEGIN */
 var I18N = {
   "en": {
@@ -454,6 +515,24 @@ var I18N = {
 var DAY = 86400000;
 var T0 = Date.parse('2026-10-01T09:00:00Z');
 function uid() { return Math.random().toString(36).slice(2, 10); }
+
+// Due dates are local calendar days ('YYYY-MM-DD'); sample ones are relative to today.
+function dayKey(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function daysFromToday(n) { var d = new Date(); d.setDate(d.getDate() + n); return dayKey(d); }
+function formatDay(key, lang) {
+  var p = key.split('-').map(Number), d = new Date(p[0], p[1] - 1, p[2]);
+  var opts = { day: 'numeric', month: 'short' };
+  if (p[0] !== new Date().getFullYear()) opts.year = 'numeric';
+  return new Intl.DateTimeFormat(lang === 'uk' ? 'uk-UA' : 'en-GB', opts).format(d);
+}
+
+// Themes recolour the accent family only; the login page is always Orange.
+var THEMES = {
+  orange: { accent: '#F59E0B', soft: '#FEF3C7', ink: '#92400E', tint: '#FFFDF7' },
+  pink: { accent: '#F472B6', soft: '#FCE7F3', ink: '#9D174D', tint: '#FFFAFC' },
+  purple: { accent: '#A78BFA', soft: '#EDE9FE', ink: '#5B21B6', tint: '#FCFBFF' }
+};
+var THEME_IDS = ['orange', 'pink', 'purple'];
 function norm(s) { return (s || '').trim().toLowerCase(); }
 function byCreatedAsc(a, b) { return a.createdAt - b.createdAt; }
 
@@ -472,13 +551,13 @@ function seedAccount() {
       { id: 'acc-travel', name: 'Travel', isDefault: false, createdAt: T0 - 10 * DAY }
     ],
     notes: [
-      { id: 'an1', folderId: 'acc-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, createdAt: T0 - 2 * DAY },
-      { id: 'an2', folderId: 'acc-gen', title: '', text: 'Renew bike insurance\nPolicy ends 30 Oct', completed: false, createdAt: T0 - 3 * DAY },
-      { id: 'an7', folderId: 'acc-gen', title: '', text: 'Return library books before Friday', completed: true, createdAt: T0 - 6 * DAY },
+      { id: 'an1', folderId: 'acc-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, dueDate: daysFromToday(3), createdAt: T0 - 2 * DAY },
+      { id: 'an2', folderId: 'acc-gen', title: '', text: 'Renew bike insurance\nPolicy ends 30 Oct', completed: false, dueDate: daysFromToday(-2), createdAt: T0 - 3 * DAY },
+      { id: 'an7', folderId: 'acc-gen', title: '', text: 'Return library books before Friday', completed: true, dueDate: daysFromToday(-4), createdAt: T0 - 6 * DAY },
       { id: 'an3', folderId: 'acc-work', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.', completed: false, createdAt: T0 - 1 * DAY },
-      { id: 'an4', folderId: 'acc-work', title: 'Standup', text: 'Share the sync bug findings', completed: false, createdAt: T0 - 4 * DAY },
+      { id: 'an4', folderId: 'acc-work', title: 'Standup', text: 'Share the sync bug findings', completed: false, dueDate: daysFromToday(0), createdAt: T0 - 4 * DAY },
       { id: 'an5', folderId: 'acc-work', title: 'Expenses', text: 'Submit September receipts', completed: true, createdAt: T0 - 9 * DAY },
-      { id: 'an6', folderId: 'acc-travel', title: 'Packing list', text: 'Passport, charger, rain jacket, adapters', completed: false, createdAt: T0 - 5 * DAY }
+      { id: 'an6', folderId: 'acc-travel', title: 'Packing list', text: 'Passport, charger, rain jacket, adapters', completed: false, dueDate: daysFromToday(21), createdAt: T0 - 5 * DAY }
     ]
   };
 }
@@ -504,12 +583,13 @@ class Component extends DCLogic {
     super(...args);
     var p = this.props || {};
     this.state = this.initState(p.preset || 'login', p.lang === 'uk' ? 'uk' : 'en');
+    this.state.theme = THEMES[p.theme] ? p.theme : 'orange';
   }
 
   initState(preset, lang) {
     var s = {
       lang: lang, screen: 'login', account: seedAccount(), sel: null, offline: preset === 'offline',
-      folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false,
+      folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false, themeOpen: false,
       w: typeof window !== 'undefined' ? window.innerWidth : 1280
     };
     function open() {
@@ -522,12 +602,14 @@ class Component extends DCLogic {
     if (preset === 'desktop-editing') {
       open();
       s.sel = 'acc-work';
-      s.noteEdit = { id: 'an3', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.' };
+      s.noteEdit = { id: 'an3', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.', dueDate: '' };
       s.folderForm = { mode: 'new', id: null, value: 'work ', error: 'folders.errors.taken' };
     }
     if (preset === 'delete-folder') { open(); s.sel = 'acc-work'; s.dialog = { kind: 'deleteFolder', id: 'acc-work' }; }
     if (preset === 'mobile-drawer') { open(); s.drawer = true; }
-    if (preset === 'new-note') { open(); s.noteEdit = { id: 'new', title: '', text: 'Pick up the parcel at the post office' }; }
+    if (preset === 'new-note') { open(); s.noteEdit = { id: 'new', title: '', text: 'Pick up the parcel at the post office', dueDate: '' }; }
+    if (preset === 'due-dates') { open(); s.noteEdit = { id: 'an1', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', dueDate: daysFromToday(3) }; }
+    if (preset === 'theme') { open(); s.themeOpen = true; }
     if (preset === 'empty') {
       open();
       s.account = { folders: s.account.folders.concat([{ id: 'acc-ideas', name: 'Ideas', isDefault: false, createdAt: T0 }]), notes: s.account.notes };
@@ -573,7 +655,7 @@ class Component extends DCLogic {
     });
   }
   signOut() {
-    this.setState({ screen: 'login', sel: null, folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false });
+    this.setState({ screen: 'login', sel: null, folderForm: null, noteEdit: null, search: '', dialog: null, drawer: false, themeOpen: false });
   }
 
   // Folders
@@ -608,8 +690,8 @@ class Component extends DCLogic {
   }
 
   // Notes
-  startNewNote() { this.setState({ noteEdit: { id: 'new', title: '', text: '' }, search: '' }); }
-  startEdit(n) { this.setState({ noteEdit: { id: n.id, title: n.title, text: n.text } }); }
+  startNewNote() { this.setState({ noteEdit: { id: 'new', title: '', text: '', dueDate: '' }, search: '' }); }
+  startEdit(n) { this.setState({ noteEdit: { id: n.id, title: n.title, text: n.text, dueDate: n.dueDate || '' } }); }
   cancelNote() { this.setState({ noteEdit: null }); }
   submitNote() {
     var ne = this.state.noteEdit;
@@ -617,12 +699,13 @@ class Component extends DCLogic {
     var text = ne.text.trim();
     if (!text) return;
     var title = ne.title.trim();
+    var dueDate = ne.dueDate || null;
     var folderId = this.currentFolder().id;
     if (ne.id === 'new') {
-      var n = { id: uid(), folderId: folderId, title: title, text: text, completed: false, createdAt: Date.now() };
+      var n = { id: uid(), folderId: folderId, title: title, text: text, completed: false, dueDate: dueDate, createdAt: Date.now() };
       this.setData((d) => ({ folders: d.folders, notes: d.notes.concat([n]) }));
     } else {
-      this.setData((d) => ({ folders: d.folders, notes: d.notes.map((x) => (x.id === ne.id ? Object.assign({}, x, { title: title, text: text }) : x)) }));
+      this.setData((d) => ({ folders: d.folders, notes: d.notes.map((x) => (x.id === ne.id ? Object.assign({}, x, { title: title, text: text, dueDate: dueDate }) : x)) }));
     }
     this.setState({ noteEdit: null });
   }
@@ -637,18 +720,21 @@ class Component extends DCLogic {
   renderVals() {
     var s = this.state;
     var t = I18N[s.lang] || {};
-    var accent = this.props.accent ?? '#F59E0B';
     var narrow = s.w < 900;
     var isApp = s.screen === 'app';
     var isEn = s.lang === 'en';
+    // The login page is always Orange; the app follows the chosen Theme. The `accent` tweak
+    // overrides Orange's main colour.
+    var th = THEMES[isApp ? s.theme : 'orange'];
+    var accent = isApp && s.theme !== 'orange' ? th.accent : (this.props.accent ?? th.accent);
     var vals = {
-      t: t, lang: s.lang, accent: accent, narrow: narrow, wide: !narrow, isLogin: !isApp, isApp: isApp,
+      t: t, lang: s.lang, accent: accent, accentSoft: th.soft, accentInk: th.ink, accentTint: th.tint, narrow: narrow, wide: !narrow, isLogin: !isApp, isApp: isApp,
       signIn: () => this.signIn(), signOut: () => this.signOut(),
       offline: !!s.offline, online: !s.offline, signInOpacity: s.offline ? 0.45 : 1,
       setEn: () => this.setState({ lang: 'en' }), setUk: () => this.setState({ lang: 'uk' }),
       enPressed: isEn ? 'true' : 'false', ukPressed: isEn ? 'false' : 'true',
-      enBg: isEn ? '#FEF3C7' : '#FFFFFF', ukBg: isEn ? '#FFFFFF' : '#FEF3C7',
-      enColor: isEn ? '#92400E' : '#5F5F64', ukColor: isEn ? '#5F5F64' : '#92400E',
+      enBg: isEn ? th.soft : '#FFFFFF', ukBg: isEn ? '#FFFFFF' : th.soft,
+      enColor: isEn ? th.ink : '#5F5F64', ukColor: isEn ? '#5F5F64' : th.ink,
       btnPad: narrow ? '10px' : '14px',
       hasDialog: false
     };
@@ -660,6 +746,19 @@ class Component extends DCLogic {
     var ff = s.folderForm;
     var ne = s.noteEdit;
     var q = norm(s.search);
+
+    vals.themeOpen = !!s.themeOpen;
+    vals.themeExpanded = s.themeOpen ? 'true' : 'false';
+    vals.themeBtnBg = s.themeOpen ? th.soft : 'transparent';
+    vals.themeBtnColor = s.themeOpen ? th.ink : '#5F5F64';
+    vals.toggleTheme = () => this.setState({ themeOpen: !this.state.themeOpen });
+    vals.closeTheme = () => this.setState({ themeOpen: false });
+    vals.themes = THEME_IDS.map((id) => ({
+      id: id, accent: THEMES[id].accent, label: this.tr('theme.' + id),
+      selected: s.theme === id, checked: s.theme === id ? 'true' : 'false',
+      ring: s.theme === id ? '0 0 0 2px #FFFFFF, 0 0 0 4px #1C1C1E' : 'none',
+      pick: () => this.setState({ theme: id, themeOpen: false })
+    }));
 
     vals.openDrawer = () => this.setState({ drawer: true });
     vals.closeDrawer = () => this.setState({ drawer: false });
@@ -690,9 +789,9 @@ class Component extends DCLogic {
       return {
         id: f.id, name: folderLabel(f, s.lang), count: count, selected: selected, renaming: renaming, normal: !renaming,
         current: selected ? 'page' : 'false',
-        bg: selected ? '#FEF3C7' : 'transparent',
+        bg: selected ? th.soft : 'transparent',
         weight: selected ? 600 : 400,
-        iconColor: selected ? '#92400E' : '#8A8880',
+        iconColor: selected ? th.ink : '#8A8880',
         pick: () => this.pickFolder(f.id),
         rename: () => this.startRename(f),
         del: () => this.setState({ dialog: { kind: 'deleteFolder', id: f.id } }),
@@ -717,6 +816,12 @@ class Component extends DCLogic {
     vals.noteTitle = ne ? ne.title : '';
     vals.noteText = ne ? ne.text : '';
     vals.noteCount = (ne ? ne.text.length : 0) + ' / 1000';
+    vals.noteDue = ne && ne.dueDate ? ne.dueDate : '';
+    vals.hasNoteDue = !!vals.noteDue;
+    vals.noNoteDue = !vals.noteDue;
+    vals.onNoteDue = (e) => this.setState({ noteEdit: Object.assign({}, s.noteEdit, { dueDate: e.target.value }) });
+    vals.onNoteDueKey = (e) => { if (e.key === 'Escape') this.cancelNote(); };
+    vals.clearNoteDue = () => this.setState({ noteEdit: Object.assign({}, s.noteEdit, { dueDate: '' }) });
     vals.noteSubmitDisabled = !(ne && ne.text.trim());
     vals.noteSubmitOpacity = vals.noteSubmitDisabled ? 0.4 : 1;
     vals.onNoteTitle = (e) => this.setState({ noteEdit: Object.assign({}, s.noteEdit, { title: e.target.value }) });
@@ -732,7 +837,14 @@ class Component extends DCLogic {
     vals.notes = shown.map((n) => {
       var editing = !!(ne && ne.id === n.id);
       var label = n.title || n.text.slice(0, 40);
+      var overdue = !!n.dueDate && !n.completed && n.dueDate < daysFromToday(0);
+      var dueText = n.dueDate ? formatDay(n.dueDate, s.lang) : '';
       return {
+        hasDue: !!n.dueDate,
+        dueLabel: n.dueDate ? this.tr(overdue ? 'notes.overdue' : 'notes.due', { date: dueText }) : '',
+        dueIcon: overdue ? 'event_busy' : 'event',
+        dueBg: overdue ? '#FEE2E2' : '#F1F0EC',
+        dueColor: overdue ? '#B91C1C' : '#5F5F64',
         id: n.id, title: n.title, text: n.text, hasTitle: !!n.title, completed: n.completed,
         editing: editing, normal: !editing,
         deco: n.completed ? 'line-through' : 'none',
