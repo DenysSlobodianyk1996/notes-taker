@@ -60,6 +60,11 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 - A search box above the list filters as you type on title and text, ignoring case. It applies only to the current folder.
 - No popups for create or edit. `<dialog>` is used only for delete confirmations.
 
+**UX analytics (ticket 13, ADR-0011)**
+
+- Microsoft Clarity (`@microsoft/clarity`) in production only: session replays and heatmaps to find UX problems.
+- Notes, Folder names, Due dates and searches are masked in code (`data-clarity-mask`) and the project uses Strict masking; no cookies, no consent banner, no identity. Sessions are tagged with UI language, Theme and layout.
+
 **Theme (ticket 12, ADR-0010)**
 
 - A palette button in the header opens three colour circles: Orange (default), Pink and Purple. Only the accent colours change; the login page is always Orange.

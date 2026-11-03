@@ -2,7 +2,7 @@
 
 Status: ready-for-agent
 
-Sources: `docs/plan.md`, `CONTEXT.md` (glossary), `docs/adr/0001`–`0009`, design in `docs/design/` (canvas <https://claude.ai/artifact/TXP1WiDr5cb8hvjZvpV68G>, standalone `docs/design/notes-taker-design.html`, translations `docs/design/i18n/*.json`). Where this spec and the design disagree, the design prototype wins for UI and this spec wins for behaviour and data.
+Sources: `docs/plan.md`, `CONTEXT.md` (glossary), `docs/adr/0001`–`0011`, design in `docs/design/` (canvas <https://claude.ai/artifact/TXP1WiDr5cb8hvjZvpV68G>, standalone `docs/design/notes-taker-design.html`, translations `docs/design/i18n/*.json`). Where this spec and the design disagree, the design prototype wins for UI and this spec wins for behaviour and data.
 
 ## Problem Statement
 
@@ -98,6 +98,11 @@ A small installable web app (PWA) called **Notes**:
 81. As a user, I want a Theme change on one device to show up on my other open devices, so that they stay consistent.
 82. As a new Account, I want the Orange Theme by default, so that the app looks as designed until I choose otherwise.
 83. As a user, I want the browser tab icon to follow my Theme, so that the tab matches the app. The installed app icon stays Orange.
+
+### UX analytics
+84. As the owner, I want session replays and heatmaps of the hosted app (Microsoft Clarity), so that I can see where people struggle with the UI.
+85. As a user, I want my notes, Folder names and searches never to appear in those recordings, and no tracking cookie or identity attached, so that analytics never exposes what I write.
+86. As the owner, I want analytics only in production, tagged with UI language, Theme and layout, so that development is untracked and recordings are easy to filter.
 
 ### Language
 55. As a Ukrainian speaker, I want the interface in Ukrainian, so that the app feels native.
@@ -212,6 +217,11 @@ A small installable web app (PWA) called **Notes**:
 - **Translations:** a test asserts that `en.json` and `uk.json` have identical key sets.
 - **Not automated in v1:** the Firebase emulator and end-to-end browser tests. Real-device checks are done by hand: sign-in in Safari and in the iPhone home-screen app shows the same notes, Android install, offline edit then sync, deep-link refresh on hosting.
 - **Prior art:** none in the repo yet. The behaviour to match is pinned down by the design prototype, whose `?state=` presets list the states the tests should cover.
+
+### UX analytics (ADR-0011)
+- `@microsoft/clarity`, initialised once at startup in production only (project ID in the production environment); nothing loads in development or tests.
+- User content carries `data-clarity-mask="true"` (note title and text, Folder names, Due date, search, quoted names in dialogs); the Clarity project uses Strict masking and no cookies.
+- No `identify`, no consent API, no custom events. Tags: `lang`, `theme`, `layout`.
 
 ## Out of Scope
 
