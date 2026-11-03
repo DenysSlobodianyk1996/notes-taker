@@ -4,13 +4,13 @@
 
 **Blocked by:** none (the Theme and layout tags use ticket 12's ThemeService and ticket 10's LayoutService, both done)
 
-**Status:** done (project id `z7wvfu4416` in `environment.prod.ts`; PR #28 merged, masking narrowed on `feature/clarity-masking`). The owner's setup is done; one dashboard change is left below.
+**Status:** done (project id `z7wvfu4416` in `environment.prod.ts`; PR #28 merged, masking narrowed on `feature/clarity-masking`). The owner's setup is done, including the switch to Balanced.
 
 Human setup (owner, one-time):
 
 - [x] Create a project at <https://clarity.microsoft.com> for `https://notes-taker-df334.web.app`.
 - [x] Settings → Masking: set (owner check done).
-- [ ] Settings → Masking: switch to **Balanced** (Strict hides every label; see ADR-0011).
+- [x] Settings → Masking: switch to **Balanced** (Strict hides every label; see ADR-0011). Done by the owner.
 - [x] Settings → Setup: turn **Cookies** off (no-cookie mode).
 - [x] Copy the project ID (Settings → Overview) for the build. It is public, like the Firebase config.
 
