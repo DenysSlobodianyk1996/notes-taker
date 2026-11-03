@@ -1,12 +1,8 @@
-/** Public Firebase web config: safe to commit, access is enforced by firestore.rules. */
+import { firebaseConfig } from './firebase.config';
+
+/** Development and tests. Production builds use environment.prod.ts instead (angular.json). */
 export const environment = {
-  firebase: {
-    apiKey: 'AIzaSyBvaf1aWBltfv17HkozXEl5t4ec_HV5ipI',
-    // The hosting domain, not firebaseapp.com, so redirect sign-in works (ADR-0003).
-    authDomain: 'notes-taker-df334.web.app',
-    projectId: 'notes-taker-df334',
-    storageBucket: 'notes-taker-df334.firebasestorage.app',
-    messagingSenderId: '443702703956',
-    appId: '1:443702703956:web:e5598de0f8763276b43ac1',
-  },
+  firebase: firebaseConfig,
+  /** Microsoft Clarity (ADR-0011): off outside production. */
+  clarityProjectId: '',
 };
