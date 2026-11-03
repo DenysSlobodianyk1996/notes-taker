@@ -22,7 +22,7 @@
   <app-language-toggle />
   @let user = auth.user();
   @if (!layout.narrow()) {
-    <span class="avatar">
+    <span class="avatar" data-clarity-mask="true">
       @if (user?.photoURL && !photoFailed()) {
         <img
           [src]="user?.photoURL"

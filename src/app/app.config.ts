@@ -12,9 +12,10 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { environment } from '@env/environment';
 import { routes } from './app.routes';
-import { AuthService } from './core/auth/auth.service';
-import { provideFirebase } from './core/firebase/firebase';
-import { UiLanguageService } from './core/i18n/ui-language.service';
+import { AnalyticsService, CLARITY_PROJECT_ID } from '@core/analytics/analytics.service';
+import { AuthService } from '@core/auth/auth.service';
+import { provideFirebase } from '@core/firebase/firebase';
+import { UiLanguageService } from '@core/i18n/ui-language.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,6 +28,9 @@ export const appConfig: ApplicationConfig = {
     }),
     provideFirebase(environment.firebase),
     provideAppInitializer(() => inject(UiLanguageService).init()),
+    // UX analytics (ADR-0011): production only, through the production environment's project id.
+    { provide: CLARITY_PROJECT_ID, useValue: environment.clarityProjectId },
+    provideAppInitializer(() => inject(AnalyticsService).start()),
     // Guards need the real sign-in state (and any finished redirect) before the first route.
     provideAppInitializer(() => inject(AuthService).ready()),
     provideServiceWorker('ngsw-worker.js', {
