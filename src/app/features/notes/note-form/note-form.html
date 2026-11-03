@@ -7,6 +7,7 @@
       <label>
         <span class="visually-hidden">{{ 'notes.titlePlaceholder' | translate }}</span>
         <input
+          data-clarity-mask="true"
           class="title"
           [formField]="noteForm.title"
           [placeholder]="'notes.titlePlaceholder' | translate"
@@ -17,6 +18,7 @@
       <label>
         <span class="visually-hidden">{{ 'notes.textLabel' | translate }}</span>
         <textarea
+          data-clarity-mask="true"
           #textInput
           [formField]="noteForm.text"
           rows="9"
@@ -36,7 +38,12 @@
     <span class="material-symbols-outlined" aria-hidden="true">event</span>
     <label>
       <span class="visually-hidden">{{ 'notes.dueDateLabel' | translate }}</span>
-      <input type="date" class="due-input" [formField]="noteForm.dueDate" />
+      <input
+        data-clarity-mask="true"
+        type="date"
+        class="due-input"
+        [formField]="noteForm.dueDate"
+      />
     </label>
     @if (model().dueDate) {
       <button

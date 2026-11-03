@@ -10,7 +10,7 @@ UX analytics for the hosted app: session replays and heatmaps (ADR-0011). Free, 
 
 ## 2. Privacy settings (required by ADR-0011)
 
-1. **Settings → Masking**: choose **Strict**. The app also masks user content in code (`data-clarity-mask`), so notes stay hidden even if this is changed later.
+1. **Settings → Masking**: choose **Balanced**. It masks form fields and sensitive-looking text; the app masks note content in code (`data-clarity-mask`), so notes stay hidden even in Balanced. Don't use Strict: it hides every label, so recordings say nothing about the UI.
 2. **Settings → Setup**: turn **Cookies** off. Visits are then anonymous and no consent banner is needed.
 
 ## 3. Connect the app
@@ -26,4 +26,4 @@ UX analytics for the hosted app: session replays and heatmaps (ADR-0011). Free, 
 
 ## 4. Check
 
-After the deploy, open the hosted app, click around, and within a few minutes the session shows up under **Recordings**. Note titles, text and Folder names show as masked blocks; the app's own labels and your clicks are visible. Filter by the `lang`, `theme` and `layout` tags.
+After the deploy, open the hosted app, click around, and within a few minutes the session shows up under **Recordings**. Note titles, text, Due dates, searches, dialog bodies and your avatar show as masked blocks; Folder names, the app's own labels, buttons and your clicks are visible. Filter by the `lang`, `theme` and `layout` tags.
