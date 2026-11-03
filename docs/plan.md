@@ -63,7 +63,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 **UX analytics (ticket 13, ADR-0011)**
 
 - Microsoft Clarity (`@microsoft/clarity`) in production only: session replays and heatmaps to find UX problems.
-- Notes, Folder names, Due dates and searches are masked in code (`data-clarity-mask`) and the project uses Strict masking; no cookies, no consent banner, no identity. Sessions are tagged with UI language, Theme and layout.
+- What the user writes (note titles, text, Due dates, searches, the avatar) is masked in code (`data-clarity-mask`) and the project uses Balanced masking; labels, buttons and Folder names stay visible for UX review. No cookies, no consent banner, no identity. Sessions are tagged with UI language, Theme and layout.
 
 **Theme (ticket 12, ADR-0010)**
 

@@ -1,12 +1,6 @@
-<dialog
-  data-clarity-mask="true"
-  #dialog
-  class="dialog"
-  [attr.aria-labelledby]="headingId"
-  (close)="onClose()"
->
+<dialog #dialog class="dialog" [attr.aria-labelledby]="headingId" (close)="onClose()">
   <h2 [id]="headingId">{{ heading() }}</h2>
-  <p>{{ body() }}</p>
+  <p data-clarity-mask="true">{{ body() }}</p>
   <div class="actions">
     <button type="button" class="cancel" (click)="cancel()">{{ cancelLabel() }}</button>
     <button type="button" class="danger" (click)="confirm()">{{ confirmLabel() }}</button>

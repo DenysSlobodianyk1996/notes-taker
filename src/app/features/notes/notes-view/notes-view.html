@@ -1,4 +1,4 @@
-<div class="col" data-clarity-mask="true">
+<div class="col">
   <div class="head">
     <button
       type="button"
@@ -24,6 +24,7 @@
     <span class="material-symbols-outlined" aria-hidden="true">search</span>
     <span class="visually-hidden">{{ 'notes.searchLabel' | translate }}</span>
     <input
+      data-clarity-mask="true"
       #searchBox
       type="search"
       [value]="query()"
@@ -42,7 +43,7 @@
         <app-note-form [initial]="note" (saved)="update(note, $event)" (cancelled)="closeForm()" />
       } @else {
         <article class="note" [class.completed]="note.completed">
-          <label class="check">
+          <label data-clarity-mask="true" class="check">
             <input
               type="checkbox"
               [checked]="note.completed"
@@ -54,6 +55,7 @@
             />
           </label>
           <button
+            data-clarity-mask="true"
             type="button"
             class="note-body"
             [attr.aria-label]="'notes.edit' | translate: { note: name(note) }"
@@ -90,7 +92,7 @@
       @if (notes().length && !creating()) {
         <div class="empty" role="status">
           <span class="material-symbols-outlined" aria-hidden="true">search_off</span>
-          <p class="empty-title">
+          <p data-clarity-mask="true" class="empty-title">
             {{ 'notes.noMatchTitle' | translate: { query: query().trim() } }}
           </p>
           <p>{{ 'notes.noMatchHint' | translate }}</p>
