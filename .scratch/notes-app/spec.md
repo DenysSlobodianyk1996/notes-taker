@@ -220,7 +220,7 @@ A small installable web app (PWA) called **Notes**:
 
 ### UX analytics (ADR-0011)
 - `@microsoft/clarity`, initialised once at startup in production only (project ID in the production environment); nothing loads in development or tests.
-- User content carries `data-clarity-mask="true"` (note title and text, Folder names, Due date, search, quoted names in dialogs); the Clarity project uses Strict masking and no cookies.
+- Note content carries `data-clarity-mask="true"` (note body with title, text and Due date; the completion checkbox label; the note form fields; the search field and no-match message; the dialog body; the avatar). Labels, buttons and Folder names stay visible. The Clarity project uses Balanced masking and no cookies.
 - No `identify`, no consent API, no custom events. Tags: `lang`, `theme`, `layout`.
 
 ## Out of Scope
