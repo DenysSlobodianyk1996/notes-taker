@@ -1,4 +1,10 @@
-<dialog #dialog class="dialog" [attr.aria-labelledby]="headingId" (close)="onClose()">
+<dialog
+  data-clarity-mask="true"
+  #dialog
+  class="dialog"
+  [attr.aria-labelledby]="headingId"
+  (close)="onClose()"
+>
   <h2 [id]="headingId">{{ heading() }}</h2>
   <p>{{ body() }}</p>
   <div class="actions">

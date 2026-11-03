@@ -2,7 +2,7 @@
 
 To see how the app is really used (where people hesitate, rage-click or miss a control), production loads Microsoft Clarity through the `@microsoft/clarity` package: session replays, heatmaps and Clarity's built-in dashboard. It is the app's first third-party script, so these limits are part of the decision:
 
-- **User content is never recorded.** Note titles and text, Folder names, the Due date chip and the search field carry `data-clarity-mask="true"`, and the Clarity project is set to **Strict** masking. Masking in code keeps notes hidden even if the dashboard setting is later relaxed. The app's own text, layout and clicks stay visible.
+- **User content is never recorded.** Whole content areas carry `data-clarity-mask="true"`: the Notes area (Folder header, search, Notes, forms, empty and no-match messages), the Folders sidebar, confirm dialogs and the Account avatar. Masking areas, not single elements, also covers user content in aria-labels, placeholders and messages that quote it. The Clarity project is set to **Strict** masking too, so notes stay hidden even if one of the two is relaxed. Layout, clicks, scrolling and the top bar stay visible.
 - **No cookies, no banner.** The Clarity project runs without cookies, so each visit is anonymous and no consent prompt is needed. The consent API is not called.
 - **No identity.** `Clarity.identify` is not called: no uid, email or name is sent.
 - **Production only.** Clarity loads only on the hosted app (the project ID lives in the production environment). `ng serve`, tests and builds without the ID never load it.
