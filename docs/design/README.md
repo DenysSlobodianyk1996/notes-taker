@@ -98,7 +98,7 @@ One signed-in Account: the Default folder (3 notes, one completed), Work (3 note
 - Button text stays dark (`#1C1C1E`) on every Theme; all three accents keep it above 4.5:1.
 - The login page is always Orange. The browser tab icon follows the Theme (try it in the standalone HTML); the installed app icon stays Orange.
 - Start state `theme` opens the popover; `?theme=pink` or `?theme=purple` starts in that Theme.
-- **Canvas:** the `Main` artboard source has the new header layout and icon-only Sign out, but not the Due date or Theme yet. The standalone HTML is the reference for those.
+- **Canvas:** the published canvas matches the repo (`project/Main.dc.html`): Due date, Theme (Start state `theme`, Theme setting in Tweaks), the note form and the counts. Publish it again from `project/` after changing the prototype.
 
 ## Behaviour the prototype pins down
 
