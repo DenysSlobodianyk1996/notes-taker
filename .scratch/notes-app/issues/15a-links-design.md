@@ -4,7 +4,7 @@
 
 **Blocked by:** 14 (the row needs its Edit button before it can hold links)
 
-**Status:** ready-for-human: built on `feature/15a-links-design` and published to the canvas (version 26); approve by merging its PR
+**Status:** done: approved by merging PR #32; published to the canvas (version 26)
 
 - [x] New and edit note form rows: under the Due date, a Link field (placeholder e.g. "https://…") with a **+ Add** button; added Links listed one per line with a ✕ to remove each; a counter "N / 5 links" styled like the Text's "N / 1000" hint. At 5 Links the field and + Add are hidden.
 - [x] Error states under the Link field: "Only https links" (for `http://`, `mailto:`, text that isn't an address), "Already added", "Too long". Shown on + Add, Enter, or Save with text left in the field.
