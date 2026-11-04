@@ -4,11 +4,11 @@
 
 **Blocked by:** 02 (Sign in and out with Google). Also needs the owner to run `firebase init hosting:github`, which creates the deploy secret.
 
-**Status:** done; the iPhone check was skipped (no iPhone) and moved to ticket 16
+**Status:** done; the iPhone check was dropped by the owner (2026-11-04)
 
 - [x] `firebase.json` serves the production build and rewrites `**` to `/index.html`.
 - [x] `deploy.yml` on push to `main`: lint, test, build, then `FirebaseExtended/action-hosting-deploy` to the live channel using the `FIREBASE_SERVICE_ACCOUNT_<PROJECT>` secret.
 - [x] A deep-link refresh on the hosted app returns the app, not a 404.
 - [x] **Human check (Android):** sign in in Chrome, then install the app (Add to Home screen), open it and sign in. Both show the same signed-in state. Passed on 2026-10-21.
-- [x] **Human check (iPhone): skipped, moved to ticket 16.** The owner has no iPhone yet. Redirect sign-in in an iOS home-screen install is unverified (see ADR-0003, Status).
-- [x] Moved to ticket 16 with the iPhone check. If the iPhone home-screen sign-in fails: implement the Google Identity Services → `signInWithCredential` fallback for standalone iOS and record the outcome in ADR-0003.
+- [x] **Human check (iPhone): dropped by the owner.** The owner has no iPhone yet. Redirect sign-in in an iOS home-screen install is unverified (see ADR-0003, Status).
+- [x] Dropped with the iPhone check. If the iPhone home-screen sign-in fails: implement the Google Identity Services → `signInWithCredential` fallback for standalone iOS and record the outcome in ADR-0003.
