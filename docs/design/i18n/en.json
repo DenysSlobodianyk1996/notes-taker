@@ -65,7 +65,18 @@
     "dueDateLabel": "Due date",
     "clearDueDate": "Clear due date",
     "due": "Due {{date}}",
-    "overdue": "Overdue · {{date}}"
+    "overdue": "Overdue · {{date}}",
+    "linkLabel": "Link",
+    "linkPlaceholder": "https://…",
+    "addLink": "Add",
+    "removeLink": "Remove link: {{link}}",
+    "linkCount": "{{count}} / 5 links",
+    "openLink": "{{link}} (opens in a new tab)",
+    "linkErrors": {
+      "https": "Only https links",
+      "duplicate": "Already added",
+      "maxLength": "Too long"
+    }
   },
   "dialogs": {
     "deleteFolder": {

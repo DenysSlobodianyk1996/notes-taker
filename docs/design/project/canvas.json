@@ -1,103 +1,166 @@
 {
   "v": 3,
-  "createdOnFiles": {
-    "v": 1,
-    "at": "2026-10-20T12:00:00Z"
+  "attachments": {},
+  "boards": {
+    "Artboard-epaw.dc.html": {
+      "h": 600,
+      "page": "page-zw9bgu",
+      "title": "Artboard 1",
+      "w": 800,
+      "x": 0,
+      "y": 0
+    },
+    "Desktop-DeleteFolder.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "title": "Desktop: delete folder dialog",
+      "w": 1280,
+      "x": 2720,
+      "y": 0
+    },
+    "Desktop-Editing.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "title": "Desktop: editing a note + duplicate folder name",
+      "w": 1280,
+      "x": 1360,
+      "y": 0
+    },
+    "Main.dc.html": {
+      "expand": "fill",
+      "h": 800,
+      "is_interactive": true,
+      "title": "Clickable prototype (start here, press Play)",
+      "w": 1280,
+      "x": 0,
+      "y": 0
+    },
+    "Mobile-Drawer.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Mobile: folders drawer open",
+      "w": 390,
+      "x": 1410,
+      "y": 1220
+    },
+    "Mobile-Empty.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Mobile: empty folder",
+      "w": 390,
+      "x": 2350,
+      "y": 1220
+    },
+    "Mobile-List-UA.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Mobile (UA): notes list",
+      "w": 390,
+      "x": 3290,
+      "y": 1220
+    },
+    "Mobile-List.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Mobile: notes list",
+      "w": 390,
+      "x": 940,
+      "y": 1220
+    },
+    "Mobile-Login-Offline.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Mobile: login while offline (never signed in)",
+      "w": 390,
+      "x": 470,
+      "y": 1220
+    },
+    "Mobile-Login-UA.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Mobile (UA): login",
+      "w": 390,
+      "x": 2820,
+      "y": 1220
+    },
+    "Mobile-Login.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Mobile: login",
+      "w": 390,
+      "x": 0,
+      "y": 1220
+    },
+    "Mobile-NewNote.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Mobile: new note row",
+      "w": 390,
+      "x": 1880,
+      "y": 1220
+    },
+    "Desktop-Links.dc.html": {
+      "x": 4500,
+      "y": 0,
+      "w": 1280,
+      "h": 800,
+      "title": "Desktop: Links (one, five, completed, long) + adding one with an error",
+      "is_interactive": true
+    },
+    "Mobile-Links.dc.html": {
+      "x": 3760,
+      "y": 1220,
+      "w": 390,
+      "h": 844,
+      "title": "Mobile: Links in the new note row, with an error",
+      "is_interactive": true
+    },
+    "Mobile-Links-UA.dc.html": {
+      "x": 4230,
+      "y": 1220,
+      "w": 390,
+      "h": 844,
+      "title": "Mobile (UA): Links in the new note row, with an error",
+      "is_interactive": true
+    }
   },
-  "title": "Notes Taker Design",
+  "createdOnFiles": {
+    "at": "2026-10-20T12:00:00Z",
+    "v": 1
+  },
+  "designSystems": [],
   "launch": {
     "view": "canvas"
   },
-  "pages": [],
-  "boards": {
-    "Main.dc.html": {
+  "noteOrder": [
+    "rowDesktop",
+    "rowMobile",
+    "howTo"
+  ],
+  "notes": {
+    "howTo": {
+      "fill": "orange",
+      "size": 24,
+      "text": "Every artboard is clickable (Play).\n\nTry in Main:\n1. Switch EN | UA (login card or header)\n2. Sign in with Google (the only way in; notes sync across devices)\n3. Add a folder and a few notes, tick one off, search\n4. Delete a folder (dialog)\n5. Sign out\n\nOffline before the first sign-in: the login shows a note and the button is disabled (Start state: offline).\n\nThe Default folder is shown as General / Загальне (follows the language toggle) and has a lock: it can't be renamed or deleted, and both names are reserved.\n\nThe other artboards are the same prototype, opened at a specific state and language.",
+      "w": 340,
+      "x": 4080,
+      "y": 0
+    },
+    "rowDesktop": {
+      "kind": "title1",
+      "maxW": 4000,
+      "text": "Desktop (900px and wider)",
+      "w": 240,
       "x": 0,
-      "y": 0,
-      "w": 1280,
-      "h": 800,
-      "title": "Clickable prototype (start here, press Play)",
-      "expand": "fill",
-      "is_interactive": true
+      "y": -300
     },
-    "Desktop-Editing.dc.html": {
-      "x": 1360,
-      "y": 0,
-      "w": 1280,
-      "h": 800,
-      "title": "Desktop: editing a note + duplicate folder name",
-      "is_interactive": true
-    },
-    "Desktop-DeleteFolder.dc.html": {
-      "x": 2720,
-      "y": 0,
-      "w": 1280,
-      "h": 800,
-      "title": "Desktop: delete folder dialog",
-      "is_interactive": true
-    },
-    "Mobile-Login.dc.html": {
+    "rowMobile": {
+      "kind": "title1",
+      "maxW": 3680,
+      "text": "Mobile (under 900px)",
+      "w": 240,
       "x": 0,
-      "y": 1220,
-      "w": 390,
-      "h": 844,
-      "title": "Mobile: login",
-      "is_interactive": true
-    },
-    "Mobile-Login-Offline.dc.html": {
-      "x": 470,
-      "y": 1220,
-      "w": 390,
-      "h": 844,
-      "title": "Mobile: login while offline (never signed in)",
-      "is_interactive": true
-    },
-    "Mobile-List.dc.html": {
-      "x": 940,
-      "y": 1220,
-      "w": 390,
-      "h": 844,
-      "title": "Mobile: notes list",
-      "is_interactive": true
-    },
-    "Mobile-Drawer.dc.html": {
-      "x": 1410,
-      "y": 1220,
-      "w": 390,
-      "h": 844,
-      "title": "Mobile: folders drawer open",
-      "is_interactive": true
-    },
-    "Mobile-NewNote.dc.html": {
-      "x": 1880,
-      "y": 1220,
-      "w": 390,
-      "h": 844,
-      "title": "Mobile: new note row",
-      "is_interactive": true
-    },
-    "Mobile-Empty.dc.html": {
-      "x": 2350,
-      "y": 1220,
-      "w": 390,
-      "h": 844,
-      "title": "Mobile: empty folder",
-      "is_interactive": true
-    },
-    "Mobile-Login-UA.dc.html": {
-      "x": 2820,
-      "y": 1220,
-      "w": 390,
-      "h": 844,
-      "title": "Mobile (UA): login",
-      "is_interactive": true
-    },
-    "Mobile-List-UA.dc.html": {
-      "x": 3290,
-      "y": 1220,
-      "w": 390,
-      "h": 844,
-      "title": "Mobile (UA): notes list",
-      "is_interactive": true
+      "y": 920
     }
   },
   "order": [
@@ -111,31 +174,21 @@
     "Mobile-NewNote.dc.html",
     "Mobile-Empty.dc.html",
     "Mobile-Login-UA.dc.html",
-    "Mobile-List-UA.dc.html"
+    "Mobile-List-UA.dc.html",
+    "Desktop-Links.dc.html",
+    "Mobile-Links.dc.html",
+    "Mobile-Links-UA.dc.html",
+    "Artboard-epaw.dc.html"
   ],
-  "notes": {
-    "rowDesktop": {
-      "x": 0,
-      "y": -300,
-      "text": "Desktop (900px and wider)",
-      "kind": "title1",
-      "maxW": 4000
+  "pages": [
+    {
+      "id": "page-1",
+      "name": "Page 1"
     },
-    "rowMobile": {
-      "x": 0,
-      "y": 920,
-      "text": "Mobile (under 900px)",
-      "kind": "title1",
-      "maxW": 3680
-    },
-    "howTo": {
-      "x": 4080,
-      "y": 0,
-      "w": 340,
-      "size": "m",
-      "fill": "orange",
-      "text": "Every artboard is clickable (Play).\n\nTry in Main:\n1. Switch EN | UA (login card or header)\n2. Sign in with Google (the only way in; notes sync across devices)\n3. Add a folder and a few notes, tick one off, search\n4. Delete a folder (dialog)\n5. Sign out\n\nOffline before the first sign-in: the login shows a note and the button is disabled (Start state: offline).\n\nThe Default folder is shown as General / Загальне (follows the language toggle) and has a lock: it can't be renamed or deleted, and both names are reserved.\n\nThe other artboards are the same prototype, opened at a specific state and language."
+    {
+      "id": "page-zw9bgu",
+      "name": "Page 2"
     }
-  },
-  "designSystems": []
+  ],
+  "title": "Notes Taker Design"
 }
