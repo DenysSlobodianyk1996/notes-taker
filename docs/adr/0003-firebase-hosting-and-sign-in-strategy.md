@@ -13,4 +13,4 @@ The first implementation work includes testing sign-in on a real iPhone home-scr
 
 ## Status
 
-As of 2026-10-21, redirect sign-in has been checked on Android only. The iPhone home-screen check is deferred because no iPhone is available, so the iOS risk stays open. Run the check, and build the Google Identity Services fallback if needed, once an iPhone is available.
+As of 2026-10-21, redirect sign-in has been checked on Android only. The iPhone home-screen check is deferred because no iPhone is available, so the iOS risk stays open. Run the check, and build the Google Identity Services fallback if needed, once an iPhone is available (ticket 16).

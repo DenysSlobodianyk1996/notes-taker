@@ -4,7 +4,7 @@
 
 **Blocked by:** 03 (Deploy to Firebase Hosting + iPhone sign-in check), 10 (Phone layout: drawer and compact header)
 
-**Status:** done (built on `feature/11-installable-offline`; device check done by the owner; the iPhone part stays with ticket 03)
+**Status:** done (built on `feature/11-installable-offline`; device check done by the owner; the iPhone part moved to ticket 16)
 
 - [x] Manifest: name "Notes Taker", short name "Notes", theme and background colours from the design, `display: standalone`, icons (maskable PNG set plus an Apple touch icon) based on the amber sticky-note mark.
 - [x] The service worker caches the app shell and the translation files; the hosted app opens offline after one visit. The icon font is subset to the icons in use (3.6 KB instead of 316 KB) and cached by the service worker on use (`icon-font` data group, kept for a year and across app updates; the stylesheet is loaded with `crossorigin` so it can be cached), guarded by `src/app/icon-font.spec.ts`. It is cached on use, so icons work offline once the installed app has been opened online.
