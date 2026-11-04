@@ -51,7 +51,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 **Notes**
 
 - Fields: optional title (≤200), required text (≤1000, not just spaces, with a live character count), `completed`, `links` (0–5 https Links, ADR-0013), optional `dueDate` (a day, `'YYYY-MM-DD'` or `null`; can be cleared), `createdAt`, `updatedAt`.
-- A Note with a due date shows it in the UI language's date format. An overdue Note (due date before today, not completed) shows it in red. Due dates don't change the newest-first order (designed in 07a, built in ticket 07).
+- A Note with a due date shows it in the UI language's date format. An overdue Note (due date before today, not completed) shows it in red. Due dates don't change the newest-first order (designed in 07a, built in ticket 07b).
 - Shown in full with no preview truncation, newest first. Completed notes stay in place, crossed out and dimmed.
 - Each row has a checkbox on the left that toggles completion either way, and a delete icon that asks in a `<dialog>`.
 - A ✎ Edit button on each row (left of 🗑) edits it inline with Save and Cancel; no autosave. Only one row is edited at a time. The note body itself isn't clickable, so text can be selected (ADR-0012, ticket 14).

@@ -1,6 +1,6 @@
 # 07a: Design the Due date in the prototype
 
-**What to build:** Add the Due date to the design prototype (the Claude Design canvas and `docs/design/notes-taker-design.html`) before any app code, so it can be approved like the rest of the UI. Built in ticket 07. Spec stories 74–77. Glossary: Due date, Overdue.
+**What to build:** Add the Due date to the design prototype (the Claude Design canvas and `docs/design/notes-taker-design.html`) before any app code, so it can be approved like the rest of the UI. Built in ticket 07b. Spec stories 74–77. Glossary: Due date, Overdue.
 
 **Blocked by:** none
 

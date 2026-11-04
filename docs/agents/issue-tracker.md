@@ -7,6 +7,8 @@ Issues and specs for this repo live as markdown files in `.scratch/`.
 - One feature per directory: `.scratch/<feature-slug>/`
 - The spec is `.scratch/<feature-slug>/spec.md`
 - Implementation issues are one file per ticket at `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01`, never a single combined tickets file
+- A new ticket takes the next free number. Letter suffixes are only for a design → build pair of one feature: `<NN>a` designs it in the prototype, `<NN>b` builds it and is blocked by `<NN>a` (e.g. 07a → 07b Due dates, 15a → 15b Links). A follow-up or unrelated ticket gets its own number, never a letter on another ticket's number.
+- When a ticket is renumbered, add a `**Formerly:** <old number>` line, because commit scopes (`feat(<NN>)`) keep the old one.
 - Triage state is recorded as a `Status:` line near the top of each issue file (see `triage-labels.md` for the role strings)
 - Comments and conversation history append to the bottom of the file under a `## Comments` heading
 
