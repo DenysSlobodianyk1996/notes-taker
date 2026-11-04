@@ -54,13 +54,7 @@
               (change)="toggle(note, $event)"
             />
           </label>
-          <button
-            data-clarity-mask="true"
-            type="button"
-            class="note-body"
-            [attr.aria-label]="'notes.edit' | translate: { note: name(note) }"
-            (click)="startEdit(note)"
-          >
+          <div data-clarity-mask="true" class="note-body">
             @if (note.title) {
               <span class="note-title">{{ note.title }}</span>
             }
@@ -76,6 +70,16 @@
                 }}
               </span>
             }
+          </div>
+          <button
+            type="button"
+            class="icon-btn edit"
+            [attr.data-note-id]="note.id"
+            [attr.aria-label]="'notes.edit' | translate: { note: name(note) }"
+            [title]="'notes.edit' | translate: { note: name(note) }"
+            (click)="startEdit(note)"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true">edit</span>
           </button>
           <button
             type="button"

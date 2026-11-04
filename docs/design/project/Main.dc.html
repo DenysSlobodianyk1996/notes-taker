@@ -286,7 +286,7 @@ body{margin:0}
               <label style="width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer">
                 <input type="checkbox" checked="{{n.completed}}" onChange="{{n.toggle}}" aria-label="{{n.checkLabel}}" style="width: 20px; height: 20px; margin: 0; accent-color: {{accent}}; cursor: pointer">
               </label>
-              <button type="button" onClick="{{n.edit}}" aria-label="{{n.editLabel}}" style="flex: 1; min-width: 0; padding: 5px 0; border: 0; background: none; font: inherit; color: {{n.color}}; text-align: left; cursor: text; display: flex; flex-direction: column; gap: 2px">
+              <div style="flex: 1; min-width: 0; padding: 5px 0; color: {{n.color}}; user-select: text; display: flex; flex-direction: column; gap: 2px">
                 <sc-if value="{{n.hasTitle}}" hint-placeholder-val="{{true}}">
                   <span style="font-weight: 600; text-decoration: {{n.deco}}">{{n.title}}</span>
                 </sc-if>
@@ -297,6 +297,9 @@ body{margin:0}
                     {{n.dueLabel}}
                   </span>
                 </sc-if>
+              </div>
+              <button type="button" aria-label="{{n.editLabel}}" title="{{n.editLabel}}" onClick="{{n.edit}}" style="width: 36px; height: 36px; flex-shrink: 0; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
+                <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">edit</span>
               </button>
               <button type="button" aria-label="{{t.notes.delete}}" onClick="{{n.del}}" style="width: 36px; height: 36px; flex-shrink: 0; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
                 <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">delete</span>

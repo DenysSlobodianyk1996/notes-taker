@@ -12,11 +12,7 @@ const FORM = 'features/notes/note-form/note-form.html';
 
 /** What must be masked: what, template, the opening tag of the masked element. */
 const MASKED: [what: string, template: string, element: RegExp][] = [
-  [
-    'the note body (title, text, due chip, its "Edit note: …" label)',
-    NOTES,
-    /<button\b[^>]*class="note-body"[^>]*>/,
-  ],
+  ['the note body (title, text, due chip)', NOTES, /<div\b[^>]*class="note-body"[^>]*>/],
   [
     'the completion checkbox label ("Mark as completed: …")',
     NOTES,
@@ -47,6 +43,7 @@ const MASKED: [what: string, template: string, element: RegExp][] = [
 const VISIBLE: [what: string, template: string, element: RegExp][] = [
   ['the Notes area', NOTES, /<div\b[^>]*class="col"[^>]*>/],
   ['the Folder name heading', NOTES, /<h1\b[^>]*>/],
+  ['the Note ✎ Edit button', NOTES, /<button\b[^>]*class="icon-btn edit"[^>]*>/],
   ['the Folders sidebar', 'features/folders/folders-sidebar/folders-sidebar.html', /<nav\b[^>]*>/],
   [
     'the confirm dialog (heading, buttons)',

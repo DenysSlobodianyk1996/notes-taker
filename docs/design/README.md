@@ -98,12 +98,12 @@ One signed-in Account: the Default folder (3 notes, one completed), Work (3 note
 - Button text stays dark (`#1C1C1E`) on every Theme; all three accents keep it above 4.5:1.
 - The login page is always Orange. The browser tab icon follows the Theme (try it in the standalone HTML); the installed app icon stays Orange.
 - Start state `theme` opens the popover; `?theme=pink` or `?theme=purple` starts in that Theme.
-- **Canvas:** the published canvas matches the repo (`project/Main.dc.html`): Due date, Theme (Start state `theme`, Theme setting in Tweaks), the note form and the counts. Publish it again from `project/` after changing the prototype.
+- **Canvas:** the published canvas matches the repo (`project/Main.dc.html`): Due date, Theme (Start state `theme`, Theme setting in Tweaks), the note form, the counts and the note row's ✎ Edit button. Publish it again from `project/` after changing the prototype.
 
 ## Behaviour the prototype pins down
 
 - The **New folder** and **New note** buttons add a form row at the top of the list. ✓ submits and ✕ cancels. In the note form, Enter in the title submits, Ctrl/⌘+Enter in the text submits, and Esc cancels.
-- Clicking a note row edits it in place. Only one row is edited at a time.
+- Each note row has a ✎ Edit button left of its 🗑 Delete button, always visible on phones and desktop. ✎ edits the Note in place; the note body itself isn't clickable, so its text can be selected and copied (ticket 14, ADR-0012). Only one row is edited at a time.
 - The selected folder row shows rename and delete. The Default folder instead shows a lock icon, because it can't be renamed or deleted.
 - The folder header starts with the **+** (New note) button on the left, followed by the name and the counts; the search field has its own row below it.
 - Search filters the current folder by title and text as you type, ignoring case, and has its own "no match" state ("No notes match “…”" plus a hint that search covers this folder only). The counts in the header always describe the whole folder.

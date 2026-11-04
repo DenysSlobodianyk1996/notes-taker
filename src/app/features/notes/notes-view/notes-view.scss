@@ -106,10 +106,8 @@
   flex-direction: column;
   gap: 2px;
   padding: 5px 0;
-  border: 0;
-  background: none;
-  text-align: left;
-  cursor: text;
+  // Plain content, so its Title and Text can be selected and copied (ADR-0012).
+  user-select: text;
 }
 
 .note-title {
@@ -152,6 +150,7 @@
   }
 }
 
+.edit,
 .delete {
   @include icon-button;
   color: $muted;

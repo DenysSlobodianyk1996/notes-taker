@@ -1,6 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
+  Injector,
+  afterNextRender,
   computed,
   effect,
   inject,
@@ -21,7 +24,7 @@ import { ConfirmDialog } from '@shared/confirm-dialog/confirm-dialog';
 
 /**
  * The selected Folder's Notes: header with counts, the "+" new-note row, the list (tick to
- * complete, tap to edit inline, delete after confirming) and the empty state.
+ * complete, ✎ to edit inline, delete after confirming) and the empty state.
  */
 @Component({
   selector: 'app-notes-view',
@@ -40,6 +43,8 @@ export class NotesView {
   /** The shared open form row; only one (Folder or Note) is open at a time. */
   private readonly row = inject(FormRowService).open;
   private readonly today = inject(TodayService).key;
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
 
   protected readonly notes = computed(() => this.service.notesIn(this.folderId()));
   protected readonly summary = computed(() => noteSummary(this.notes()));
@@ -84,7 +89,20 @@ export class NotesView {
   }
 
   protected closeForm(): void {
+    const row = this.row();
     this.row.set(null);
+    // Saving or cancelling an edit puts focus back on that Note's ✎, where the user started.
+    if (row?.kind === 'edit-note') this.focusEditButton(row.id);
+  }
+
+  private focusEditButton(id: string): void {
+    afterNextRender(
+      () => {
+        const buttons = this.host.nativeElement.querySelectorAll<HTMLElement>('button.edit');
+        [...buttons].find((button) => button.dataset['noteId'] === id)?.focus();
+      },
+      { injector: this.injector },
+    );
   }
 
   protected create(input: NoteInput): void {
