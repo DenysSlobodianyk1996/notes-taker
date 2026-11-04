@@ -167,6 +167,30 @@
   .due .ms { font-size: 15px; }
   .due.overdue { background: #FEE2E2; color: var(--danger); }
 
+  /* Links (ADR-0013) */
+  .links-field { display: flex; flex-direction: column; gap: 4px; padding: 0 0 4px; }
+  .link-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .link-list li { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--accent-ink); }
+  .link-list .ms, .link-add .ms { flex-shrink: 0; font-size: 18px; color: var(--muted); }
+  .link-addr { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .note-form .link-list .icon-btn { width: 36px; height: 36px; border-radius: 8px; color: var(--muted); }
+  .link-add { display: flex; align-items: center; gap: 6px; }
+  .link-add label { flex: 1; min-width: 0; }
+  .note-form .link-add input { height: 36px; padding: 0 10px; border: 1px solid #D4D3CE; border-radius: 8px; background: #FFF; font-size: 16px; font-weight: 400; }
+  .note-form .link-add input:focus { border-color: var(--accent); }
+  .note-form .link-add input[aria-invalid="true"] { border-color: var(--danger); }
+  .add-link { height: 36px; flex-shrink: 0; display: flex; align-items: center; gap: 2px; padding: 0 12px 0 8px; border: 1px solid #D4D3CE; border-radius: 8px; background: #FFF; font-size: 14px; font-weight: 600; white-space: nowrap; }
+  .add-link .ms { font-size: 18px; color: inherit; }
+  .add-link:disabled { opacity: .45; }
+  .links-field .err, .links-field .text-hint { margin: 0; padding: 0 0 0 24px; }
+  .links { display: flex; flex-direction: column; margin-top: 4px; }
+  .link { align-self: flex-start; max-width: 100%; min-height: 30px; display: inline-flex; align-items: center; gap: 4px; font-size: 14px; color: var(--accent-ink); text-decoration: none; }
+  .narrow .link { min-height: 40px; }
+  .link:hover .link-addr { text-decoration: underline; }
+  .link .ms { flex-shrink: 0; font-size: 16px; }
+  .note.done .note-body .links, .note.done .note-body .links span { text-decoration: none; }
+  .note.done .link { color: #6B6B70; }
+
   /* Theme picker */
   .theme-wrap { position: relative; flex-shrink: 0; }
   .theme-btn { width: 40px; height: 40px; border-radius: 10px; color: var(--muted); }
@@ -340,6 +364,18 @@
                     <span v-if="!noteEdit.dueDate">{{ t('notes.dueDateLabel') }}</span>
                     <button v-else type="button" class="icon-btn" :aria-label="t('notes.clearDueDate')" :title="t('notes.clearDueDate')" @click="noteEdit.dueDate = ''"><span class="ms" aria-hidden="true">close</span></button>
                   </div>
+                  <div class="links-field">
+                    <ul v-if="noteEdit.links.length" class="link-list">
+                      <li v-for="(l, i) in noteEdit.links" :key="l"><span class="ms" aria-hidden="true">link</span><span class="link-addr" :title="l">{{ shortLink(l) }}</span><button type="button" class="icon-btn" :aria-label="t('notes.removeLink', { link: shortLink(l) })" :title="t('notes.removeLink', { link: shortLink(l) })" @click="noteEdit.links.splice(i, 1)"><span class="ms" aria-hidden="true">close</span></button></li>
+                    </ul>
+                    <div v-if="noteEdit.links.length < 5" class="link-add">
+                      <span class="ms" aria-hidden="true">add_link</span>
+                      <label><span class="sr">{{ t('notes.linkLabel') }}</span><input type="url" inputmode="url" autocapitalize="off" spellcheck="false" v-model="noteEdit.linkDraft" :placeholder="t('notes.linkPlaceholder')" :aria-invalid="noteEdit.linkError ? 'true' : 'false'" :aria-describedby="noteEdit.linkError ? 'link-error' : null" @input="noteEdit.linkError = ''" @keydown.enter.exact.prevent="addLink" @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></label>
+                      <button type="button" class="add-link" :disabled="!noteEdit.linkDraft.trim()" @click="addLink"><span class="ms" aria-hidden="true">add</span>{{ t('notes.addLink') }}</button>
+                    </div>
+                    <p v-if="noteEdit.linkError" id="link-error" class="err" role="alert">{{ t('notes.linkErrors.' + noteEdit.linkError) }}</p>
+                    <p class="text-hint">{{ t('notes.linkCount', { count: noteEdit.links.length }) }}</p>
+                  </div>
                   <div class="foot">
                     <span class="grow"></span>
                     <button type="button" class="text-btn btn-outline" @click="noteEdit = null">{{ t('common.cancel') }}</button>
@@ -357,6 +393,18 @@
                       <span v-if="!noteEdit.dueDate">{{ t('notes.dueDateLabel') }}</span>
                       <button v-else type="button" class="icon-btn" :aria-label="t('notes.clearDueDate')" :title="t('notes.clearDueDate')" @click="noteEdit.dueDate = ''"><span class="ms" aria-hidden="true">close</span></button>
                     </div>
+                    <div class="links-field">
+                      <ul v-if="noteEdit.links.length" class="link-list">
+                        <li v-for="(l, i) in noteEdit.links" :key="l"><span class="ms" aria-hidden="true">link</span><span class="link-addr" :title="l">{{ shortLink(l) }}</span><button type="button" class="icon-btn" :aria-label="t('notes.removeLink', { link: shortLink(l) })" :title="t('notes.removeLink', { link: shortLink(l) })" @click="noteEdit.links.splice(i, 1)"><span class="ms" aria-hidden="true">close</span></button></li>
+                      </ul>
+                      <div v-if="noteEdit.links.length < 5" class="link-add">
+                        <span class="ms" aria-hidden="true">add_link</span>
+                        <label><span class="sr">{{ t('notes.linkLabel') }}</span><input type="url" inputmode="url" autocapitalize="off" spellcheck="false" v-model="noteEdit.linkDraft" :placeholder="t('notes.linkPlaceholder')" :aria-invalid="noteEdit.linkError ? 'true' : 'false'" :aria-describedby="noteEdit.linkError ? 'link-error' : null" @input="noteEdit.linkError = ''" @keydown.enter.exact.prevent="addLink" @keydown.enter.ctrl.prevent="submitNote" @keydown.enter.meta.prevent="submitNote" @keydown.esc="noteEdit = null"></label>
+                        <button type="button" class="add-link" :disabled="!noteEdit.linkDraft.trim()" @click="addLink"><span class="ms" aria-hidden="true">add</span>{{ t('notes.addLink') }}</button>
+                      </div>
+                      <p v-if="noteEdit.linkError" id="link-error" class="err" role="alert">{{ t('notes.linkErrors.' + noteEdit.linkError) }}</p>
+                      <p class="text-hint">{{ t('notes.linkCount', { count: noteEdit.links.length }) }}</p>
+                    </div>
                     <div class="foot">
                       <span class="grow"></span>
                       <button type="button" class="text-btn btn-outline" @click="noteEdit = null">{{ t('common.cancel') }}</button>
@@ -369,6 +417,7 @@
                       <span v-if="n.title" class="t">{{ n.title }}</span>
                       <span class="x">{{ n.text }}</span>
                       <span v-if="n.dueDate" class="due" :class="{ overdue: isOverdue(n) }"><span class="ms" aria-hidden="true">{{ isOverdue(n) ? 'event_busy' : 'event' }}</span>{{ t(isOverdue(n) ? 'notes.overdue' : 'notes.due', { date: formatDay(n.dueDate) }) }}</span>
+                      <span v-if="n.links && n.links.length" class="links"><a v-for="l in n.links" :key="l" class="link" :href="l" target="_blank" rel="noopener noreferrer" :title="l" :aria-label="t('notes.openLink', { link: shortLink(l) })"><span class="ms" aria-hidden="true">link</span><span class="link-addr">{{ shortLink(l) }}</span></a></span>
                     </div>
                     <button type="button" class="icon-btn sm" :aria-label="t('notes.edit', { note: n.title || n.text.slice(0, 40) })" :title="t('notes.edit', { note: n.title || n.text.slice(0, 40) })" @click="startEdit(n)"><span class="ms" aria-hidden="true">edit</span></button>
                     <button type="button" class="icon-btn sm" :aria-label="t('notes.delete')" @click="dialog = { kind: 'deleteNote', id: n.id }"><span class="ms" aria-hidden="true">delete</span></button>
@@ -487,7 +536,18 @@ var I18N = {
       "dueDateLabel": "Due date",
       "clearDueDate": "Clear due date",
       "due": "Due {{date}}",
-      "overdue": "Overdue · {{date}}"
+      "overdue": "Overdue · {{date}}",
+      "linkLabel": "Link",
+      "linkPlaceholder": "https://…",
+      "addLink": "Add",
+      "removeLink": "Remove link: {{link}}",
+      "linkCount": "{{count}} / 5 links",
+      "openLink": "{{link}} (opens in a new tab)",
+      "linkErrors": {
+        "https": "Only https links",
+        "duplicate": "Already added",
+        "maxLength": "Too long"
+      }
     },
     "dialogs": {
       "deleteFolder": {
@@ -570,7 +630,18 @@ var I18N = {
       "dueDateLabel": "Термін",
       "clearDueDate": "Прибрати термін",
       "due": "Термін: {{date}}",
-      "overdue": "Прострочено · {{date}}"
+      "overdue": "Прострочено · {{date}}",
+      "linkLabel": "Посилання",
+      "linkPlaceholder": "https://…",
+      "addLink": "Додати",
+      "removeLink": "Видалити посилання: {{link}}",
+      "linkCount": "{{count}} / 5 посилань",
+      "openLink": "{{link}} (відкриється в новій вкладці)",
+      "linkErrors": {
+        "https": "Лише посилання https",
+        "duplicate": "Вже додано",
+        "maxLength": "Задовге посилання"
+      }
     },
     "dialogs": {
       "deleteFolder": {
@@ -593,6 +664,30 @@ var DAY = 86400000;
 var T0 = Date.parse('2026-10-01T09:00:00Z');
 function uid() { return Math.random().toString(36).slice(2, 10); }
 function norm(s) { return (s || '').trim().toLowerCase(); }
+
+// Links (ADR-0013): https only, at most 5 per Note, 2048 characters each. A bare address gets
+// https://; any other scheme (http:, mailto:, …) is refused, never upgraded.
+var MAX_LINKS = 5;
+function parseLink(raw, existing) {
+  var v = (raw || '').trim();
+  if (/\s/.test(v)) return { error: 'https' };
+  if (/^[a-z][a-z0-9+.-]*:(?!\d)/i.test(v) && !/^https:\/\//i.test(v)) return { error: 'https' };
+  if (!/^https:\/\//i.test(v)) v = 'https://' + v;
+  if (v.length > 2048) return { error: 'maxLength' };
+  var u;
+  try { u = new URL(v); } catch (e) { return { error: 'https' }; }
+  if (!/^[^.]+(\.[^.]+)+$/.test(u.hostname)) return { error: 'https' };
+  if (existing.indexOf(u.href) !== -1) return { error: 'duplicate' };
+  return { link: u.href };
+}
+// Shown as host and path ("example.com/a/b"); CSS adds the ellipsis.
+function shortLink(url) {
+  try {
+    var u = new URL(url), path = u.pathname.replace(/\/$/, '');
+    try { path = decodeURI(path); } catch (e) {}
+    return u.hostname.replace(/^www\./, '') + path;
+  } catch (e) { return url; }
+}
 function byCreatedAsc(a, b) { return a.createdAt - b.createdAt; }
 
 // ngx-translate style lookup: nested keys + {{param}} interpolation.
@@ -645,9 +740,10 @@ function seedAccount() {
       { id: 'acc-travel', name: 'Travel', isDefault: false, createdAt: T0 - 10 * DAY }
     ],
     notes: [
-      { id: 'an1', folderId: 'acc-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, dueDate: daysFromToday(3), createdAt: T0 - 2 * DAY },
-      { id: 'an2', folderId: 'acc-gen', title: '', text: 'Renew bike insurance\nPolicy ends 30 Oct', completed: false, dueDate: daysFromToday(-2), createdAt: T0 - 3 * DAY },
-      { id: 'an7', folderId: 'acc-gen', title: '', text: 'Return library books before Friday', completed: true, dueDate: daysFromToday(-4), createdAt: T0 - 6 * DAY },
+      { id: 'an1', folderId: 'acc-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, dueDate: daysFromToday(3), links: ['https://bookings.example.com/dentist/thursday'], createdAt: T0 - 2 * DAY },
+      { id: 'an2', folderId: 'acc-gen', title: '', text: 'Renew bike insurance\nPolicy ends 30 Oct', completed: false, dueDate: daysFromToday(-2), links: ['https://insurance.example.com/policies/bike/renewal/review-and-pay/BK-2049-7781-autumn-2026'], createdAt: T0 - 3 * DAY },
+      { id: 'an8', folderId: 'acc-gen', title: 'Weekend in Lviv', text: 'Pick a hotel near the old town and book the train', completed: false, links: ['https://hotels.example.com/lviv/old-town', 'https://trains.example.com/kyiv-lviv', 'https://maps.example.com/lviv/rynok-square', 'https://weather.example.com/lviv', 'https://museums.example.org/lviv/pharmacy-museum'], createdAt: T0 - 4 * DAY },
+      { id: 'an7', folderId: 'acc-gen', title: '', text: 'Return library books before Friday', completed: true, dueDate: daysFromToday(-4), links: ['https://library.example.org/account/loans'], createdAt: T0 - 6 * DAY },
       { id: 'an3', folderId: 'acc-work', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.', completed: false, createdAt: T0 - 1 * DAY },
       { id: 'an4', folderId: 'acc-work', title: 'Standup', text: 'Share the sync bug findings', completed: false, dueDate: daysFromToday(0), createdAt: T0 - 4 * DAY },
       { id: 'an5', folderId: 'acc-work', title: 'Expenses', text: 'Submit September receipts', completed: true, createdAt: T0 - 9 * DAY },
@@ -695,11 +791,16 @@ function initState(preset) {
   if (preset === 'new-note') { open(); s.noteEdit = { id: 'new', title: '', text: 'Pick up the parcel at the post office', dueDate: '' }; }
   if (preset === 'due-dates') { open(); s.noteEdit = { id: 'an1', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', dueDate: daysFromToday(3) }; }
   if (preset === 'theme') { open(); s.themeOpen = true; }
+  if (preset === 'links') {
+    open();
+    s.noteEdit = { id: 'new', title: '', text: 'Pick up the parcel at the post office', dueDate: '', links: ['https://parcels.example.com/track/UA123456789'], linkDraft: 'http://post.example.com/branch/12', linkError: 'https' };
+  }
   if (preset === 'empty') {
     open();
     s.account.folders.push({ id: 'acc-ideas', name: 'Ideas', isDefault: false, createdAt: T0 });
     s.sel = 'acc-ideas';
   }
+  if (s.noteEdit) s.noteEdit = Object.assign({ links: [], linkDraft: '', linkError: '' }, s.noteEdit);
   return s;
 }
 
@@ -714,7 +815,8 @@ var PRESETS = [
   { id: 'new-note', label: 'New note row' },
   { id: 'empty', label: 'Empty folder' },
   { id: 'due-dates', label: 'Due dates: today, overdue, editing one' },
-  { id: 'theme', label: 'Theme picker open' }
+  { id: 'theme', label: 'Theme picker open' },
+  { id: 'links', label: 'Links: one, five, completed, long; adding one with an error' }
 ];
 
 Vue.createApp({
@@ -762,6 +864,7 @@ Vue.createApp({
   methods: {
     t: function (key, params) { return translate(this.lang, key, params); },
     formatDay: function (key) { return formatDay(key, this.lang); },
+    shortLink: shortLink,
     isOverdue: function (n) { return !!n.dueDate && !n.completed && n.dueDate < daysFromToday(0); },
     setTheme: function (id) {
       this.theme = id;
@@ -836,8 +939,19 @@ Vue.createApp({
     },
 
     // Notes
-    startNewNote: function () { Object.assign(this, { noteEdit: { id: 'new', title: '', text: '', dueDate: '' }, search: '' }); },
-    startEdit: function (n) { this.noteEdit = { id: n.id, title: n.title, text: n.text, dueDate: n.dueDate || '' }; },
+    startNewNote: function () { Object.assign(this, { noteEdit: { id: 'new', title: '', text: '', dueDate: '', links: [], linkDraft: '', linkError: '' }, search: '' }); },
+    startEdit: function (n) { this.noteEdit = { id: n.id, title: n.title, text: n.text, dueDate: n.dueDate || '', links: (n.links || []).slice(), linkDraft: '', linkError: '' }; },
+    // Adds the typed Link; false (with its error shown) when it can't be added.
+    addLink: function () {
+      var ne = this.noteEdit;
+      if (!ne.linkDraft.trim() || ne.links.length >= MAX_LINKS) return true;
+      var r = parseLink(ne.linkDraft, ne.links);
+      if (r.error) { ne.linkError = r.error; return false; }
+      ne.links.push(r.link);
+      ne.linkDraft = '';
+      ne.linkError = '';
+      return true;
+    },
     submitNote: function () {
       var ne = this.noteEdit;
       if (!ne) return;
@@ -845,11 +959,14 @@ Vue.createApp({
       if (!text) return;
       var title = ne.title.trim();
       var dueDate = ne.dueDate || null;
+      // A Link still typed in the field is added on Save, or blocks the save with its error.
+      if (!this.addLink()) return;
+      var links = ne.links.slice();
       if (ne.id === 'new') {
-        var n = { id: uid(), folderId: this.current.id, title: title, text: text, completed: false, dueDate: dueDate, createdAt: Date.now() };
+        var n = { id: uid(), folderId: this.current.id, title: title, text: text, completed: false, dueDate: dueDate, links: links, createdAt: Date.now() };
         this.setData({ folders: this.data.folders, notes: this.data.notes.concat([n]) });
       } else {
-        this.setData({ folders: this.data.folders, notes: this.data.notes.map(function (x) { return x.id === ne.id ? Object.assign({}, x, { title: title, text: text, dueDate: dueDate }) : x; }) });
+        this.setData({ folders: this.data.folders, notes: this.data.notes.map(function (x) { return x.id === ne.id ? Object.assign({}, x, { title: title, text: text, dueDate: dueDate, links: links }) : x; }) });
       }
       this.noteEdit = null;
     },

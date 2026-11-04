@@ -65,7 +65,18 @@
     "dueDateLabel": "Термін",
     "clearDueDate": "Прибрати термін",
     "due": "Термін: {{date}}",
-    "overdue": "Прострочено · {{date}}"
+    "overdue": "Прострочено · {{date}}",
+    "linkLabel": "Посилання",
+    "linkPlaceholder": "https://…",
+    "addLink": "Додати",
+    "removeLink": "Видалити посилання: {{link}}",
+    "linkCount": "{{count}} / 5 посилань",
+    "openLink": "{{link}} (відкриється в новій вкладці)",
+    "linkErrors": {
+      "https": "Лише посилання https",
+      "duplicate": "Вже додано",
+      "maxLength": "Задовге посилання"
+    }
   },
   "dialogs": {
     "deleteFolder": {

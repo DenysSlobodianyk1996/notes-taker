@@ -234,6 +234,33 @@ body{margin:0}
                 <span aria-hidden="true">{{t.notes.dueDateLabel}}</span>
               </sc-if>
             </div>
+            <div style="display: flex; flex-direction: column; gap: 4px; padding: 0 0 4px">
+              <sc-for list="{{noteLinks}}" as="l" hint-placeholder-count="1">
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: {{accentInk}}">
+                  <span class="material-symbols-outlined" aria-hidden="true" style="flex-shrink: 0; font-size: 18px; color: #5F5F64">link</span>
+                  <span title="{{l.href}}" style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{l.short}}</span>
+                  <button type="button" aria-label="{{l.removeLabel}}" title="{{l.removeLabel}}" onClick="{{l.remove}}" style="width: 36px; height: 36px; flex-shrink: 0; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
+                    <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">close</span>
+                  </button>
+                </div>
+              </sc-for>
+              <sc-if value="{{canAddLink}}" hint-placeholder-val="{{true}}">
+                <div style="display: flex; align-items: center; gap: 6px">
+                  <span class="material-symbols-outlined" aria-hidden="true" style="flex-shrink: 0; font-size: 18px; color: #5F5F64">add_link</span>
+                  <label style="flex: 1; min-width: 0">
+                    <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.linkLabel}}</span>
+                    <input type="url" inputMode="url" autoCapitalize="off" spellCheck="false" value="{{linkDraft}}" onChange="{{onLinkDraft}}" onKeyDown="{{onLinkKey}}" placeholder="{{t.notes.linkPlaceholder}}" aria-invalid="{{linkInvalid}}" style="width: 100%; height: 36px; box-sizing: border-box; padding: 0 10px; border: 1px solid {{linkBorder}}; border-radius: 8px; outline: none; background: #FFFFFF; font: inherit; font-size: 16px; color: #1C1C1E">
+                  </label>
+                  <button type="button" onClick="{{addLink}}" disabled="{{addLinkDisabled}}" style="height: 36px; flex-shrink: 0; display: flex; align-items: center; gap: 2px; padding: 0 12px 0 8px; border: 1px solid #D4D3CE; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1C1C1E; opacity: {{addLinkOpacity}}; white-space: nowrap; cursor: pointer">
+                    <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px">add</span>{{t.notes.addLink}}
+                  </button>
+                </div>
+              </sc-if>
+              <sc-if value="{{hasLinkError}}" hint-placeholder-val="{{false}}">
+                <p role="alert" style="margin: 0; padding-left: 24px; font-size: 13px; color: #B91C1C">{{linkError}}</p>
+              </sc-if>
+              <p style="margin: 0; padding-left: 24px; font-size: 12px; color: #5F5F64">{{linkCount}}</p>
+            </div>
             <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px">
               <button type="button" onClick="{{cancelNote}}" style="height: 40px; padding: 0 16px; border-radius: 10px; border: 1px solid #D4D3CE; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1C1C1E; white-space: nowrap; cursor: pointer">{{t.common.cancel}}</button>
               <button type="button" onClick="{{submitNote}}" disabled="{{noteSubmitDisabled}}" style="height: 40px; padding: 0 16px; border-radius: 10px; border: 0; background: {{accent}}; font: inherit; font-size: 14px; font-weight: 600; color: #1C1C1E; opacity: {{noteSubmitOpacity}}; white-space: nowrap; cursor: pointer">{{t.notes.save}}</button>
@@ -275,6 +302,33 @@ body{margin:0}
                   <span aria-hidden="true">{{t.notes.dueDateLabel}}</span>
                 </sc-if>
               </div>
+              <div style="display: flex; flex-direction: column; gap: 4px; padding: 0 0 4px">
+                <sc-for list="{{noteLinks}}" as="l" hint-placeholder-count="1">
+                  <div style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: {{accentInk}}">
+                    <span class="material-symbols-outlined" aria-hidden="true" style="flex-shrink: 0; font-size: 18px; color: #5F5F64">link</span>
+                    <span title="{{l.href}}" style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{l.short}}</span>
+                    <button type="button" aria-label="{{l.removeLabel}}" title="{{l.removeLabel}}" onClick="{{l.remove}}" style="width: 36px; height: 36px; flex-shrink: 0; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
+                      <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 20px">close</span>
+                    </button>
+                  </div>
+                </sc-for>
+                <sc-if value="{{canAddLink}}" hint-placeholder-val="{{true}}">
+                  <div style="display: flex; align-items: center; gap: 6px">
+                    <span class="material-symbols-outlined" aria-hidden="true" style="flex-shrink: 0; font-size: 18px; color: #5F5F64">add_link</span>
+                    <label style="flex: 1; min-width: 0">
+                      <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.notes.linkLabel}}</span>
+                      <input type="url" inputMode="url" autoCapitalize="off" spellCheck="false" value="{{linkDraft}}" onChange="{{onLinkDraft}}" onKeyDown="{{onLinkKey}}" placeholder="{{t.notes.linkPlaceholder}}" aria-invalid="{{linkInvalid}}" style="width: 100%; height: 36px; box-sizing: border-box; padding: 0 10px; border: 1px solid {{linkBorder}}; border-radius: 8px; outline: none; background: #FFFFFF; font: inherit; font-size: 16px; color: #1C1C1E">
+                    </label>
+                    <button type="button" onClick="{{addLink}}" disabled="{{addLinkDisabled}}" style="height: 36px; flex-shrink: 0; display: flex; align-items: center; gap: 2px; padding: 0 12px 0 8px; border: 1px solid #D4D3CE; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1C1C1E; opacity: {{addLinkOpacity}}; white-space: nowrap; cursor: pointer">
+                      <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 18px">add</span>{{t.notes.addLink}}
+                    </button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{hasLinkError}}" hint-placeholder-val="{{false}}">
+                  <p role="alert" style="margin: 0; padding-left: 24px; font-size: 13px; color: #B91C1C">{{linkError}}</p>
+                </sc-if>
+                <p style="margin: 0; padding-left: 24px; font-size: 12px; color: #5F5F64">{{linkCount}}</p>
+              </div>
               <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px">
                 <button type="button" onClick="{{cancelNote}}" style="height: 40px; padding: 0 16px; border-radius: 10px; border: 1px solid #D4D3CE; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #1C1C1E; white-space: nowrap; cursor: pointer">{{t.common.cancel}}</button>
                 <button type="button" onClick="{{submitNote}}" disabled="{{noteSubmitDisabled}}" style="height: 40px; padding: 0 16px; border-radius: 10px; border: 0; background: {{accent}}; font: inherit; font-size: 14px; font-weight: 600; color: #1C1C1E; opacity: {{noteSubmitOpacity}}; white-space: nowrap; cursor: pointer">{{t.notes.save}}</button>
@@ -296,6 +350,16 @@ body{margin:0}
                     <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 15px">{{n.dueIcon}}</span>
                     {{n.dueLabel}}
                   </span>
+                </sc-if>
+                <sc-if value="{{n.hasLinks}}" hint-placeholder-val="{{false}}">
+                  <div style="display: flex; flex-direction: column; margin-top: 4px">
+                    <sc-for list="{{n.links}}" as="l" hint-placeholder-count="1">
+                      <a href="{{l.href}}" target="_blank" rel="noopener noreferrer" title="{{l.href}}" aria-label="{{l.label}}" style="align-self: flex-start; max-width: 100%; min-height: {{linkMinHeight}}; display: inline-flex; align-items: center; gap: 4px; font-size: 14px; color: {{n.linkColor}}; text-decoration: none">
+                        <span class="material-symbols-outlined" aria-hidden="true" style="flex-shrink: 0; font-size: 16px">link</span>
+                        <span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{l.short}}</span>
+                      </a>
+                    </sc-for>
+                  </div>
                 </sc-if>
               </div>
               <button type="button" aria-label="{{n.editLabel}}" title="{{n.editLabel}}" onClick="{{n.edit}}" style="width: 36px; height: 36px; flex-shrink: 0; border: 0; border-radius: 8px; background: none; color: #5F5F64; display: flex; align-items: center; justify-content: center; cursor: pointer">
@@ -343,7 +407,7 @@ body{margin:0}
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"preset":{"editor":"enum","default":"login","options":["login","offline","app","new-account","desktop-editing","delete-folder","mobile-drawer","new-note","empty","due-dates","theme"],"section":"Start state"},"lang":{"editor":"enum","default":"en","options":["en","uk"],"section":"Start state"},"theme":{"editor":"enum","default":"orange","options":["orange","pink","purple"],"section":"Start state"},"accent":{"editor":"color","default":"#F59E0B","options":["#F59E0B","#FBBF24","#FB923C"]},"$preview":{"width":1280,"height":800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"preset":{"editor":"enum","default":"login","options":["login","offline","app","new-account","desktop-editing","delete-folder","mobile-drawer","new-note","empty","due-dates","theme","links"],"section":"Start state"},"lang":{"editor":"enum","default":"en","options":["en","uk"],"section":"Start state"},"theme":{"editor":"enum","default":"orange","options":["orange","pink","purple"],"section":"Start state"},"accent":{"editor":"color","default":"#F59E0B","options":["#F59E0B","#FBBF24","#FB923C"]},"$preview":{"width":1280,"height":800}}'>
 /* I18N:BEGIN */
 var I18N = {
   "en": {
@@ -413,7 +477,18 @@ var I18N = {
       "dueDateLabel": "Due date",
       "clearDueDate": "Clear due date",
       "due": "Due {{date}}",
-      "overdue": "Overdue · {{date}}"
+      "overdue": "Overdue · {{date}}",
+      "linkLabel": "Link",
+      "linkPlaceholder": "https://…",
+      "addLink": "Add",
+      "removeLink": "Remove link: {{link}}",
+      "linkCount": "{{count}} / 5 links",
+      "openLink": "{{link}} (opens in a new tab)",
+      "linkErrors": {
+        "https": "Only https links",
+        "duplicate": "Already added",
+        "maxLength": "Too long"
+      }
     },
     "dialogs": {
       "deleteFolder": {
@@ -496,7 +571,18 @@ var I18N = {
       "dueDateLabel": "Термін",
       "clearDueDate": "Прибрати термін",
       "due": "Термін: {{date}}",
-      "overdue": "Прострочено · {{date}}"
+      "overdue": "Прострочено · {{date}}",
+      "linkLabel": "Посилання",
+      "linkPlaceholder": "https://…",
+      "addLink": "Додати",
+      "removeLink": "Видалити посилання: {{link}}",
+      "linkCount": "{{count}} / 5 посилань",
+      "openLink": "{{link}} (відкриється в новій вкладці)",
+      "linkErrors": {
+        "https": "Лише посилання https",
+        "duplicate": "Вже додано",
+        "maxLength": "Задовге посилання"
+      }
     },
     "dialogs": {
       "deleteFolder": {
@@ -537,6 +623,31 @@ var THEMES = {
 };
 var THEME_IDS = ['orange', 'pink', 'purple'];
 function norm(s) { return (s || '').trim().toLowerCase(); }
+
+// Links (ADR-0013): https only, at most 5 per Note, 2048 characters each. A bare address gets
+// https://; any other scheme (http:, mailto:, …) is refused, never upgraded.
+var MAX_LINKS = 5;
+function parseLink(raw, existing) {
+  var v = (raw || '').trim();
+  if (/\s/.test(v)) return { error: 'https' };
+  if (/^[a-z][a-z0-9+.-]*:(?!\d)/i.test(v) && !/^https:\/\//i.test(v)) return { error: 'https' };
+  if (!/^https:\/\//i.test(v)) v = 'https://' + v;
+  if (v.length > 2048) return { error: 'maxLength' };
+  var u;
+  try { u = new URL(v); } catch (e) { return { error: 'https' }; }
+  if (!/^[^.]+(\.[^.]+)+$/.test(u.hostname)) return { error: 'https' };
+  if (existing.indexOf(u.href) !== -1) return { error: 'duplicate' };
+  return { link: u.href };
+}
+// Shown as host and path ("example.com/a/b"); CSS adds the ellipsis.
+function shortLink(url) {
+  try {
+    var u = new URL(url), path = u.pathname.replace(/\/$/, '');
+    try { path = decodeURI(path); } catch (e) {}
+    return u.hostname.replace(/^www\./, '') + path;
+  } catch (e) { return url; }
+}
+function byCreatedAsc(a, b) { return a.createdAt - b.createdAt; }
 function byCreatedAsc(a, b) { return a.createdAt - b.createdAt; }
 
 // ngx-translate style lookup: nested keys + {{param}} interpolation.
@@ -554,9 +665,10 @@ function seedAccount() {
       { id: 'acc-travel', name: 'Travel', isDefault: false, createdAt: T0 - 10 * DAY }
     ],
     notes: [
-      { id: 'an1', folderId: 'acc-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, dueDate: daysFromToday(3), createdAt: T0 - 2 * DAY },
-      { id: 'an2', folderId: 'acc-gen', title: '', text: 'Renew bike insurance\nPolicy ends 30 Oct', completed: false, dueDate: daysFromToday(-2), createdAt: T0 - 3 * DAY },
-      { id: 'an7', folderId: 'acc-gen', title: '', text: 'Return library books before Friday', completed: true, dueDate: daysFromToday(-4), createdAt: T0 - 6 * DAY },
+      { id: 'an1', folderId: 'acc-gen', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', completed: false, dueDate: daysFromToday(3), links: ['https://bookings.example.com/dentist/thursday'], createdAt: T0 - 2 * DAY },
+      { id: 'an2', folderId: 'acc-gen', title: '', text: 'Renew bike insurance\nPolicy ends 30 Oct', completed: false, dueDate: daysFromToday(-2), links: ['https://insurance.example.com/policies/bike/renewal/review-and-pay/BK-2049-7781-autumn-2026'], createdAt: T0 - 3 * DAY },
+      { id: 'an8', folderId: 'acc-gen', title: 'Weekend in Lviv', text: 'Pick a hotel near the old town and book the train', completed: false, links: ['https://hotels.example.com/lviv/old-town', 'https://trains.example.com/kyiv-lviv', 'https://maps.example.com/lviv/rynok-square', 'https://weather.example.com/lviv', 'https://museums.example.org/lviv/pharmacy-museum'], createdAt: T0 - 4 * DAY },
+      { id: 'an7', folderId: 'acc-gen', title: '', text: 'Return library books before Friday', completed: true, dueDate: daysFromToday(-4), links: ['https://library.example.org/account/loans'], createdAt: T0 - 6 * DAY },
       { id: 'an3', folderId: 'acc-work', title: 'Q4 planning', text: 'Draft goals for the notes app launch. Keep it to three.', completed: false, createdAt: T0 - 1 * DAY },
       { id: 'an4', folderId: 'acc-work', title: 'Standup', text: 'Share the sync bug findings', completed: false, dueDate: daysFromToday(0), createdAt: T0 - 4 * DAY },
       { id: 'an5', folderId: 'acc-work', title: 'Expenses', text: 'Submit September receipts', completed: true, createdAt: T0 - 9 * DAY },
@@ -613,11 +725,16 @@ class Component extends DCLogic {
     if (preset === 'new-note') { open(); s.noteEdit = { id: 'new', title: '', text: 'Pick up the parcel at the post office', dueDate: '' }; }
     if (preset === 'due-dates') { open(); s.noteEdit = { id: 'an1', title: 'Call dentist', text: 'Ask for a Thursday morning slot. Bring the insurance card.', dueDate: daysFromToday(3) }; }
     if (preset === 'theme') { open(); s.themeOpen = true; }
+    if (preset === 'links') {
+      open();
+      s.noteEdit = { id: 'new', title: '', text: 'Pick up the parcel at the post office', dueDate: '', links: ['https://parcels.example.com/track/UA123456789'], linkDraft: 'http://post.example.com/branch/12', linkError: 'https' };
+    }
     if (preset === 'empty') {
       open();
       s.account = { folders: s.account.folders.concat([{ id: 'acc-ideas', name: 'Ideas', isDefault: false, createdAt: T0 }]), notes: s.account.notes };
       s.sel = 'acc-ideas';
     }
+    if (s.noteEdit) s.noteEdit = Object.assign({ links: [], linkDraft: '', linkError: '' }, s.noteEdit);
     return s;
   }
 
@@ -693,8 +810,20 @@ class Component extends DCLogic {
   }
 
   // Notes
-  startNewNote() { this.setState({ noteEdit: { id: 'new', title: '', text: '', dueDate: '' }, search: '' }); }
-  startEdit(n) { this.setState({ noteEdit: { id: n.id, title: n.title, text: n.text, dueDate: n.dueDate || '' } }); }
+  startNewNote() { this.setState({ noteEdit: { id: 'new', title: '', text: '', dueDate: '', links: [], linkDraft: '', linkError: '' }, search: '' }); }
+  startEdit(n) { this.setState({ noteEdit: { id: n.id, title: n.title, text: n.text, dueDate: n.dueDate || '', links: (n.links || []).slice(), linkDraft: '', linkError: '' } }); }
+  // The form with the typed Link added; ok is false (and the error set) when it can't be added.
+  withDraftLink(ne) {
+    if (!ne.linkDraft.trim() || ne.links.length >= MAX_LINKS) return { ne: ne, ok: true };
+    var r = parseLink(ne.linkDraft, ne.links);
+    if (r.error) return { ne: Object.assign({}, ne, { linkError: r.error }), ok: false };
+    return { ne: Object.assign({}, ne, { links: ne.links.concat([r.link]), linkDraft: '', linkError: '' }), ok: true };
+  }
+  addLink() { this.setState({ noteEdit: this.withDraftLink(this.state.noteEdit).ne }); }
+  removeLink(i) {
+    var ne = this.state.noteEdit;
+    this.setState({ noteEdit: Object.assign({}, ne, { links: ne.links.filter((_, j) => j !== i) }) });
+  }
   cancelNote() { this.setState({ noteEdit: null }); }
   submitNote() {
     var ne = this.state.noteEdit;
@@ -703,12 +832,16 @@ class Component extends DCLogic {
     if (!text) return;
     var title = ne.title.trim();
     var dueDate = ne.dueDate || null;
+    // A Link still typed in the field is added on Save, or blocks the save with its error.
+    var added = this.withDraftLink(ne);
+    if (!added.ok) { this.setState({ noteEdit: added.ne }); return; }
+    var links = added.ne.links.slice();
     var folderId = this.currentFolder().id;
     if (ne.id === 'new') {
-      var n = { id: uid(), folderId: folderId, title: title, text: text, completed: false, dueDate: dueDate, createdAt: Date.now() };
+      var n = { id: uid(), folderId: folderId, title: title, text: text, completed: false, dueDate: dueDate, links: links, createdAt: Date.now() };
       this.setData((d) => ({ folders: d.folders, notes: d.notes.concat([n]) }));
     } else {
-      this.setData((d) => ({ folders: d.folders, notes: d.notes.map((x) => (x.id === ne.id ? Object.assign({}, x, { title: title, text: text, dueDate: dueDate }) : x)) }));
+      this.setData((d) => ({ folders: d.folders, notes: d.notes.map((x) => (x.id === ne.id ? Object.assign({}, x, { title: title, text: text, dueDate: dueDate, links: links }) : x)) }));
     }
     this.setState({ noteEdit: null });
   }
@@ -837,6 +970,28 @@ class Component extends DCLogic {
       if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); this.submitNote(); }
       if (e.key === 'Escape') this.cancelNote();
     };
+    var formLinks = ne ? ne.links : [];
+    vals.noteLinks = formLinks.map((l, i) => {
+      var short = shortLink(l);
+      return { href: l, short: short, removeLabel: this.tr('notes.removeLink', { link: short }), remove: () => this.removeLink(i) };
+    });
+    vals.canAddLink = !!ne && formLinks.length < MAX_LINKS;
+    vals.linkDraft = ne ? ne.linkDraft : '';
+    vals.onLinkDraft = (e) => this.setState({ noteEdit: Object.assign({}, this.state.noteEdit, { linkDraft: e.target.value, linkError: '' }) });
+    vals.onLinkKey = (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); this.submitNote(); return; }
+      if (e.key === 'Enter') { e.preventDefault(); this.addLink(); }
+      if (e.key === 'Escape') this.cancelNote();
+    };
+    vals.addLink = () => this.addLink();
+    vals.addLinkDisabled = !vals.linkDraft.trim();
+    vals.addLinkOpacity = vals.addLinkDisabled ? 0.45 : 1;
+    vals.hasLinkError = !!(ne && ne.linkError);
+    vals.linkError = vals.hasLinkError ? this.tr('notes.linkErrors.' + ne.linkError) : '';
+    vals.linkInvalid = vals.hasLinkError ? 'true' : 'false';
+    vals.linkBorder = vals.hasLinkError ? '#B91C1C' : '#D4D3CE';
+    vals.linkCount = this.tr('notes.linkCount', { count: formLinks.length });
+    vals.linkMinHeight = narrow ? '40px' : '30px';
     vals.notes = shown.map((n) => {
       var editing = !!(ne && ne.id === n.id);
       var label = n.title || n.text.slice(0, 40);
@@ -844,6 +999,9 @@ class Component extends DCLogic {
       var dueText = n.dueDate ? formatDay(n.dueDate, s.lang) : '';
       return {
         hasDue: !!n.dueDate,
+        hasLinks: !!(n.links && n.links.length),
+        links: (n.links || []).map((l) => ({ href: l, short: shortLink(l), label: this.tr('notes.openLink', { link: shortLink(l) }) })),
+        linkColor: n.completed ? '#6B6B70' : th.ink,
         dueLabel: n.dueDate ? this.tr(overdue ? 'notes.overdue' : 'notes.due', { date: dueText }) : '',
         dueIcon: overdue ? 'event_busy' : 'event',
         dueBg: overdue ? '#FEE2E2' : '#F1F0EC',

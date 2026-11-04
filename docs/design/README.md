@@ -69,12 +69,15 @@ Minimal and light, in the style of Apple Notes:
 | `Mobile-Empty`         | empty folder state                                                                                                          |
 | `Mobile-Login-UA`      | login page in Ukrainian                                                                                                     |
 | `Mobile-List-UA`       | notes list in Ukrainian, with user content left untranslated                                                                |
+| `Desktop-Links`        | Notes with Links (one, five, Completed, a long one cut short) and a new note row adding a Link, with the https error        |
+| `Mobile-Links`         | the same on a phone: the new note row with its Links and the https error                                                    |
+| `Mobile-Links-UA`      | the same in Ukrainian                                                                                                       |
 
-The other artboards all reuse `Main`, opened at a fixed starting state (its `preset` and `lang` props). In the standalone HTML, the same states are the **Start state** options, with `?state=` values `login`, `offline`, `app`, `new-account`, `desktop-editing`, `delete-folder`, `mobile-drawer`, `new-note`, `empty`, `due-dates` and `theme`. Add `&lang=uk` for Ukrainian, and `&theme=pink` or `&theme=purple` for a Theme.
+The other artboards all reuse `Main`, opened at a fixed starting state (its `preset` and `lang` props). In the standalone HTML, the same states are the **Start state** options, with `?state=` values `login`, `offline`, `app`, `new-account`, `desktop-editing`, `delete-folder`, `mobile-drawer`, `new-note`, `empty`, `due-dates`, `theme` and `links`. Add `&lang=uk` for Ukrainian, and `&theme=pink` or `&theme=purple` for a Theme.
 
 ## Sample data
 
-One signed-in Account: the Default folder (3 notes, one completed), Work (3 notes) and Travel (1 note). The `new-account` state starts with no folders and shows the Default folder being created on first sign-in.
+One signed-in Account: the Default folder (4 notes, one completed; they carry the sample Links), Work (3 notes) and Travel (1 note). The `new-account` state starts with no folders and shows the Default folder being created on first sign-in.
 
 ## Due dates (ticket 07a)
 
@@ -83,6 +86,16 @@ One signed-in Account: the Default folder (3 notes, one completed), Work (3 note
 - An **Overdue** Note (Due date before today, not Completed) shows a red chip with "Overdue · 28 Oct". A Completed Note's chip stays grey, even if the date has passed.
 - Due dates never change the order: Notes stay newest first.
 - Start state `due-dates`: the General folder with one Note due soon (open in the edit row), one Overdue and one Completed with a past date. The sample dates are relative to today.
+
+## Links (ticket 15a)
+
+- The new and edit note rows have a Link field under the Due date: a link icon, an address field ("https://…") and a **+ Add** button. Added Links are listed above it, one per line, each with a ✕ to remove it. Under the field, "N / 5 links" uses the same small muted style as the Text's "N / 1000". At 5 Links the field and **+ Add** are hidden.
+- Enter in the Link field adds the Link; Ctrl/⌘+Enter saves the Note and Esc cancels, as in the other fields. An address still in the field when you press **Save note** is added if it's valid; otherwise the save stops and shows its error.
+- Only https addresses are accepted (ADR-0013). A bare address like `example.com` becomes `https://example.com`. Errors show in red under the field, which gets a red border: "Only https links" (`http://`, `mailto:`, text that isn't an address), "Already added", "Too long" (over 2048 characters). Typing clears the error.
+- In the note row, Links sit under the Text and the Due chip, one per line: a 🔗 icon and the address shortened to host and path (no `https://` or `www.`), cut with an ellipsis when long, in the Theme's accent ink colour. They open in a new tab (`rel="noopener noreferrer"`), and the full address is the tooltip. On phones each Link is at least 40 px tall, so it's easy to tap.
+- A Completed Note's Links turn the same grey as its text but aren't crossed out, and they stay clickable.
+- Search ignores Links. Links are user content, so the app masks them for Clarity.
+- Start state `links` (artboards `Desktop-Links`, `Mobile-Links`, `Mobile-Links-UA`): the General folder with one Note with a Link, one with five, a Completed one with a Link and one long address, plus a new note row with one Link added and `http://…` refused.
 
 ## Theme (ticket 12)
 
@@ -98,7 +111,7 @@ One signed-in Account: the Default folder (3 notes, one completed), Work (3 note
 - Button text stays dark (`#1C1C1E`) on every Theme; all three accents keep it above 4.5:1.
 - The login page is always Orange. The browser tab icon follows the Theme (try it in the standalone HTML); the installed app icon stays Orange.
 - Start state `theme` opens the popover; `?theme=pink` or `?theme=purple` starts in that Theme.
-- **Canvas:** the published canvas matches the repo (`project/Main.dc.html`): Due date, Theme (Start state `theme`, Theme setting in Tweaks), the note form, the counts and the note row's ✎ Edit button. Publish it again from `project/` after changing the prototype.
+- **Canvas:** the published canvas matches the repo (`project/Main.dc.html`): Due date, Theme (Start state `theme`, Theme setting in Tweaks), the note form, the counts, the note row's ✎ Edit button and Links (Start state `links`, artboards `Desktop-Links`, `Mobile-Links`, `Mobile-Links-UA`). Publish it again from `project/` after changing the prototype.
 
 ## Behaviour the prototype pins down
 
