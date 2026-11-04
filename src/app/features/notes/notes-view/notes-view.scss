@@ -150,6 +150,51 @@
   }
 }
 
+.links {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.link {
+  max-width: 100%;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: $accent-ink;
+  text-decoration: none;
+
+  // Easy to tap on a phone.
+  @media (max-width: $breakpoint-wide - 1px) {
+    min-height: 40px;
+  }
+
+  .material-symbols-outlined {
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+
+  &:hover .link-text {
+    text-decoration: underline;
+  }
+}
+
+.link-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Completed: dimmed like the Note, not crossed out, still clickable.
+.completed .link {
+  color: $completed;
+}
+
 .edit,
 .delete {
   @include icon-button;

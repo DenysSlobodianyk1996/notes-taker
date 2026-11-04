@@ -70,6 +70,25 @@
                 }}
               </span>
             }
+            @if (note.links.length) {
+              <ul data-clarity-mask="true" class="links">
+                @for (link of note.links; track link) {
+                  <li>
+                    <a
+                      class="link"
+                      [href]="link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      [title]="link"
+                      [attr.aria-label]="'notes.openLink' | translate: { link: shortLink(link) }"
+                    >
+                      <span class="material-symbols-outlined" aria-hidden="true">link</span>
+                      <span class="link-text">{{ shortLink(link) }}</span>
+                    </a>
+                  </li>
+                }
+              </ul>
+            }
           </div>
           <button
             type="button"

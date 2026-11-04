@@ -1,10 +1,10 @@
 # 07a: Design the Due date in the prototype
 
-**What to build:** Add the Due date to the design prototype (the Claude Design canvas and `docs/design/notes-taker-design.html`) before any app code, so it can be approved like the rest of the UI. Built in ticket 07. Spec stories 74–77. Glossary: Due date, Overdue.
+**What to build:** Add the Due date to the design prototype (the Claude Design canvas and `docs/design/notes-taker-design.html`) before any app code, so it can be approved like the rest of the UI. Built in ticket 07b. Spec stories 74–77. Glossary: Due date, Overdue.
 
 **Blocked by:** none
 
-**Status:** done: approved by merging PR #17 (standalone prototype, `?state=due-dates`); the Claude Design canvas still needs the same change
+**Status:** done: approved by merging PR #17 (standalone prototype, `?state=due-dates`); the canvas got the same in PR #27 (version 24)
 
 - [x] New and edit note form rows: an optional Due date field (native `<input type="date">`, label from `notes.dueDateLabel`) with a clear control (`notes.clearDueDate`). Works with the existing keyboard rules (Ctrl/⌘+Enter saves, Esc cancels).
 - [x] Note row: a Note with a Due date shows it (`notes.due`, date formatted in the UI language). An Overdue Note shows it in red (`notes.overdue`, Danger `#B91C1C`). A Completed Note never looks Overdue.

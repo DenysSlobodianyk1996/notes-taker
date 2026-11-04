@@ -4,14 +4,14 @@
 
 **Blocked by:** 11 (Installable app polish + offline check); design approved by merging PR #17
 
-**Status:** done (implemented on `feature/12-theme`, stacked on `feature/11-installable-offline`); the canvas item stays open
+**Status:** done (implemented on `feature/12-theme`, stacked on `feature/11-installable-offline`); canvas updated in PR #27 (version 24)
 
 Design (done in the standalone prototype; approved):
 
 - [x] Palette button ("Theme" / "Тема") left of EN | UA on every screen size; popover with three circles as a radio group, ring and ✓ on the current one; closes on pick, Esc or a click outside.
 - [x] The three Themes recolour only the accent family; the login page stays Orange; the tab icon follows the Theme.
 - [x] Start state `theme`, `?theme=` deep links, and the `theme.*` translations in `docs/design/i18n/*.json`.
-- [ ] The Claude Design canvas gets the same (the `Main` artboard's `accent` prop already exists).
+- [x] The Claude Design canvas gets the same (the `Main` artboard's `accent` prop already exists).
 
 Build:
 

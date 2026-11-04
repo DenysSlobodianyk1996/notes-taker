@@ -1,6 +1,8 @@
-# 03a: App icon from the design logo
+# 16: App icon from the design logo
 
 **What to build:** Replace the default Angular favicon and PWA icons with the app logo from the design: the Material Symbols `sticky_note_2` glyph (outlined, weight 400, opsz 24) in `#1C1C1E` on the `#F59E0B` rounded tile, exactly as on the login screen. Design: `docs/design/` (`.logo` on Mobile-Login).
+
+**Formerly:** 03a (commits `feat(03a)` and `docs(03a)`). Renumbered because it follows 03 rather than being part of it.
 
 **Blocked by:** 03 (Deploy to Firebase Hosting)
 

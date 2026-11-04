@@ -87,6 +87,7 @@ export function aNote(fields: Partial<Note> = {}): Note {
     text: 'Buy milk',
     completed: false,
     dueDate: null,
+    links: [],
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...fields,

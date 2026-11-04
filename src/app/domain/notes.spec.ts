@@ -1,9 +1,14 @@
 import {
+  NOTE_LINKS_MAX,
+  NOTE_LINK_MAX_LENGTH,
   Note,
   filterNotes,
   isOverdue,
+  normalizeLink,
   noteFormErrors,
+  noteLinkError,
   noteSummary,
+  shortLink,
   sortNotes,
   todayKey,
 } from './notes';
@@ -16,6 +21,7 @@ function note(fields: Partial<Note>): Note {
     text: 'Text',
     completed: false,
     dueDate: null,
+    links: [],
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...fields,
@@ -130,5 +136,83 @@ describe('filterNotes', () => {
 
   it('finds nothing when no Note matches', () => {
     expect(ids('holiday')).toEqual([]);
+  });
+});
+
+describe('normalizeLink', () => {
+  it('keeps an https address, as the browser writes it', () => {
+    expect(normalizeLink('https://Example.com/a?b=1#c')).toBe('https://example.com/a?b=1#c');
+    expect(normalizeLink('  https://example.com  ')).toBe('https://example.com/');
+  });
+
+  it('puts https:// in front of a bare address', () => {
+    expect(normalizeLink('example.com')).toBe('https://example.com/');
+    expect(normalizeLink('www.example.com/path')).toBe('https://www.example.com/path');
+    expect(normalizeLink('example.com:8443/x')).toBe('https://example.com:8443/x');
+  });
+
+  it.each([
+    'http://example.com',
+    'HTTP://example.com',
+    'javascript:alert(1)',
+    'mailto:me@example.com',
+    'data:text/html,<b>hi</b>',
+    'ftp://example.com',
+    'hello',
+    'two words.com',
+    'https://localhost',
+    'https://user:pass@example.com',
+    'https://.example.com',
+    '',
+  ])('refuses %j', (raw) => {
+    expect(normalizeLink(raw)).toBeNull();
+  });
+});
+
+describe('noteLinkError', () => {
+  it('accepts a new https Link', () => {
+    expect(noteLinkError('example.com', ['https://other.com/'])).toBeNull();
+  });
+
+  it("refuses what isn't an https address, http: included", () => {
+    expect(noteLinkError('http://example.com', [])).toBe('https');
+    expect(noteLinkError('not a link', [])).toBe('https');
+  });
+
+  it('refuses a Link the Note already has, however it was typed', () => {
+    expect(noteLinkError('Example.com', ['https://example.com/'])).toBe('duplicate');
+  });
+
+  it('refuses a Link over the length limit', () => {
+    const long = `https://example.com/${'a'.repeat(NOTE_LINK_MAX_LENGTH)}`;
+    expect(noteLinkError(long, [])).toBe('maxLength');
+    const fits = `https://example.com/${'a'.repeat(NOTE_LINK_MAX_LENGTH - 20)}`;
+    expect(noteLinkError(fits, [])).toBeNull();
+  });
+
+  it('refuses a sixth Link', () => {
+    const five = Array.from({ length: NOTE_LINKS_MAX }, (_, i) => `https://e${i}.com/`);
+    expect(noteLinkError('example.com', five)).toBe('tooMany');
+  });
+});
+
+describe('shortLink', () => {
+  it('shows the host and path, without https:// and www.', () => {
+    expect(shortLink('https://www.example.com/a/b/')).toBe('example.com/a/b');
+    expect(shortLink('https://example.com/')).toBe('example.com');
+    expect(shortLink('https://docs.example.com/x?y=1')).toBe('docs.example.com/x');
+  });
+
+  it('shows a non-Latin path as typed', () => {
+    expect(shortLink('https://kyiv.example.ua/%D1%88%D0%BB%D1%8F%D1%85')).toBe(
+      'kyiv.example.ua/шлях',
+    );
+  });
+});
+
+describe('filterNotes and Links', () => {
+  it('does not search Links', () => {
+    const withLink = note({ text: 'Trip', links: ['https://hotels.example.com/'] });
+    expect(filterNotes([withLink], 'hotels')).toEqual([]);
   });
 });

@@ -17,7 +17,7 @@ import { UiLanguageService } from '@core/i18n/ui-language.service';
 import { NotesService } from '@core/notes/notes.service';
 import { FormRowService } from '@core/ui/form-row.service';
 import { TodayService } from '@core/ui/today.service';
-import { Note, NoteInput, filterNotes, isOverdue, noteSummary } from '@domain/notes';
+import { Note, NoteInput, filterNotes, isOverdue, noteSummary, shortLink } from '@domain/notes';
 import { formatDueDate } from '@features/notes/due-date';
 import { NoteForm } from '@features/notes/note-form/note-form';
 import { ConfirmDialog } from '@shared/confirm-dialog/confirm-dialog';
@@ -63,6 +63,7 @@ export class NotesView {
     const row = this.row();
     return row?.kind === 'edit-note' ? row.id : null;
   });
+  protected readonly shortLink = shortLink;
   /** The Note waiting for delete confirmation. */
   protected readonly deleting = signal<Note | null>(null);
 
@@ -112,7 +113,10 @@ export class NotesView {
 
   protected update(note: Note, input: NoteInput): void {
     const changed =
-      input.title !== note.title || input.text !== note.text || input.dueDate !== note.dueDate;
+      input.title !== note.title ||
+      input.text !== note.text ||
+      input.dueDate !== note.dueDate ||
+      input.links.join('\n') !== note.links.join('\n');
     if (changed) this.service.updateNote(note.id, input);
     // An edit that no longer matches the search would vanish; show the whole Folder instead.
     if (filterNotes([{ ...note, ...input }], this.query()).length === 0) this.query.set('');
