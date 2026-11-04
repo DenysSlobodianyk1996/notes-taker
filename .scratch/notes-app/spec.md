@@ -104,6 +104,21 @@ A small installable web app (PWA) called **Notes**:
 85. As a user, I want my notes, Folder names and searches never to appear in those recordings, and no tracking cookie or identity attached, so that analytics never exposes what I write.
 86. As the owner, I want analytics only in production, tagged with UI language, Theme and layout, so that development is untracked and recordings are easy to filter.
 
+### Editing a Note (ADR-0012)
+87. As a user, I want a ✎ Edit button on each Note row, left of 🗑, that opens its inline edit form, so that editing is a deliberate action, as it is for Folders.
+88. As a user, I want to select and copy a Note's Title and Text without the edit form opening, so that I can reuse what I wrote.
+
+### Links (ADR-0013)
+89. As a user, I want to add Links to a Note in its new or edit form row (a Link field with + Add, or Enter), so that I can keep related pages with the Note.
+90. As a user, I want to remove a Link with its ✕ before saving, so that I can fix a mistake.
+91. As a user, I want to see "N / 5 links" under the Link field, styled like the Text counter, and the field hidden at 5, so that I know the limit.
+92. As a user, I want a bare address like `example.com` saved as `https://example.com`, and an inline error for anything that isn't an https address (including `http://`), a duplicate, or longer than 2048 characters, so that every saved Link works and is safe.
+93. As a user, I want Enter in the Link field to add the Link, Ctrl/⌘+Enter to save the Note and Esc to cancel, so that the keyboard rules match the other fields.
+94. As a user, I want an address still typed in the Link field when I press Save to be added if valid, or to block the save with its error, so that I never lose a Link silently.
+95. As a user, I want a Note's Links shown under its Text and Due date, one per line with a 🔗 icon and a shortened address, opening in a new tab, so that I can reach them in one click.
+96. As a user, I want a Completed Note's Links dimmed like the rest of the Note but still clickable, so that finished Notes keep their references.
+97. As a user, I want my Links masked in analytics recordings and not matched by search, so that they stay private and search stays about the Title and Text.
+
 ### Language
 55. As a Ukrainian speaker, I want the interface in Ukrainian, so that the app feels native.
 56. As a first-time visitor, I want the language picked from my browser (Ukrainian if it's `uk*`, otherwise English), so that it's right without setup.
@@ -137,11 +152,11 @@ A small installable web app (PWA) called **Notes**:
 - Tooling: Vitest through Angular's unit-test builder, angular-eslint, Prettier, Husky with lint-staged.
 
 ### Modules (deep modules, small interfaces)
-- **Domain rules** (pure functions, no Angular): folder-name normalisation; the "name taken" check (against existing names, excluding the folder being renamed, ignoring the Default folder, and rejecting every language's Default-folder display name); the folder label (translated name for the Default folder, otherwise the stored name); note filtering by query; the Overdue check (Due date before today's local date and not Completed); folder and note validation (required, max lengths, trimming); sorting (folders oldest first, notes newest first).
+- **Domain rules** (pure functions, no Angular): folder-name normalisation; the "name taken" check (against existing names, excluding the folder being renamed, ignoring the Default folder, and rejecting every language's Default-folder display name); the folder label (translated name for the Default folder, otherwise the stored name); note filtering by query; the Overdue check (Due date before today's local date and not Completed); Link normalisation and validation (`normalizeLink`, `noteLinkError`: https only, a bare host gets `https://`, ≤2048 characters, no duplicates, at most 5); folder and note validation (required, max lengths, trimming); sorting (folders oldest first, notes newest first).
 - **Auth service:** the current user as a signal; `signIn()` chooses popup on desktop and redirect on mobile or standalone display mode, and completes a pending redirect result on startup; `signOut()` signs out, then terminates Firestore and clears its persistent cache.
 - **Online status:** a signal driven by `navigator.onLine` and the online/offline events.
 - **Folders service:** a live, sorted folder list signal for the current user; `createFolder(name)`, `renameFolder(id, name)`, `deleteFolder(id)` (deletes the folder and all its notes in one batched write; refuses the Default folder), and `ensureDefaultFolder()` (creates the Default folder only if the Account has no folder marked default; idempotent).
-- **Notes service:** a live note list per folder; `createNote`, `updateNote` (both take an optional Due date), `toggleNote`, `deleteNote`; it also provides note counts per folder for the sidebar.
+- **Notes service:** a live note list per folder; `createNote`, `updateNote` (both take an optional Due date and the Links), `toggleNote`, `deleteNote`; it also provides note counts per folder for the sidebar.
 - The services talk to Firestore directly; there is no store interface (ADR-0009). Validation runs in the UI through the domain rules, and the services assume valid input apart from the Default-folder guard.
 - **UI-language service:** picks the initial language (saved choice, then the browser language), `use(lang)` (switches ngx-translate, saves the choice, sets `<html lang>`), and exposes the current language as a signal.
 - **Features:** a login page; a shell (header with brand, language toggle, avatar and sign-out; responsive sidebar or drawer; outlet); a folders sidebar (list, inline new/rename form row, lock on the Default folder); a notes view (header with counts, search, inline new/edit form row, note rows, empty and no-match states); a shared confirm dialog built on native `<dialog>`; a shared language toggle.
@@ -153,7 +168,8 @@ A small installable web app (PWA) called **Notes**:
 
 ### Data model (Firestore)
 - `users/{uid}/folders/{folderId}`: `{ name: string, nameKey: string, isDefault: boolean, createdAt: Timestamp }`. The Default folder stores `name: ''`, `nameKey: ''`, `isDefault: true`. `nameKey = name.trim().toLowerCase()`.
-- `users/{uid}/notes/{noteId}`: `{ folderId: string, title: string, text: string, completed: boolean, dueDate: string | null, createdAt: Timestamp, updatedAt: Timestamp }`.
+- `users/{uid}/notes/{noteId}`: `{ folderId: string, title: string, text: string, completed: boolean, dueDate: string | null, createdAt: Timestamp, updatedAt: Timestamp, links: string[] }`.
+- `links` holds absolute `https://` URLs in the order added, at most 5 (ADR-0013). Notes without the field have none; entries that fail the Link rules when read are dropped.
 - `dueDate` is a local calendar day as `'YYYY-MM-DD'`, or `null` for none (clearing sets `null`). A string, not a Timestamp, so the day never shifts across time zones. Notes written before this field existed have no `dueDate` and are read as `null`.
 - IDs come from `crypto.randomUUID()`, set on the client, so writes work offline. The one exception is the Default folder, whose id is always `default`: creating it from two devices at once then still gives one Folder.
 - Limits: folder name 1–50 characters after trimming; title 0–200; text 1–1000 after trimming (stored trimmed).
@@ -179,6 +195,8 @@ A small installable web app (PWA) called **Notes**:
 
 ### UI rules (from the design prototype)
 - Creating and editing happen inline. `<dialog>` is used only for delete confirmations (ADR-0004).
+- A Note row opens its edit form only from its ✎ Edit button (left of 🗑, aria-label "Edit note: <title>"); the note body is plain, selectable content (ADR-0012). Focus returns to ✎ after Save or Cancel.
+- Links in the note form: a Link field with + Add under the Due date, added Links listed with ✕, and an "N / 5 links" counter styled like the Text counter; the field is hidden at 5. Links in a row: under the Text and Due date, one per line, 🔗 plus host and path (truncated), `target="_blank" rel="noopener noreferrer"`.
 - Only one form row is open at a time: opening another closes the current one without saving.
 - Breakpoint 900px: below it, the sidebar is a drawer with a backdrop and closes on folder pick; the header hides the avatar.
 - Colours: accent `#F59E0B`, accent-soft `#FEF3C7`/`#92400E`, text `#1C1C1E`, muted `#5F5F64`, sidebar `#F7F6F3`, borders `#E5E4E0`/`#ECEBE7`, danger `#B91C1C`. System font stack.
@@ -198,6 +216,7 @@ A small installable web app (PWA) called **Notes**:
   - the folder label for the Default folder in EN and UA
   - note filtering (title and text, case-insensitive, current folder only)
   - the Overdue check (yesterday Overdue, today and tomorrow not, Completed never)
+  - Link rules (bare host gets `https://`; `http:`, `javascript:`, `mailto:` and non-addresses rejected; duplicates; 2048 limit; 5 at most) and that search ignores Links
   - validation limits
   - sort orders
 - **Seam 2, pages and components through Angular TestBed:** render the login page, the shell, the folders sidebar and the notes view with the Auth, Folders, Notes and online-status services replaced through Angular DI by simple test doubles (plain objects with signals and spy methods; no extra interface in app code). Assert on what the user sees and on which service method is called. Cover:
@@ -207,6 +226,8 @@ A small installable web app (PWA) called **Notes**:
   - only one form row open at a time
   - Save disabled for empty Text; Ctrl/⌘+Enter saves; Esc cancels
   - the checkbox calling `toggleNote`
+  - ✎ opening the edit form while a click on the note body doesn't
+  - adding and removing Links, the counter, the Save rule for a typed Link, and Links rendered as new-tab anchors
   - the confirm dialog before `deleteFolder` and `deleteNote`
   - search and its no-match state
   - the EN ↔ UA switch changing the labels but not the user content
@@ -220,7 +241,7 @@ A small installable web app (PWA) called **Notes**:
 
 ### UX analytics (ADR-0011)
 - `@microsoft/clarity`, initialised once at startup in production only (project ID in the production environment); nothing loads in development or tests.
-- Note content carries `data-clarity-mask="true"` (note body with title, text and Due date; the completion checkbox label; the note form fields; the search field and no-match message; the dialog body; the avatar). Labels, buttons and Folder names stay visible. The Clarity project uses Balanced masking and no cookies.
+- Note content carries `data-clarity-mask="true"` (note body with title, text, Due date and Links; the form's Link field and Link list; the completion checkbox label; the note form fields; the search field and no-match message; the dialog body; the avatar). Labels, buttons and Folder names stay visible. The Clarity project uses Balanced masking and no cookies.
 - No `identify`, no consent API, no custom events. Tags: `lang`, `theme`, `layout`.
 
 ## Out of Scope
@@ -231,7 +252,7 @@ A small installable web app (PWA) called **Notes**:
 - Rich text or Markdown, images, attachments, checklists inside a Note, reminders, push notifications.
 - Global search across folders, tags, pinning, trash or undo, archive.
 - Sharing or collaboration between Accounts.
-- Dark mode, more languages, plural-aware translations, a translated PWA manifest, date display other than the Due date. Due-date reminders or notifications, a time of day on the Due date, and sorting or filtering by Due date.
+- Dark mode, more languages, plural-aware translations, a translated PWA manifest, date display other than the Due date. Link labels, previews or favicons, `http:` Links, and searching Links. Due-date reminders or notifications, a time of day on the Due date, and sorting or filtering by Due date.
 - End-to-end encryption (the project owner can read data in the Firebase console).
 - A Firebase emulator and end-to-end test suites (may come later).
 
