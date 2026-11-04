@@ -151,7 +151,7 @@
   .note { display: flex; align-items: flex-start; gap: 12px; padding: 12px 4px 12px 6px; border-bottom: 1px solid var(--divider); }
   .check { width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .check input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); cursor: pointer; }
-  .note-body { flex: 1; min-width: 0; padding: 5px 0; border: 0; background: none; text-align: left; cursor: text; display: flex; flex-direction: column; gap: 2px; }
+  .note-body { flex: 1; min-width: 0; padding: 5px 0; user-select: text; display: flex; flex-direction: column; gap: 2px; }
   .note-body .t { font-weight: 600; }
   .note-body .x { white-space: pre-wrap; overflow-wrap: anywhere; }
   .note.done .note-body { color: #6B6B70; }
@@ -365,11 +365,12 @@
                   </div>
                   <div v-else class="note" :class="{ done: n.completed }">
                     <label class="check"><input type="checkbox" :checked="n.completed" @change="toggleNote(n.id)" :aria-label="t(n.completed ? 'notes.markNotCompleted' : 'notes.markCompleted', { note: n.title || n.text.slice(0, 40) })"></label>
-                    <button type="button" class="note-body" :aria-label="t('notes.edit', { note: n.title || n.text.slice(0, 40) })" @click="startEdit(n)">
+                    <div class="note-body">
                       <span v-if="n.title" class="t">{{ n.title }}</span>
                       <span class="x">{{ n.text }}</span>
                       <span v-if="n.dueDate" class="due" :class="{ overdue: isOverdue(n) }"><span class="ms" aria-hidden="true">{{ isOverdue(n) ? 'event_busy' : 'event' }}</span>{{ t(isOverdue(n) ? 'notes.overdue' : 'notes.due', { date: formatDay(n.dueDate) }) }}</span>
-                    </button>
+                    </div>
+                    <button type="button" class="icon-btn sm" :aria-label="t('notes.edit', { note: n.title || n.text.slice(0, 40) })" :title="t('notes.edit', { note: n.title || n.text.slice(0, 40) })" @click="startEdit(n)"><span class="ms" aria-hidden="true">edit</span></button>
                     <button type="button" class="icon-btn sm" :aria-label="t('notes.delete')" @click="dialog = { kind: 'deleteNote', id: n.id }"><span class="ms" aria-hidden="true">delete</span></button>
                   </div>
                 </template>

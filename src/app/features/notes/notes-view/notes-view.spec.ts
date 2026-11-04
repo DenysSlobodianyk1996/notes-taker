@@ -251,6 +251,51 @@ describe('NotesView', () => {
       expect(view.root.querySelector('form')).toBeNull();
     });
 
+    it("opens a Note's form from its ✎ button, not from a click on its text", async () => {
+      const view = await render(
+        withNotes(
+          { id: 'n1', title: 'Call', text: 'Dentist', createdAt: new Date('2026-02-01') },
+          { id: 'n2', title: 'Rent', text: 'Pay', createdAt: new Date('2026-01-01') },
+        ),
+      );
+
+      const body = view.root.querySelector<HTMLElement>('.note-body')!;
+      expect(body.tagName).not.toBe('BUTTON');
+      body.click();
+      await view.fixture.whenStable();
+      expect(view.root.querySelector('form')).toBeNull();
+
+      const edit = getButton(view.root, 'Edit note: Rent');
+      expect(edit.title).toBe('Edit note: Rent');
+      await click(view, 'Edit note: Rent');
+      expect(view.root.querySelectorAll('form')).toHaveLength(1);
+      expect(field<HTMLTextAreaElement>(view, 'textarea').value).toBe('Pay');
+    });
+
+    it('puts ✎ before 🗑 in each Note row', async () => {
+      const view = await render(withNotes({ id: 'n1', title: 'Call' }));
+
+      const buttons = [...view.root.querySelectorAll('article.note button')];
+      expect(buttons.map((b) => b.getAttribute('aria-label'))).toEqual([
+        'Edit note: Call',
+        'Delete note',
+      ]);
+    });
+
+    it("sends focus back to the Note's ✎ after Save and after Esc", async () => {
+      const view = await render(withNotes({ id: 'n1', title: 'Call', text: 'Dentist' }));
+
+      await click(view, 'Edit note: Call');
+      await type(view, 'textarea', 'Dentist at 9');
+      saveButton(view).click();
+      await view.fixture.whenStable();
+      expect(document.activeElement).toBe(getButton(view.root, 'Edit note: Call'));
+
+      await click(view, 'Edit note: Call');
+      await press(view, 'textarea', { key: 'Escape' });
+      expect(document.activeElement).toBe(getButton(view.root, 'Edit note: Call'));
+    });
+
     it('cancels an edit with Esc and shows the Note unchanged', async () => {
       const view = await render(withNotes({ id: 'n1', title: 'Call', text: 'Dentist' }));
       await click(view, 'Edit note: Call');
