@@ -74,6 +74,7 @@ describe('NotesService', () => {
       title: '  Groceries ',
       text: '\n Milk\nBread  \n',
       dueDate: null,
+      links: [],
     });
     await flushSnapshots();
 
@@ -86,6 +87,7 @@ describe('NotesService', () => {
       text: 'Milk\nBread',
       completed: false,
       dueDate: null,
+      links: [],
     });
     expect(data['createdAt']).toBeInstanceOf(FakeTimestamp);
     expect(data['updatedAt']).toEqual(data['createdAt']);
@@ -119,7 +121,9 @@ describe('NotesService', () => {
   it('refuses a Note without a Folder', async () => {
     const notes = await setup();
 
-    expect(() => notes.createNote('', { title: '', text: 'Text', dueDate: null })).toThrow();
+    expect(() =>
+      notes.createNote('', { title: '', text: 'Text', dueDate: null, links: [] }),
+    ).toThrow();
     expect(fakeDb.writes).toHaveLength(0);
   });
 
@@ -128,7 +132,7 @@ describe('NotesService', () => {
     seedNote('dated', { dueDate: '2026-11-05' });
     const notes = await setup();
 
-    notes.createNote('default', { title: '', text: 'Pay rent', dueDate: '2026-12-01' });
+    notes.createNote('default', { title: '', text: 'Pay rent', dueDate: '2026-12-01', links: [] });
     await flushSnapshots();
 
     expect(fakeDb.writes[0].data).toMatchObject({ dueDate: '2026-12-01' });
@@ -141,7 +145,7 @@ describe('NotesService', () => {
     seedNote('n1', { title: 'Old', dueDate: '2026-11-05' });
     const notes = await setup();
 
-    notes.updateNote('n1', { title: ' New ', text: ' Text ', dueDate: null });
+    notes.updateNote('n1', { title: ' New ', text: ' Text ', dueDate: null, links: [] });
     await flushSnapshots();
 
     const { path, data } = fakeDb.writes[0];
@@ -182,5 +186,44 @@ describe('NotesService', () => {
     const notes = await setup();
 
     expect(notes.notesIn('default')[0].dueDate).toBeNull();
+  });
+
+  it("stores a Note's Links when creating and editing it", async () => {
+    seedNote('n1', {});
+    const notes = await setup();
+    const links = ['https://example.com/', 'https://docs.example.com/a'];
+
+    notes.createNote('default', { title: '', text: 'Trip', dueDate: null, links });
+    notes.updateNote('n1', { title: '', text: 'n1', dueDate: null, links: [] });
+    await flushSnapshots();
+
+    expect(fakeDb.writes[0].data).toMatchObject({ links });
+    expect(fakeDb.writes[1].data).toMatchObject({ links: [] });
+    expect(notes.notesIn('default').find((n) => n.text === 'Trip')?.links).toEqual(links);
+  });
+
+  it('reads missing Links as none, and drops any that are not safe https Links', async () => {
+    seedNote('old', {});
+    seedNote('mixed', {
+      links: [
+        'https://ok.example.com/',
+        'http://plain.example.com/',
+        'javascript:alert(1)',
+        'example.com',
+        42,
+        'https://ok.example.com/',
+        'https://two.example.com/',
+        `https://long.example.com/${'a'.repeat(2048)}`,
+      ],
+    });
+    seedNote('many', { links: [1, 2, 3, 4, 5, 6].map((n) => `https://e${n}.example.com/`) });
+    seedNote('notAList', { links: 'https://example.com/' });
+    const notes = await setup();
+
+    const byText = new Map(notes.notesIn('default').map((n) => [n.text, n.links]));
+    expect(byText.get('old')).toEqual([]);
+    expect(byText.get('mixed')).toEqual(['https://ok.example.com/', 'https://two.example.com/']);
+    expect(byText.get('many')).toHaveLength(5);
+    expect(byText.get('notAList')).toEqual([]);
   });
 });

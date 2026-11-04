@@ -9,7 +9,14 @@ import {
   setDoc,
   updateDoc,
 } from 'firebase/firestore';
-import { Note, NoteInput, sortNotes } from '@domain/notes';
+import {
+  NOTE_LINKS_MAX,
+  NOTE_LINK_MAX_LENGTH,
+  Note,
+  NoteInput,
+  normalizeLink,
+  sortNotes,
+} from '@domain/notes';
 import { AuthService } from '@core/auth/auth.service';
 import { FIRESTORE } from '@core/firebase/firebase';
 import { notesCollection } from '@core/firebase/paths';
@@ -89,7 +96,7 @@ export class NotesService {
     return id;
   }
 
-  /** Saves an edited Note: trimmed title and text, the Due date (null clears it). */
+  /** Saves an edited Note: trimmed title and text, the Due date (null clears it), its Links. */
   updateNote(id: string, input: NoteInput): void {
     this.save(updateDoc(this.ref(id), { ...fields(input), updatedAt: Timestamp.now() }));
   }
@@ -134,13 +141,40 @@ function toNote(snapshot: QueryDocumentSnapshot): Note {
     text: String(data['text'] ?? ''),
     completed: data['completed'] === true,
     dueDate: isDay(data['dueDate']) ? data['dueDate'] : null,
+    links: storedLinks(data['links']),
     createdAt: date(data['createdAt']),
     updatedAt: date(data['updatedAt']),
   };
 }
 
-function fields(input: NoteInput): { title: string; text: string; dueDate: string | null } {
-  return { title: input.title.trim(), text: input.text.trim(), dueDate: input.dueDate || null };
+function fields(input: NoteInput): NoteInput {
+  return {
+    title: input.title.trim(),
+    text: input.text.trim(),
+    dueDate: input.dueDate || null,
+    links: [...input.links],
+  };
+}
+
+/**
+ * A Note's stored Links, checked again (ADR-0013): a document edited outside the app must not slip
+ * in an `http:` or `javascript:` one. Only Links already in their stored form and within the length
+ * limit are kept, once each, at most five. Missing (older Notes) means none.
+ */
+function storedLinks(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  const links: string[] = [];
+  for (const link of value) {
+    if (
+      typeof link === 'string' &&
+      link.length <= NOTE_LINK_MAX_LENGTH &&
+      normalizeLink(link) === link &&
+      !links.includes(link)
+    ) {
+      links.push(link);
+    }
+  }
+  return links.slice(0, NOTE_LINKS_MAX);
 }
 
 /**

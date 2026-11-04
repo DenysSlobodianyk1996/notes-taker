@@ -59,6 +59,63 @@
       <span aria-hidden="true">{{ 'notes.dueDateLabel' | translate }}</span>
     }
   </div>
+  <div class="links-field">
+    @if (links().length) {
+      <ul data-clarity-mask="true" class="link-list">
+        @for (link of links(); track link) {
+          <li>
+            <span class="material-symbols-outlined" aria-hidden="true">link</span>
+            <span class="link-text" [title]="link">{{ shortLink(link) }}</span>
+            <button
+              type="button"
+              class="icon-btn remove-link"
+              [attr.aria-label]="'notes.removeLink' | translate: { link: shortLink(link) }"
+              [title]="'notes.removeLink' | translate: { link: shortLink(link) }"
+              (click)="removeLink(link)"
+            >
+              <span class="material-symbols-outlined" aria-hidden="true">close</span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+    @if (links().length < linksMax) {
+      <div class="link-add">
+        <span class="material-symbols-outlined" aria-hidden="true">add_link</span>
+        <label>
+          <span class="visually-hidden">{{ 'notes.linkLabel' | translate }}</span>
+          <input
+            data-clarity-mask="true"
+            #linkInput
+            type="url"
+            inputmode="url"
+            autocapitalize="off"
+            autocomplete="off"
+            spellcheck="false"
+            class="link-input"
+            [value]="linkDraft()"
+            [placeholder]="'notes.linkPlaceholder' | translate"
+            [attr.aria-invalid]="linkError() ? 'true' : 'false'"
+            [attr.aria-describedby]="linkError() ? linkErrorId : null"
+            (input)="typeLink(linkInput.value)"
+            (keydown.enter)="addLinkFromEnter($event)"
+            (keydown.control.enter)="save($event)"
+            (keydown.meta.enter)="save($event)"
+          />
+        </label>
+        <button type="button" class="add-link" [disabled]="!linkDraft().trim()" (click)="addLink()">
+          <span class="material-symbols-outlined" aria-hidden="true">add</span>
+          {{ 'notes.addLink' | translate }}
+        </button>
+      </div>
+    }
+    @if (linkError(); as error) {
+      <p class="link-error" [id]="linkErrorId" role="alert">
+        {{ 'notes.linkErrors.' + error | translate }}
+      </p>
+    }
+    <p class="link-count">{{ 'notes.linkCount' | translate: { count: links().length } }}</p>
+  </div>
   <div class="foot">
     <span class="grow"></span>
     <button type="button" class="text-btn cancel" (click)="cancelled.emit()">

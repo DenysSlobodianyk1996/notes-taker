@@ -18,6 +18,7 @@ const MASKED: [what: string, template: string, element: RegExp][] = [
     NOTES,
     /<label\b[^>]*class="check"[^>]*>/,
   ],
+  ['the Links under a Note', NOTES, /<ul\b[^>]*class="links"[^>]*>/],
   ['the search field', NOTES, /<input\b[^>]*type="search"[^>]*>/],
   [
     'the no-match message (repeats the search)',
@@ -27,6 +28,8 @@ const MASKED: [what: string, template: string, element: RegExp][] = [
   ['the note title field', FORM, /<input\b[^>]*class="title"[^>]*>/],
   ['the note text field', FORM, /<textarea\b[^>]*>/],
   ['the due date field', FORM, /<input\b[^>]*type="date"[^>]*>/],
+  ['the Links added in the note form', FORM, /<ul\b[^>]*class="link-list"[^>]*>/],
+  ['the Link field', FORM, /<input\b[^>]*class="link-input"[^>]*>/],
   [
     'the confirm dialog body (quotes a Note)',
     'shared/confirm-dialog/confirm-dialog.html',

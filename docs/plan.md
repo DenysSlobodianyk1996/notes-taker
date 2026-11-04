@@ -85,7 +85,7 @@ Workflow (from the `ask-matt` skill flow): seed docs → **Claude Design clickab
 **Data model**
 
 - Firestore: `users/{uid}/folders/{folderId}` holds `{name, nameKey, isDefault, createdAt}`.
-- Firestore: `users/{uid}/notes/{noteId}` holds `{folderId, title, text, completed, dueDate, createdAt, updatedAt}`.
+- Firestore: `users/{uid}/notes/{noteId}` holds `{folderId, title, text, completed, dueDate, links, createdAt, updatedAt}`.
 - Security rules allow access only when `request.auth.uid == uid`.
 - Name uniqueness is checked in the client against the loaded list, since Firestore can't enforce it offline.
 

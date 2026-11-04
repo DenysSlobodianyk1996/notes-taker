@@ -139,6 +139,7 @@ describe('NotesView', () => {
       title: 'Groceries',
       text: 'Milk\nBread',
       dueDate: null,
+      links: [],
     });
     expect(view.root.querySelector('form')).toBeNull();
     expect(view.root.querySelector('.note-title')?.textContent).toBe('Groceries');
@@ -247,6 +248,7 @@ describe('NotesView', () => {
         title: 'Call',
         text: 'Dentist at 9',
         dueDate: null,
+        links: [],
       });
       expect(view.root.querySelector('form')).toBeNull();
     });
@@ -369,6 +371,7 @@ describe('NotesView', () => {
         title: '',
         text: 'Pay rent',
         dueDate: '2026-12-01',
+        links: [],
       });
     });
 
@@ -385,6 +388,7 @@ describe('NotesView', () => {
         title: 'Rent',
         text: 'Buy milk',
         dueDate: null,
+        links: [],
       });
     });
 
@@ -614,5 +618,191 @@ describe('NotesView', () => {
       expect(button.getAttribute('aria-label')).toBeNull();
       expect(button.querySelector('.material-symbols-outlined')).toBeNull();
     }
+  });
+
+  describe('Links', () => {
+    function withNotes(...notes: Parameters<typeof aNote>[0][]): FakeNotesService {
+      const service = new FakeNotesService();
+      service.notes.set(notes.map((fields) => aNote({ folderId: 'work', ...fields })));
+      return service;
+    }
+
+    const linkInput = (view: View): HTMLInputElement | null =>
+      view.root.querySelector<HTMLInputElement>('form input.link-input');
+    const addedLinks = (view: View): string[] =>
+      [...view.root.querySelectorAll('form .link-list .link-text')].map((e) =>
+        e.textContent!.trim(),
+      );
+    const linkError = (view: View): string =>
+      view.root.querySelector('form .link-error')?.textContent?.trim() ?? '';
+    const linkCount = (view: View): string =>
+      view.root.querySelector('form .link-count')?.textContent?.trim() ?? '';
+
+    async function addWithButton(view: View, value: string): Promise<void> {
+      await type(view, 'input.link-input', value);
+      getButton(view.root, 'Add').click();
+      await view.fixture.whenStable();
+    }
+
+    async function addWithEnter(view: View, value: string): Promise<void> {
+      await type(view, 'input.link-input', value);
+      await press(view, 'input.link-input', { key: 'Enter' });
+    }
+
+    async function newNoteWithText(view: View): Promise<void> {
+      await openNewNote(view);
+      await type(view, 'textarea', 'Trip');
+    }
+
+    it('adds Links with + Add and with Enter, as https, and counts them', async () => {
+      const view = await render();
+      await newNoteWithText(view);
+      expect(linkCount(view)).toBe('0 / 5 links');
+      expect(getButton(view.root, 'Add').disabled).toBe(true);
+
+      await addWithButton(view, 'example.com');
+      await addWithEnter(view, 'https://docs.example.com/guide');
+
+      expect(addedLinks(view)).toEqual(['example.com', 'docs.example.com/guide']);
+      expect(linkInput(view)!.value).toBe('');
+      expect(linkCount(view)).toBe('2 / 5 links');
+      expect(view.notes.createNote).not.toHaveBeenCalled();
+    });
+
+    it('removes a Link with its ✕', async () => {
+      const view = await render();
+      await newNoteWithText(view);
+      await addWithEnter(view, 'a.example.com');
+      await addWithEnter(view, 'b.example.com');
+
+      getButton(view.root, 'Remove link: a.example.com').click();
+      await view.fixture.whenStable();
+
+      expect(addedLinks(view)).toEqual(['b.example.com']);
+      expect(linkCount(view)).toBe('1 / 5 links');
+    });
+
+    it('explains a Link it refuses, until the user types again', async () => {
+      const view = await render();
+      await newNoteWithText(view);
+
+      await addWithEnter(view, 'http://example.com');
+      expect(linkError(view)).toBe('Only https links');
+      expect(linkInput(view)!.getAttribute('aria-invalid')).toBe('true');
+
+      await type(view, 'input.link-input', 'example.com');
+      expect(linkError(view)).toBe('');
+
+      await addWithEnter(view, 'example.com');
+      await addWithEnter(view, 'https://example.com/');
+      expect(linkError(view)).toBe('Already added');
+
+      await addWithButton(view, `example.com/${'a'.repeat(2048)}`);
+      expect(linkError(view)).toBe('Too long');
+      expect(addedLinks(view)).toEqual(['example.com']);
+    });
+
+    it('hides the Link field at five Links', async () => {
+      const view = await render();
+      await newNoteWithText(view);
+      for (const host of ['a', 'b', 'c', 'd', 'e']) await addWithEnter(view, `${host}.example.com`);
+
+      expect(linkInput(view)).toBeNull();
+      expect(view.root.querySelector('form .add-link')).toBeNull();
+      expect(linkCount(view)).toBe('5 / 5 links');
+    });
+
+    it('on Save, adds a valid Link still in the field, and blocks the save for a bad one', async () => {
+      const view = await render();
+      await newNoteWithText(view);
+
+      await type(view, 'input.link-input', 'mailto:me@example.com');
+      saveButton(view).click();
+      await view.fixture.whenStable();
+      expect(view.notes.createNote).not.toHaveBeenCalled();
+      expect(linkError(view)).toBe('Only https links');
+
+      await type(view, 'input.link-input', 'example.com');
+      saveButton(view).click();
+      await view.fixture.whenStable();
+      expect(view.notes.createNote).toHaveBeenCalledWith('work', {
+        title: '',
+        text: 'Trip',
+        dueDate: null,
+        links: ['https://example.com/'],
+      });
+    });
+
+    it('saves with Ctrl+Enter or ⌘+Enter in the Link field, and cancels with Esc', async () => {
+      const view = await render();
+      await newNoteWithText(view);
+      await type(view, 'input.link-input', 'example.com');
+      await press(view, 'input.link-input', { key: 'Enter', ctrlKey: true });
+      expect(view.notes.createNote).toHaveBeenLastCalledWith(
+        'work',
+        expect.objectContaining({ links: ['https://example.com/'] }),
+      );
+
+      await newNoteWithText(view);
+      await press(view, 'input.link-input', { key: 'Enter', metaKey: true });
+      expect(view.notes.createNote).toHaveBeenCalledTimes(2);
+
+      await newNoteWithText(view);
+      await type(view, 'input.link-input', 'example.com');
+      await press(view, 'input.link-input', { key: 'Escape' });
+      expect(view.root.querySelector('form')).toBeNull();
+      expect(view.notes.createNote).toHaveBeenCalledTimes(2);
+    });
+
+    it("starts the edit form with the Note's Links, and saves a change to them", async () => {
+      const links = ['https://a.example.com/', 'https://b.example.com/'];
+      const view = await render(withNotes({ id: 'n1', title: 'Trip', text: 'Plan', links }));
+      getButton(view.root, 'Edit note: Trip').click();
+      await view.fixture.whenStable();
+      expect(addedLinks(view)).toEqual(['a.example.com', 'b.example.com']);
+      expect(linkCount(view)).toBe('2 / 5 links');
+
+      getButton(view.root, 'Remove link: a.example.com').click();
+      await view.fixture.whenStable();
+      saveButton(view).click();
+      await view.fixture.whenStable();
+
+      expect(view.notes.updateNote).toHaveBeenCalledWith('n1', {
+        title: 'Trip',
+        text: 'Plan',
+        dueDate: null,
+        links: ['https://b.example.com/'],
+      });
+    });
+
+    it('shows Links under the Note as short links that open in a new tab', async () => {
+      const view = await render(
+        withNotes(
+          {
+            id: 'n1',
+            title: 'Trip',
+            completed: true,
+            links: ['https://www.hotels.example.com/lviv/', 'https://maps.example.com/'],
+            createdAt: new Date('2026-02-01'),
+          },
+          { id: 'n2', title: 'Plain', createdAt: new Date('2026-01-01') },
+        ),
+      );
+      const [withLinks, plain] = [...view.root.querySelectorAll('article.note')];
+
+      const anchors = [...withLinks.querySelectorAll<HTMLAnchorElement>('.links a')];
+      expect(anchors.map((a) => a.querySelector('.link-text')?.textContent?.trim())).toEqual([
+        'hotels.example.com/lviv',
+        'maps.example.com',
+      ]);
+      expect(anchors[0].getAttribute('href')).toBe('https://www.hotels.example.com/lviv/');
+      expect(anchors[0].target).toBe('_blank');
+      expect(anchors[0].rel).toBe('noopener noreferrer');
+      expect(anchors[0].title).toBe('https://www.hotels.example.com/lviv/');
+      expect(anchors[0].getAttribute('aria-label')).toBe(
+        'hotels.example.com/lviv (opens in a new tab)',
+      );
+      expect(plain.querySelector('.links')).toBeNull();
+    });
   });
 });
