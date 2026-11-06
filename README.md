@@ -5,7 +5,9 @@ An installable notes app (PWA) for iOS, Android and desktop. Keep short notes in
 - **Sign in with Google:** your notes are stored in Firebase and sync across your browsers, the installed app and all your devices. They also work offline once you've signed in. The app never sees your password.
 - **Interface in English or Ukrainian** (EN | UA toggle). Your own folder names and notes are never translated.
 
-> Status: design review. See [docs/plan.md](docs/plan.md) and the [design prototype](docs/design/README.md).
+**Open the app:** <https://notes-taker-df334.web.app> (sign in with Google; install it from the browser menu).
+
+> Status: live; every merge into `main` deploys there. See [docs/plan.md](docs/plan.md) and the [design prototype](docs/design/README.md).
 
 ## Stack
 
