@@ -4,6 +4,8 @@
 
 **Blocked by:** 11 (Installable app polish + offline check); design approved by merging PR #17
 
+**Follow-up:** the manifest `theme_color` became `#FFFFFF` (the surface) so the installed Android app's navigation bar matches the main area instead of staying Orange (`feature/android-nav-bar-color`).
+
 **Status:** done (implemented on `feature/12-theme`, stacked on `feature/11-installable-offline`); canvas updated in PR #27 (version 24)
 
 Design (done in the standalone prototype; approved):
