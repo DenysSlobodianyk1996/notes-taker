@@ -191,7 +191,7 @@ A small installable web app (PWA) called **Notes**:
 - Firestore only, no local copy: after a reload the app shows Orange until Firestore answers (normally from its offline cache, within moments).
 - The login page is always Orange; signing out returns to Orange.
 - The header has a 40px `palette` icon button ("Theme" / "Тема") left of EN | UA, on every screen size. It opens a popover with three 28px circles as a radio group; the current one has a ring and a ✓. Picking one applies and saves it and closes the popover; Esc or a click outside closes it.
-- The browser tab icon (an SVG favicon) is swapped for the Theme's colour; `<meta name="theme-color">` follows the Theme. The manifest and installed app icons stay Orange.
+- The browser tab icon (an SVG favicon) is swapped for the Theme's colour; `<meta name="theme-color">` follows the Theme. The installed app icons stay Orange. The manifest `theme_color` is the page surface white (`$surface`), because Android colours its navigation bar from it once, at install, so it cannot follow the Theme; white blends with the main area in every Theme.
 
 ### UI rules (from the design prototype)
 - Creating and editing happen inline. `<dialog>` is used only for delete confirmations (ADR-0004).
